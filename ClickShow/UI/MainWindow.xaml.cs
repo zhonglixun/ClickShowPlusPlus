@@ -726,7 +726,8 @@ namespace ClickShow
             MouseHook.MouseHook.ForceCrossCursor = true;
             Cursor = System.Windows.Input.Cursors.Cross;
             CaptureHint.Visibility = Visibility.Visible;
-            CaptureButton.Content = L("captureCancel");
+            // 保持动态资源引用，语言切换时按钮文字跟随更新
+            CaptureButton.SetResourceReference(ContentProperty, "captureCancel");
         }
 
         private void DisarmCapture()
@@ -738,7 +739,7 @@ namespace ClickShow
             MouseHook.MouseHook.ForceCrossCursor = false;
             Cursor = null;
             CaptureHint.Visibility = Visibility.Collapsed;
-            CaptureButton.Content = L("captureStart");
+            CaptureButton.SetResourceReference(ContentProperty, "captureStart");
             if (markJustDisarmed)
             {
                 _captureDisarmedAt = DateTime.Now;
@@ -764,23 +765,6 @@ namespace ClickShow
             {
                 DisarmCapture();
                 e.Handled = true;
-            }
-        }
-
-        private void IndicatorDefault_Click(object sender, RoutedEventArgs e)
-        {
-            if (Editing != null)
-            {
-                Editing.IndicatorSize = 150;
-                Editing.RippleDurationMs = 400;
-            }
-        }
-
-        private void HoverDotDefault_Click(object sender, RoutedEventArgs e)
-        {
-            if (Editing != null)
-            {
-                Editing.HoverDotSize = 60;
             }
         }
 

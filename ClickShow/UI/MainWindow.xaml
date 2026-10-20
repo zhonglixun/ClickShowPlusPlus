@@ -69,12 +69,13 @@
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource rippleSize}" />
                 <Grid Grid.Column="1" Margin="12,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="7" />
                     </Grid.ColumnDefinitions>
-                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="400" Minimum="50" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding IndicatorSize}" />
-                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
-                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="IndicatorDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
+                    <Slider Grid.ColumnSpan="4" IsSnapToTickEnabled="True" Maximum="400" Minimum="50" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding IndicatorSize}" />
+                    <Rectangle Grid.Column="1" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
                 </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding IndicatorSize, StringFormat={}{0:0} px}" />
             </Grid>
@@ -87,12 +88,13 @@
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource rippleDuration}" />
                 <Grid Grid.Column="1" Margin="12,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="7" />
                     </Grid.ColumnDefinitions>
-                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="800" Minimum="100" Style="{StaticResource ModernSlider}" TickFrequency="25" Value="{Binding RippleDurationMs}" />
-                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
-                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="IndicatorDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
+                    <Slider Grid.ColumnSpan="4" IsSnapToTickEnabled="True" Maximum="800" Minimum="100" Style="{StaticResource ModernSlider}" TickFrequency="25" Value="{Binding RippleDurationMs}" />
+                    <Rectangle Grid.Column="1" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
                 </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding RippleDurationMs, StringFormat={}{0:0} ms}" />
             </Grid>
@@ -161,12 +163,13 @@
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource hoverDotSize}" />
                 <Grid Grid.Column="1" Margin="12,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="7*" />
+                        <ColumnDefinition Width="7" />
                     </Grid.ColumnDefinitions>
-                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
-                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
-                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="HoverDotDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
+                    <Slider Grid.ColumnSpan="4" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
+                    <Rectangle Grid.Column="1" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
                 </Grid>
                 <TextBlock Grid.Column="2" Margin="0,0,12,0" Style="{StaticResource HintText}" Text="{Binding HoverDotSize, StringFormat={}{0:0} px}" />
                 <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="{DynamicResource swatchDotTip}" />
@@ -187,15 +190,15 @@
                 </StackPanel>
             </Grid>
             <TextBlock Style="{StaticResource HintText}" Text="{DynamicResource silenceMasterHint}" />
-            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding Setting.FullscreenHide}" Style="{StaticResource SwitchCheckBox}" />
-                <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="{DynamicResource fullscreenHide}" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource fullscreenHideHint}" />
-            </StackPanel>
-            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource processSilence}" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource processSilenceHint}" />
-            </StackPanel>
+            <WrapPanel Margin="0,8,0,0" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding Setting.FullscreenHide}" Style="{StaticResource SwitchCheckBox}" VerticalAlignment="Center" />
+                <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="{DynamicResource fullscreenHide}" VerticalAlignment="Center" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource fullscreenHideHint}" VerticalAlignment="Center" />
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource processSilence}" VerticalAlignment="Center" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource processSilenceHint}" VerticalAlignment="Center" />
+            </WrapPanel>
             <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding ProcessList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

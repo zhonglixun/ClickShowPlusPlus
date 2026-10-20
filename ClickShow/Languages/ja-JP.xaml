@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">参照</sys:String>
     <sys:String x:Key="captureStart">前面を取得</sys:String>
     <sys:String x:Key="captureCancel">取得を取消</sys:String>
-    <sys:String x:Key="captureHint">捕捉中：対象プログラムをクリックすると追加されます。このウィンドウをクリックまたは ESC で取消</sys:String>
+    <sys:String x:Key="captureHint">捕捉中：対象プログラム上でクリックすると追加されます。ESC または右クリックで取消</sys:String>
     <sys:String x:Key="secGeneral">全般</sys:String>
     <sys:String x:Key="autoStartLabel">スタートアップに登録</sys:String>
     <sys:String x:Key="exportButton">設定をエクスポート</sys:String>

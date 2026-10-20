@@ -33,17 +33,6 @@ namespace ClickShow.MouseHook
     /// </summary>  
     public class MouseHook : GlobalHook
     {
-        // 待捕捉状态：钩子里强制全局十字光标（WPF 的 Cursor 属性只作用于本窗口）
-        public static volatile bool ForceCrossCursor;
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetCursor(IntPtr hCursor);
-
-        private const int IDC_CROSS = 32515;
-
 
         
 
@@ -143,11 +132,6 @@ namespace ClickShow.MouseHook
                 const uint MI_WP_SIGNATURE = 0xFF515700;
                 const uint SIGNATURE_MASK = 0xFFFFFF00;
                 bool isPenOrTouch = ((uint)mouseHookStruct.dwExtraInfo & SIGNATURE_MASK) == MI_WP_SIGNATURE;
-
-                if (ForceCrossCursor && eventType == MouseEventType.MouseMove)
-                {
-                    SetCursor(LoadCursor(IntPtr.Zero, IDC_CROSS));
-                }
 
                 var e = new MouseEventArgs(
                     button,

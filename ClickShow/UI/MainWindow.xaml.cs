@@ -50,7 +50,7 @@ namespace ClickShow
         private bool _suppressRadioEvents;
         private bool _suppressHexSync;
         private volatile bool _captureArmed;
-        private DateTime _captureDisarmedAt = DateTime.MinValue;
+        private CaptureOverlay _captureOverlay;
         private static readonly HttpClient UpdateHttpClient = new();
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
@@ -577,17 +577,6 @@ namespace ClickShow
         {
             if (_captureArmed)
             {
-                // 待捕捉状态下的下一次点击：抓取该坐标下的程序
-                var targetExe = SilenceChecker.GetProcessExeAtPoint(e.Location.X, e.Location.Y);
-                if (targetExe == OwnProcessExe)
-                {
-                    // 点的是本程序窗口：只取消捕捉，并抑制按钮随后的 Click 重新开启
-                    Dispatcher.InvokeAsync(() => DisarmCapture(true));
-                }
-                else
-                {
-                    Dispatcher.InvokeAsync(() => FinishCapture(targetExe));
-                }
                 return;
             }
 
@@ -716,44 +705,41 @@ namespace ClickShow
                 return;
             }
 
-            // 点本窗口取消捕捉后，抑制紧随的按钮 Click 重新进入捕捉
-            if ((DateTime.Now - _captureDisarmedAt).TotalMilliseconds < 200)
-            {
-                return;
-            }
-
             _captureArmed = true;
-            MouseHook.MouseHook.ForceCrossCursor = true;
-            Cursor = System.Windows.Input.Cursors.Cross;
             CaptureHint.Visibility = Visibility.Visible;
             // 保持动态资源引用，语言切换时按钮文字跟随更新
             CaptureButton.SetResourceReference(ContentProperty, "captureCancel");
+
+            _captureOverlay = new CaptureOverlay();
+            _captureOverlay.Captured += OnCaptureOverlayCaptured;
+            _captureOverlay.Cancelled += DisarmCapture;
+            _captureOverlay.Show();
         }
 
         private void DisarmCapture()
-            => DisarmCapture(false);
-
-        private void DisarmCapture(bool markJustDisarmed)
         {
             _captureArmed = false;
-            MouseHook.MouseHook.ForceCrossCursor = false;
-            Cursor = null;
+            if (_captureOverlay != null)
+            {
+                _captureOverlay.Close();
+                _captureOverlay = null;
+            }
             CaptureHint.Visibility = Visibility.Collapsed;
             CaptureButton.SetResourceReference(ContentProperty, "captureStart");
-            if (markJustDisarmed)
-            {
-                _captureDisarmedAt = DateTime.Now;
-            }
         }
 
-        private void FinishCapture(string exe)
+        private void OnCaptureOverlayCaptured(System.Windows.Point screenPoint)
         {
+            if (_captureOverlay != null)
+            {
+                _captureOverlay.Close();
+                _captureOverlay = null;
+            }
             DisarmCapture();
+            var exe = SilenceChecker.GetProcessExeAtPoint((int)screenPoint.X, (int)screenPoint.Y);
             if (string.IsNullOrEmpty(exe) || exe == OwnProcessExe)
             {
-                _notifyIcon.ShowBalloonTip(2500, "ClickShow",
-                    L("captureNone"),
-                    System.Windows.Forms.ToolTipIcon.Info);
+                _notifyIcon.ShowBalloonTip(2500, "ClickShow", L("captureNone"), System.Windows.Forms.ToolTipIcon.Info);
                 return;
             }
             AddProcess(exe);
@@ -1015,6 +1001,7 @@ namespace ClickShow
             }
 
             _hoverDot?.Close();
+            _captureOverlay?.Close();
         }
 
         private void OnStateChanged(object sender, EventArgs e)

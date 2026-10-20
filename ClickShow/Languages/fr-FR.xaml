@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Parcourir</sys:String>
     <sys:String x:Key="captureStart">Capturer le programme</sys:String>
     <sys:String x:Key="captureCancel">Annuler la capture</sys:String>
-    <sys:String x:Key="captureHint">Capture en cours : cliquez dans le programme cible pour l'ajouter ; cliquez ici ou appuyez sur ÉCHAP pour annuler</sys:String>
+    <sys:String x:Key="captureHint">Capture en cours : cliquez sur le programme cible pour l'ajouter ; ÉCHAP ou clic droit pour annuler</sys:String>
     <sys:String x:Key="secGeneral">Général</sys:String>
     <sys:String x:Key="autoStartLabel">Lancer au démarrage</sys:String>
     <sys:String x:Key="exportButton">Exporter les paramètres</sys:String>

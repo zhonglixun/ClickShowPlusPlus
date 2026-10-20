@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Browse</sys:String>
     <sys:String x:Key="captureStart">Capture program</sys:String>
     <sys:String x:Key="captureCancel">Cancel capture</sys:String>
-    <sys:String x:Key="captureHint">Capture armed: click once in the target program to add it; click this window or press ESC to cancel</sys:String>
+    <sys:String x:Key="captureHint">Capture armed: click on the target program to add it; ESC or right-click cancels</sys:String>
     <sys:String x:Key="secGeneral">General</sys:String>
     <sys:String x:Key="autoStartLabel">Run at startup</sys:String>
     <sys:String x:Key="exportButton">Export settings</sys:String>

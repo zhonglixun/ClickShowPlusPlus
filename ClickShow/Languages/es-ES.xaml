@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Examinar</sys:String>
     <sys:String x:Key="captureStart">Capturar programa</sys:String>
     <sys:String x:Key="captureCancel">Cancelar captura</sys:String>
-    <sys:String x:Key="captureHint">Capturando: haz clic en el programa objetivo para añadirlo; haz clic aquí o pulsa ESC para cancelar</sys:String>
+    <sys:String x:Key="captureHint">Capturando: haz clic sobre el programa objetivo para añadirlo; ESC o clic derecho para cancelar</sys:String>
     <sys:String x:Key="secGeneral">General</sys:String>
     <sys:String x:Key="autoStartLabel">Iniciar con Windows</sys:String>
     <sys:String x:Key="exportButton">Exportar ajustes</sys:String>

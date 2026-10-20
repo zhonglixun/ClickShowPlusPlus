@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">浏览</sys:String>
     <sys:String x:Key="captureStart">抓取前台</sys:String>
     <sys:String x:Key="captureCancel">取消捕捉</sys:String>
-    <sys:String x:Key="captureHint">待捕捉中：到目标程序里点击一下即可加入列表；点击本窗口或按 ESC 取消</sys:String>
+    <sys:String x:Key="captureHint">待捕捉中：在目标程序上点击一下即可加入列表；按 ESC 或右键取消</sys:String>
     <sys:String x:Key="secGeneral">通用</sys:String>
     <sys:String x:Key="autoStartLabel">开机自启</sys:String>
     <sys:String x:Key="exportButton">导出配置</sys:String>

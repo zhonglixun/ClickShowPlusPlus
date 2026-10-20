@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Sfoglia</sys:String>
     <sys:String x:Key="captureStart">Cattura programma</sys:String>
     <sys:String x:Key="captureCancel">Annulla acquisizione</sys:String>
-    <sys:String x:Key="captureHint">Acquisizione: clicca nel programma target per aggiungerlo; clicca qui o ESC per annullare</sys:String>
+    <sys:String x:Key="captureHint">Acquisizione: clicca sul programma target per aggiungerlo; ESC o tasto destro per annullare</sys:String>
     <sys:String x:Key="secGeneral">Generale</sys:String>
     <sys:String x:Key="autoStartLabel">Avvia con Windows</sys:String>
     <sys:String x:Key="exportButton">Esporta impostazioni</sys:String>

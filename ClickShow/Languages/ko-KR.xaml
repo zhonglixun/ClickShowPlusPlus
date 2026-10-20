@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">찾아보기</sys:String>
     <sys:String x:Key="captureStart">포그라운드 캡처</sys:String>
     <sys:String x:Key="captureCancel">캡처 취소</sys:String>
-    <sys:String x:Key="captureHint">캡처 대기 중: 대상 프로그램을 클릭하면 목록에 추가됩니다. 이 창을 클릭하거나 ESC로 취소</sys:String>
+    <sys:String x:Key="captureHint">캡처 대기 중: 대상 프로그램을 클릭하면 목록에 추가됩니다. ESC 또는 오른쪽 클릭으로 취소</sys:String>
     <sys:String x:Key="secGeneral">일반</sys:String>
     <sys:String x:Key="autoStartLabel">시작 프로그램 등록</sys:String>
     <sys:String x:Key="exportButton">설정 내보내기</sys:String>

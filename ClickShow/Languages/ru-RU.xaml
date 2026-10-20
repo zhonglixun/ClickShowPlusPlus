@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Обзор</sys:String>
     <sys:String x:Key="captureStart">Захват программы</sys:String>
     <sys:String x:Key="captureCancel">Отменить захват</sys:String>
-    <sys:String x:Key="captureHint">Захват: кликните в целевой программе, чтобы добавить; клик здесь или ESC — отмена</sys:String>
+    <sys:String x:Key="captureHint">Захват: кликните по целевой программе, чтобы добавить её; ESC или правая кнопка — отмена</sys:String>
     <sys:String x:Key="secGeneral">Общие</sys:String>
     <sys:String x:Key="autoStartLabel">Запуск при входе</sys:String>
     <sys:String x:Key="exportButton">Экспорт настроек</sys:String>

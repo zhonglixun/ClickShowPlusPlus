@@ -39,7 +39,7 @@
     <sys:String x:Key="browseButton">Durchsuchen</sys:String>
     <sys:String x:Key="captureStart">Programm erfassen</sys:String>
     <sys:String x:Key="captureCancel">Erfassen abbrechen</sys:String>
-    <sys:String x:Key="captureHint">Erfassen aktiv: Klicke im Zielprogramm, um es hinzuzufügen; hier klicken oder ESC bricht ab</sys:String>
+    <sys:String x:Key="captureHint">Erfassen aktiv: Klicke auf das Zielprogramm, um es hinzuzufügen; ESC oder Rechtsklick bricht ab</sys:String>
     <sys:String x:Key="secGeneral">Allgemein</sys:String>
     <sys:String x:Key="autoStartLabel">Mit Windows starten</sys:String>
     <sys:String x:Key="exportButton">Einstellungen exportieren</sys:String>

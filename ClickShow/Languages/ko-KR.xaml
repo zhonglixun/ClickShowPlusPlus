@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">언어</sys:String>
     <sys:String x:Key="defaultTickTip">클릭하면 기본값 복원</sys:String>
     <sys:String x:Key="trayBalloon">마우스 클릭 표시기 · 클릭하여 설정 열기</sys:String>
+    <sys:String x:Key="trayOpenSettings">설정 열기</sys:String>
+    <sys:String x:Key="trayPauseRipples">물결 일시중지</sys:String>
     <sys:String x:Key="trayExit">종료</sys:String>
     <sys:String x:Key="settingsTitle">설정</sys:String>
     <sys:String x:Key="updateAvailable">새 버전 있음!</sys:String>

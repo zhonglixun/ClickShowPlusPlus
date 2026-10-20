@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">言語</sys:String>
     <sys:String x:Key="defaultTickTip">クリックで既定値に戻す</sys:String>
     <sys:String x:Key="trayBalloon">マウスクリックインジケータ · クリックで設定を開く</sys:String>
+    <sys:String x:Key="trayOpenSettings">設定を開く</sys:String>
+    <sys:String x:Key="trayPauseRipples">波紋を一時停止</sys:String>
     <sys:String x:Key="trayExit">終了</sys:String>
     <sys:String x:Key="settingsTitle">設定</sys:String>
     <sys:String x:Key="updateAvailable">新バージョンあり!</sys:String>

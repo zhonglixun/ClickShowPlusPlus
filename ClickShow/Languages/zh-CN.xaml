@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">语言</sys:String>
     <sys:String x:Key="defaultTickTip">点击恢复默认值</sys:String>
     <sys:String x:Key="trayBalloon">鼠标点击提示器 · 点击打开设置</sys:String>
+    <sys:String x:Key="trayOpenSettings">打开设置</sys:String>
+    <sys:String x:Key="trayPauseRipples">暂停波纹</sys:String>
     <sys:String x:Key="trayExit">退出</sys:String>
     <sys:String x:Key="settingsTitle">设置</sys:String>
     <sys:String x:Key="updateAvailable">已有新版本!</sys:String>

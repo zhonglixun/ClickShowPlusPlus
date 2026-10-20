@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">Language</sys:String>
     <sys:String x:Key="defaultTickTip">Click to restore default</sys:String>
     <sys:String x:Key="trayBalloon">Mouse click indicator · click to open settings</sys:String>
+    <sys:String x:Key="trayOpenSettings">Open settings</sys:String>
+    <sys:String x:Key="trayPauseRipples">Pause ripple</sys:String>
     <sys:String x:Key="trayExit">Exit</sys:String>
     <sys:String x:Key="settingsTitle">Settings</sys:String>
     <sys:String x:Key="updateAvailable">New version available!</sys:String>

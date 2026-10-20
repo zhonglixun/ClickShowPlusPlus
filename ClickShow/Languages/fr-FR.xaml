@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">Langue</sys:String>
     <sys:String x:Key="defaultTickTip">Cliquer pour rétablir la valeur par défaut</sys:String>
     <sys:String x:Key="trayBalloon">Indicateur de clics de souris · cliquez pour ouvrir les paramètres</sys:String>
+    <sys:String x:Key="trayOpenSettings">Ouvrir les paramètres</sys:String>
+    <sys:String x:Key="trayPauseRipples">Mettre l'onde en pause</sys:String>
     <sys:String x:Key="trayExit">Quitter</sys:String>
     <sys:String x:Key="settingsTitle">Paramètres</sys:String>
     <sys:String x:Key="updateAvailable">Nouvelle version disponible !</sys:String>

@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">Sprache</sys:String>
     <sys:String x:Key="defaultTickTip">Klick setzt den Standardwert zurück</sys:String>
     <sys:String x:Key="trayBalloon">Mausklick-Anzeige · Klick öffnet die Einstellungen</sys:String>
+    <sys:String x:Key="trayOpenSettings">Einstellungen öffnen</sys:String>
+    <sys:String x:Key="trayPauseRipples">Welle pausieren</sys:String>
     <sys:String x:Key="trayExit">Beenden</sys:String>
     <sys:String x:Key="settingsTitle">Einstellungen</sys:String>
     <sys:String x:Key="updateAvailable">Neue Version verfügbar!</sys:String>

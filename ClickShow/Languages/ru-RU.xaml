@@ -48,6 +48,8 @@
     <sys:String x:Key="languageLabel">Язык</sys:String>
     <sys:String x:Key="defaultTickTip">Клик — вернуть значение по умолчанию</sys:String>
     <sys:String x:Key="trayBalloon">Индикатор кликов мыши · клик открывает настройки</sys:String>
+    <sys:String x:Key="trayOpenSettings">Открыть настройки</sys:String>
+    <sys:String x:Key="trayPauseRipples">Пауза волны</sys:String>
     <sys:String x:Key="trayExit">Выход</sys:String>
     <sys:String x:Key="settingsTitle">Настройки</sys:String>
     <sys:String x:Key="updateAvailable">Доступна новая версия!</sys:String>

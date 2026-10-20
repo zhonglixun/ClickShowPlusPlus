@@ -51,6 +51,9 @@ namespace ClickShow
         private bool _suppressHexSync;
         private volatile bool _captureArmed;
         private CaptureOverlay _captureOverlay;
+        private bool _trayPauseRipples;
+        private int _lastHoverX = int.MinValue;
+        private int _lastHoverY = int.MinValue;
         private static readonly HttpClient UpdateHttpClient = new();
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
@@ -117,6 +120,7 @@ namespace ClickShow
             InitializeComponent();
             DataContext = this;
             Loaded += OnLoaded;
+            SourceInitialized += OnSourceInitialized;
             Closing += OnClosing;
             Closed += OnClosed;
             StateChanged += OnStateChanged;
@@ -154,6 +158,22 @@ namespace ClickShow
                 await Task.Delay(1000 * 10);
                 CheckUpdate();
             });
+        }
+
+        private void OnSourceInitialized(object sender, EventArgs e)
+        {
+            ApplyTitleBarTheme();
+            ThemeWatcher.ThemeChanged += OnSystemThemeChanged;
+        }
+
+        private void OnSystemThemeChanged()
+        {
+            Dispatcher.Invoke(() => ApplyTitleBarTheme());
+        }
+
+        private void ApplyTitleBarTheme()
+        {
+            DwmHelper.ApplyDarkTitleBar(this, !ThemeWatcher.IsLightTheme);
         }
 
         private void LoadSetting()
@@ -673,7 +693,7 @@ namespace ClickShow
 
             var point = e.Location;
             var button = e.Button;
-            var suppressed = SilenceChecker.ShouldSuppress(Setting);
+            var suppressed = _trayPauseRipples || SilenceChecker.ShouldSuppress(Setting);
 
             _buttonStates[button].DownPosition = point;
             _buttonStates[button].DownTimeTicks = Environment.TickCount;
@@ -700,7 +720,7 @@ namespace ClickShow
             }
 
             var downState = _buttonStates[e.Button];
-            var suppressed = downState.Suppressed || SilenceChecker.ShouldSuppress(Setting);
+            var suppressed = downState.Suppressed || _trayPauseRipples || SilenceChecker.ShouldSuppress(Setting);
             downState.Suppressed = false;
             if (suppressed)
             {
@@ -724,6 +744,12 @@ namespace ClickShow
 
         private void MouseHookOnMouseMove(object sender, MouseEventArgs e)
         {
+            if (e.Location.X == _lastHoverX && e.Location.Y == _lastHoverY)
+            {
+                return;
+            }
+            _lastHoverX = e.Location.X;
+            _lastHoverY = e.Location.Y;
             var appearance = Setting.ActiveAppearance;
             if (appearance.EnableHoverDot && _hoverDot != null)
             {
@@ -1043,6 +1069,20 @@ namespace ClickShow
             _notifyIcon.Visible = true;
 
             var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+            var openItem = new System.Windows.Forms.ToolStripMenuItem(L("trayOpenSettings"), null, (sender, args) =>
+            {
+                this.Show();
+                this.Activate();
+                this.WindowState = System.Windows.WindowState.Normal;
+            });
+            var pauseItem = new System.Windows.Forms.ToolStripMenuItem(L("trayPauseRipples"))
+            {
+                CheckOnClick = true
+            };
+            pauseItem.CheckedChanged += (sender, args) => { _trayPauseRipples = pauseItem.Checked; };
+            contextMenu.Items.Add(openItem);
+            contextMenu.Items.Add(pauseItem);
+            contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
             var menuItem = new System.Windows.Forms.ToolStripMenuItem(L("trayExit"), null, (sender, args) =>
             {
                 _forceClose = true;
@@ -1050,6 +1090,11 @@ namespace ClickShow
             });
             contextMenu.Items.Add(menuItem);
             _notifyIcon.ContextMenuStrip = contextMenu;
+            // 钩子死亡时“暂停波纹”没有意义，置灰
+            contextMenu.Opening += (sender, args) =>
+            {
+                pauseItem.Enabled = _mouseHook != null && _mouseHook.IsStarted;
+            };
         }
 
         private void NotifyIconOnClick(object sender, EventArgs e)

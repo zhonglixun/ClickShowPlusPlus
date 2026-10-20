@@ -57,7 +57,7 @@ namespace ClickShow.MouseHook
                 HandleToHook = NativeMethods.SetWindowsHookEx(
                     HookType,
                     HookCallback,
-                    Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),
+                    GetHookModuleHandle(),
                     0);
 
                 // Were we able to sucessfully start hook?  
@@ -118,6 +118,24 @@ namespace ClickShow.MouseHook
             Debug.WriteLine("重新加载挂钩！");
             Stop();
             Start();
+        }
+
+        // 低级钩子不需要模块句柄；单文件发布下 GetHINSTANCE 返回无效值，
+        // 会导致 SetWindowsHookEx 静默失败（波纹/浮标全部失效）
+        private IntPtr GetHookModuleHandle()
+        {
+            if (HookType == HookType.WH_MOUSE_LL)
+            {
+                return IntPtr.Zero;
+            }
+            try
+            {
+                return Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]);
+            }
+            catch
+            {
+                return IntPtr.Zero;
+            }
         }
     }
 }

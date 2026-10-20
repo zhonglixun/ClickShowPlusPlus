@@ -16,10 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.97" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="clickshow.ico" />
   </ItemGroup>
 

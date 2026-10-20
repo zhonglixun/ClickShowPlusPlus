@@ -6,9 +6,9 @@ using System.Windows.Media;
 namespace ClickShow.Utility
 {
     /// <summary>
-    /// "#AARRGGBB" 字符串与 Color 的双向转换（取色器绑定用）。
+    /// "#AARRGGBB" 字符串转画刷（色块按钮绑定用，单向）。
     /// </summary>
-    public class StringToColorConverter : IValueConverter
+    public class StringToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -16,18 +16,20 @@ namespace ClickShow.Utility
             {
                 if (value is string s && !string.IsNullOrEmpty(s))
                 {
-                    return (Color)ColorConverter.ConvertFromString(s);
+                    var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(s));
+                    brush.Freeze();
+                    return brush;
                 }
             }
             catch
             {
             }
-            return Colors.Gray;
+            return Brushes.Gray;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is Color color ? color.ToArgb() : "#FF808080";
+            throw new NotSupportedException();
         }
     }
 }

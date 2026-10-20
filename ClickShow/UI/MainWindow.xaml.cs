@@ -28,6 +28,7 @@ using MouseButtonState = ClickShow.Entities.MouseButtonState;
 using Point = System.Drawing.Point;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using RadioButton = System.Windows.Controls.RadioButton;
+using Button = System.Windows.Controls.Button;
 
 namespace ClickShow
 {
@@ -46,7 +47,10 @@ namespace ClickShow
         private bool _forceClose = false;
         private DebounceDispatcher _settingDebounceDispatcher;
         private bool _suppressRadioEvents;
+        private DispatcherTimer _foregroundTracker;
+        private string _lastForeignForegroundExe;
         private static readonly HttpClient UpdateHttpClient = new();
+        private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
         private readonly IDictionary<MouseButtons, Brush> _buttonBrushes =
             new Dictionary<MouseButtons, Brush>()
@@ -132,6 +136,22 @@ namespace ClickShow
             _mouseHook.MouseMove += MouseHookOnMouseMove;
             _mouseHook.MouseUp += MouseHookOnMouseUp;
             _mouseHook.Start();
+
+            // 记录最近一次非本程序的前台窗口，供“抓取前台”使用
+            _foregroundTracker = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            _foregroundTracker.Tick += (s, e) =>
+            {
+                if (!IsVisible)
+                {
+                    return;
+                }
+                var exe = SilenceChecker.GetForegroundProcessExe();
+                if (exe != null && exe != OwnProcessExe)
+                {
+                    _lastForeignForegroundExe = exe;
+                }
+            };
+            _foregroundTracker.Start();
 
             Task.Run(async () =>
             {
@@ -372,6 +392,65 @@ namespace ClickShow
             fade.Completed += (s, e) => PreviewArea.Children.Remove(circle);
         }
 
+        /// <summary>色块按钮：打开系统取色对话框修改对应颜色。</summary>
+        private void Swatch_Click(object sender, RoutedEventArgs e)
+        {
+            if (Editing == null)
+            {
+                return;
+            }
+
+            var key = (string)((Button)sender).Tag;
+            ButtonSetting buttonSetting = null;
+            string current;
+            if (key == "HoverDotFill")
+            {
+                current = Editing.HoverDotFill;
+            }
+            else
+            {
+                var mb = (MouseButtons)Enum.Parse(typeof(MouseButtons), key);
+                if (!Editing.MouseButtonSettings.TryGetValue(mb, out buttonSetting))
+                {
+                    return;
+                }
+                current = buttonSetting.Color;
+            }
+
+            using var dlg = new System.Windows.Forms.ColorDialog
+            {
+                FullOpen = true,
+                Color = ToDrawingColor(current)
+            };
+            if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var argb = $"#{dlg.Color.A:X2}{dlg.Color.R:X2}{dlg.Color.G:X2}{dlg.Color.B:X2}";
+            if (buttonSetting != null)
+            {
+                buttonSetting.Color = argb;
+            }
+            else
+            {
+                Editing.HoverDotFill = argb;
+            }
+        }
+
+        private static System.Drawing.Color ToDrawingColor(string hex)
+        {
+            try
+            {
+                var m = (System.Windows.Media.Color)ColorConverter.ConvertFromString(hex);
+                return System.Drawing.Color.FromArgb(m.A, m.R, m.G, m.B);
+            }
+            catch
+            {
+                return System.Drawing.Color.White;
+            }
+        }
+
         #endregion
 
         #region 鼠标hook处理
@@ -489,11 +568,23 @@ namespace ClickShow
 
         private void CaptureForeground_Click(object sender, RoutedEventArgs e)
         {
-            var exe = SilenceChecker.GetForegroundProcessExe();
-            if (exe != null)
+            var exe = _lastForeignForegroundExe;
+            if (exe == null)
             {
-                AddProcess(exe);
+                var current = SilenceChecker.GetForegroundProcessExe();
+                if (current != null && current != OwnProcessExe)
+                {
+                    exe = current;
+                }
             }
+            if (exe == null || exe == OwnProcessExe)
+            {
+                _notifyIcon.ShowBalloonTip(2500, "ClickShow",
+                    "没有抓到其他程序：请先到目标程序里点一下鼠标，再回来点抓取前台。",
+                    System.Windows.Forms.ToolTipIcon.Info);
+                return;
+            }
+            AddProcess(exe);
         }
 
         private void ChipRemove_Click(object sender, RoutedEventArgs e)
@@ -729,6 +820,8 @@ namespace ClickShow
                 _mouseHook.MouseUp -= MouseHookOnMouseUp;
                 _mouseHook.Stop();
             }
+
+            _foregroundTracker?.Stop();
 
             if (_notifyIcon != null)
             {

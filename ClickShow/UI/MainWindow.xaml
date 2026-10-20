@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ClickShow"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:utility="clr-namespace:ClickShow.Utility"
     Title="ClickShow 设置"
     Width="580"
@@ -16,7 +15,7 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Window.Resources>
-        <utility:StringToColorConverter x:Key="StringToColor" />
+        <utility:StringToBrushConverter x:Key="StringToBrush" />
     </Window.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -33,7 +32,7 @@
                 <TextBlock Style="{StaticResource FieldLabel}" Text="正在编辑" />
                 <RadioButton x:Name="EditLightRadio" Margin="10,0,0,0" Checked="EditRadio_Checked" Content="浅色配置" GroupName="Edit" IsChecked="True" Style="{StaticResource PillRadio}" Tag="Light" />
                 <RadioButton x:Name="EditDarkRadio" Margin="8,0,0,0" Checked="EditRadio_Checked" Content="深色配置" GroupName="Edit" Style="{StaticResource PillRadio}" Tag="Dark" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="跟随系统时两套外观都生效，在此切换要编辑哪套；静默等行为设置两套共用" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="跟随系统时两套外观都生效，在此切换要编辑哪套" />
             </StackPanel>
             <Separator Margin="0,14" />
 
@@ -44,11 +43,21 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="点击波纹" />
-                <CheckBox Grid.Column="1" IsChecked="{Binding Editing.EnableClickCircle}" Style="{StaticResource SwitchCheckBox}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用" />
+                    <CheckBox IsChecked="{Binding Editing.EnableClickCircle}" Style="{StaticResource SwitchCheckBox}" />
+                </StackPanel>
             </Grid>
             <Border Height="170" Style="{StaticResource Card}">
-                <Grid x:Name="PreviewArea" Background="Transparent" Cursor="Cross" MouseDown="PreviewArea_MouseDown">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Text="分别用左键 / 中键 / 右键 / 侧键点击，预览对应颜色波纹" />
+                <Grid x:Name="PreviewArea" Background="Transparent" ClipToBounds="True" Cursor="Cross" MouseDown="PreviewArea_MouseDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="#FFFFFF" />
+                    <Border Grid.Column="1" Background="#101114" />
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#9AA0AA" Text="浅色场景 · 点击预览" />
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#6B7280" Text="深色场景 · 点击预览" />
                 </Grid>
             </Border>
             <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
@@ -71,27 +80,27 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                    <xctk:ColorPicker Width="48" Height="26" HorizontalAlignment="Center" DisplayColorAndName="False" SelectedColor="{Binding MouseButtonSettings[Left].Color, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Left].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Left" ToolTip="点击修改左键波纹颜色" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="左键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Left].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                    <xctk:ColorPicker Width="48" Height="26" HorizontalAlignment="Center" DisplayColorAndName="False" SelectedColor="{Binding MouseButtonSettings[Middle].Color, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Middle].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Middle" ToolTip="点击修改中键波纹颜色" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="中键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Middle].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                    <xctk:ColorPicker Width="48" Height="26" HorizontalAlignment="Center" DisplayColorAndName="False" SelectedColor="{Binding MouseButtonSettings[Right].Color, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Right].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Right" ToolTip="点击修改右键波纹颜色" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="右键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Right].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                    <xctk:ColorPicker Width="48" Height="26" HorizontalAlignment="Center" DisplayColorAndName="False" SelectedColor="{Binding MouseButtonSettings[XButton1].Color, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton1].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton1" ToolTip="点击修改 X1 波纹颜色" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X1" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton1].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="4" HorizontalAlignment="Center">
-                    <xctk:ColorPicker Width="48" Height="26" HorizontalAlignment="Center" DisplayColorAndName="False" SelectedColor="{Binding MouseButtonSettings[XButton2].Color, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton2].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton2" ToolTip="点击修改 X2 波纹颜色" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X2" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton2].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
@@ -105,7 +114,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="鼠标浮标" />
-                <CheckBox Grid.Column="1" IsChecked="{Binding Editing.EnableHoverDot}" Style="{StaticResource SwitchCheckBox}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用" />
+                    <CheckBox IsChecked="{Binding Editing.EnableHoverDot}" Style="{StaticResource SwitchCheckBox}" />
+                </StackPanel>
             </Grid>
             <Grid Margin="0,4,0,0" DataContext="{Binding Editing}">
                 <Grid.ColumnDefinitions>
@@ -118,8 +130,8 @@
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="浮标大小" />
                 <Slider Grid.Column="1" Margin="12,0" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
                 <TextBlock Grid.Column="2" Margin="0,0,12,0" Style="{StaticResource HintText}" Text="{Binding HoverDotSize, StringFormat={}{0:0} px}" />
-                <TextBlock Grid.Column="3" Margin="0,0,8,0" Style="{StaticResource FieldLabel}" Text="颜色" />
-                <xctk:ColorPicker Grid.Column="4" Width="48" Height="26" DisplayColorAndName="False" SelectedColor="{Binding HoverDotFill, Converter={StaticResource StringToColor}, UpdateSourceTrigger=PropertyChanged}" ShowAvailableColors="False" ShowRecentColors="False" ShowStandardColors="False" ShowTabHeaders="False" UsingAlphaChannel="True" />
+                <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="点击修改浮标颜色" />
+                <TextBlock Grid.Column="4" Style="{StaticResource FieldLabel}" Text="颜色" VerticalAlignment="Center" />
             </Grid>
             <Separator Margin="0,14" />
 
@@ -130,16 +142,20 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="静默" />
-                <CheckBox Grid.Column="1" IsChecked="{Binding Setting.SilenceEnabled}" Style="{StaticResource SwitchCheckBox}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用静默" />
+                    <CheckBox IsChecked="{Binding Setting.SilenceEnabled}" Style="{StaticResource SwitchCheckBox}" />
+                </StackPanel>
             </Grid>
-            <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+            <TextBlock Style="{StaticResource HintText}" Text="总开关：关闭后，下面的全屏隐藏与指定程序列表都不生效" />
+            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
                 <CheckBox IsChecked="{Binding Setting.FullscreenHide}" Style="{StaticResource SwitchCheckBox}" />
                 <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="全屏自动隐藏" />
                 <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="前台窗口铺满显示器时不显示特效" />
             </StackPanel>
             <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
                 <TextBlock Style="{StaticResource FieldLabel}" Text="指定程序静默" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="列表中的程序在前台时始终隐藏特效（不限全屏），两套外观共用" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="列表中的程序在前台时始终隐藏特效（不限全屏）" />
             </StackPanel>
             <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding ProcessList}">
                 <ItemsControl.ItemsPanel>
@@ -161,8 +177,8 @@
             <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
                 <TextBox x:Name="AddProcessBox" Width="220" KeyDown="AddProcessBox_KeyDown" Style="{StaticResource TextInput}" />
                 <Button Margin="8,0,0,0" Click="AddProcess_Click" Content="添加" Style="{StaticResource GhostButton}" />
-                <Button Margin="8,0,0,0" Click="BrowseProcess_Click" Content="浏览..." Style="{StaticResource GhostButton}" />
-                <Button Margin="8,0,0,0" Click="CaptureForeground_Click" Content="抓取前台程序" Style="{StaticResource GhostButton}" />
+                <Button Margin="8,0,0,0" Click="BrowseProcess_Click" Content="浏览" Style="{StaticResource GhostButton}" />
+                <Button Margin="8,0,0,0" Click="CaptureForeground_Click" Content="抓取前台" Style="{StaticResource GhostButton}" ToolTip="记录你最近点击过的其他程序" />
             </StackPanel>
             <Separator Margin="0,14" />
 

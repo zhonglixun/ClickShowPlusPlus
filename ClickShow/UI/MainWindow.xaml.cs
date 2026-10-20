@@ -212,6 +212,7 @@ namespace ClickShow
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
             SyncAllHexBoxes();
             RefreshEasingCombo();
+            RefreshPresetCombo();
             LanguageCombo.ItemsSource = Languages.NativeNames;
             LanguageCombo.DisplayMemberPath = "Value";
             LanguageCombo.SelectedValuePath = "Key";
@@ -266,6 +267,54 @@ namespace ClickShow
             {
                 Editing.RippleEasing = code;
             }
+        }
+
+        private void RefreshPresetCombo()
+        {
+            var items = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("Custom", L("presetCustom")),
+                new KeyValuePair<string, string>("Classic", L("presetClassic")),
+                new KeyValuePair<string, string>("Neon", L("presetNeon")),
+                new KeyValuePair<string, string>("Candy", L("presetCandy")),
+                new KeyValuePair<string, string>("Ocean", L("presetOcean")),
+                new KeyValuePair<string, string>("Sunset", L("presetSunset")),
+                new KeyValuePair<string, string>("Forest", L("presetForest")),
+                new KeyValuePair<string, string>("Berry", L("presetBerry")),
+                new KeyValuePair<string, string>("Macaron", L("presetMacaron"))
+            };
+            PresetCombo.ItemsSource = items;
+            PresetCombo.DisplayMemberPath = "Value";
+            PresetCombo.SelectedValuePath = "Key";
+            if (Editing != null)
+            {
+                PresetCombo.SelectedValue = Editing.RipplePreset;
+            }
+        }
+
+        private void PresetCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Editing == null)
+            {
+                return;
+            }
+            var code = PresetCombo.SelectedValue as string;
+            if (code == null || code == Editing.RipplePreset)
+            {
+                return;
+            }
+            if (code != "Custom" && RippleThemePresets.TryGetColors(code, out var colors))
+            {
+                var order = new[] { MouseButtons.Left, MouseButtons.Middle, MouseButtons.Right, MouseButtons.XButton1, MouseButtons.XButton2 };
+                for (var i = 0; i < order.Length; i++)
+                {
+                    if (Editing.MouseButtonSettings.TryGetValue(order[i], out var bs))
+                    {
+                        bs.Color = colors[i];
+                    }
+                }
+            }
+            Editing.RipplePreset = code;
         }
 
         private void SaveSettings()
@@ -603,6 +652,8 @@ namespace ClickShow
             if (Editing.MouseButtonSettings.TryGetValue((MouseButtons)Enum.Parse(typeof(MouseButtons), key), out var bs))
             {
                 bs.Color = value;
+                // 手动改色后不再匹配预设
+                Editing.RipplePreset = "Custom";
             }
         }
 

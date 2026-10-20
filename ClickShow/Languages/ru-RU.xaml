@@ -63,12 +63,22 @@
     <sys:String x:Key="autoStartSaveError">Не удалось сохранить состояние автозапуска.</sys:String>
     <sys:String x:Key="configCorrupt">Файл настроек повреждён; восстановлены значения по умолчанию.</sys:String>
     <sys:String x:Key="migrateFail">Ошибка миграции старых настроек; используются значения по умолчанию.</sys:String>
-<sys:String x:Key="rippleDuration">Длительность анимации</sys:String>
-<sys:String x:Key="hookFailed">Не удалось установить мышиный хук; перезапустите приложение.</sys:String>
+    <sys:String x:Key="rippleDuration">Длительность анимации</sys:String>
+    <sys:String x:Key="hookFailed">Не удалось установить мышиный хук; перезапустите приложение.</sys:String>
     <sys:String x:Key="easingStyle">Стиль распространения</sys:String>
     <sys:String x:Key="easingLinear">Равномерно</sys:String>
     <sys:String x:Key="easingDecel">Замедление (естественное)</sys:String>
     <sys:String x:Key="easingExpo">Сильное замедление (вода)</sys:String>
     <sys:String x:Key="easingBack">Лёгкий отскок</sys:String>
     <sys:String x:Key="easingElastic">Упруго</sys:String>
+    <sys:String x:Key="presetTheme">Тематический пресет</sys:String>
+    <sys:String x:Key="presetCustom">Свой</sys:String>
+    <sys:String x:Key="presetClassic">Классика</sys:String>
+    <sys:String x:Key="presetNeon">Неон</sys:String>
+    <sys:String x:Key="presetCandy">Карамель</sys:String>
+    <sys:String x:Key="presetOcean">Океан</sys:String>
+    <sys:String x:Key="presetSunset">Закат</sys:String>
+    <sys:String x:Key="presetForest">Лес</sys:String>
+    <sys:String x:Key="presetBerry">Ягоды</sys:String>
+    <sys:String x:Key="presetMacaron">Макарон</sys:String>
 </ResourceDictionary>

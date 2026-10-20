@@ -63,12 +63,22 @@
     <sys:String x:Key="autoStartSaveError">スタートアップ状態を保存できません。</sys:String>
     <sys:String x:Key="configCorrupt">設定ファイルが壊れているため既定値に戻しました。</sys:String>
     <sys:String x:Key="migrateFail">旧設定の移行に失敗、既定値を使用します。</sys:String>
-<sys:String x:Key="rippleDuration">アニメーションの長さ</sys:String>
-<sys:String x:Key="hookFailed">マウスフックのインストールに失敗しました。再起動してください。</sys:String>
+    <sys:String x:Key="rippleDuration">アニメーションの長さ</sys:String>
+    <sys:String x:Key="hookFailed">マウスフックのインストールに失敗しました。再起動してください。</sys:String>
     <sys:String x:Key="easingStyle">拡散スタイル</sys:String>
     <sys:String x:Key="easingLinear">等速</sys:String>
     <sys:String x:Key="easingDecel">減速（ナチュラル）</sys:String>
     <sys:String x:Key="easingExpo">強い減速（波）</sys:String>
     <sys:String x:Key="easingBack">オーバーシュート</sys:String>
     <sys:String x:Key="easingElastic">弾力</sys:String>
+    <sys:String x:Key="presetTheme">テーマプリセット</sys:String>
+    <sys:String x:Key="presetCustom">カスタム</sys:String>
+    <sys:String x:Key="presetClassic">クラシック</sys:String>
+    <sys:String x:Key="presetNeon">ネオンナイト</sys:String>
+    <sys:String x:Key="presetCandy">キャンディ</sys:String>
+    <sys:String x:Key="presetOcean">オーシャン</sys:String>
+    <sys:String x:Key="presetSunset">サンセット</sys:String>
+    <sys:String x:Key="presetForest">フォレスト</sys:String>
+    <sys:String x:Key="presetBerry">ベリー</sys:String>
+    <sys:String x:Key="presetMacaron">マカロン</sys:String>
 </ResourceDictionary>

@@ -38,7 +38,15 @@ namespace ClickShow.Utility
             {
                 try
                 {
-                    return MyJsonConverter.Deserialize<AppSetting>(File.ReadAllText(NewPath));
+                    var json = File.ReadAllText(NewPath);
+                    var setting = MyJsonConverter.Deserialize<AppSetting>(json);
+                    if (!json.Contains("\"RipplePreset\""))
+                    {
+                        // 旧 v2 配置没有预设字段：颜色是用户自定义的，不能标成预设
+                        setting.Light.RipplePreset = "Custom";
+                        setting.Dark.RipplePreset = "Custom";
+                    }
+                    return setting;
                 }
                 catch (Exception ex)
                 {
@@ -123,6 +131,8 @@ namespace ClickShow.Utility
         private static AppearanceSetting ParseLegacy(string json)
         {
             var appearance = new AppearanceSetting();
+            // 旧配置颜色是用户自定义的，不能标成预设
+            appearance.RipplePreset = "Custom";
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 

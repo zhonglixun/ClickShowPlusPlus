@@ -40,6 +40,7 @@ namespace ClickShow.Settings
         private double _indicatorSize = 150;
         private double _rippleDurationMs = 400;
         private string _rippleEasing = "Linear";
+        private string _ripplePreset = "Classic";
         private double _hoverDotSize = 60;
         private string _hoverDotFill = "#60FFFF5A";
 
@@ -81,6 +82,13 @@ namespace ClickShow.Settings
             set { _rippleEasing = value; OnPropertyChanged(); }
         }
 
+        /// <summary>当前匹配的颜色预设主题（手动改色后变为 Custom）。</summary>
+        public string RipplePreset
+        {
+            get => _ripplePreset;
+            set { _ripplePreset = value; OnPropertyChanged(); }
+        }
+
         public double HoverDotSize
         {
             get => _hoverDotSize;
@@ -102,6 +110,7 @@ namespace ClickShow.Settings
                 IndicatorSize = IndicatorSize,
                 RippleDurationMs = RippleDurationMs,
                 RippleEasing = RippleEasing,
+                RipplePreset = RipplePreset,
                 HoverDotSize = HoverDotSize,
                 HoverDotFill = HoverDotFill,
                 MouseButtonSettings = new Dictionary<MouseButtons, ButtonSetting>()

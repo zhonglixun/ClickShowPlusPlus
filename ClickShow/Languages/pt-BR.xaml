@@ -63,12 +63,22 @@
     <sys:String x:Key="autoStartSaveError">Não foi possível salvar o estado de inicialização.</sys:String>
     <sys:String x:Key="configCorrupt">Arquivo de ajustes corrompido; padrões restaurados.</sys:String>
     <sys:String x:Key="migrateFail">Falha ao migrar configurações antigas; usando padrões.</sys:String>
-<sys:String x:Key="rippleDuration">Duração da animação</sys:String>
-<sys:String x:Key="hookFailed">Falha ao instalar o gancho do mouse; reinicie o aplicativo.</sys:String>
+    <sys:String x:Key="rippleDuration">Duração da animação</sys:String>
+    <sys:String x:Key="hookFailed">Falha ao instalar o gancho do mouse; reinicie o aplicativo.</sys:String>
     <sys:String x:Key="easingStyle">Estilo de difusão</sys:String>
     <sys:String x:Key="easingLinear">Linear</sys:String>
     <sys:String x:Key="easingDecel">Desacelerar (natural)</sys:String>
     <sys:String x:Key="easingExpo">Desaceleração forte (água)</sys:String>
     <sys:String x:Key="easingBack">Leve rebote</sys:String>
     <sys:String x:Key="easingElastic">Elástico</sys:String>
+    <sys:String x:Key="presetTheme">Tema predefinido</sys:String>
+    <sys:String x:Key="presetCustom">Personalizado</sys:String>
+    <sys:String x:Key="presetClassic">Clássico</sys:String>
+    <sys:String x:Key="presetNeon">Neon noturno</sys:String>
+    <sys:String x:Key="presetCandy">Caramelo</sys:String>
+    <sys:String x:Key="presetOcean">Oceano</sys:String>
+    <sys:String x:Key="presetSunset">Pôr do sol</sys:String>
+    <sys:String x:Key="presetForest">Floresta</sys:String>
+    <sys:String x:Key="presetBerry">Frutas vermelhas</sys:String>
+    <sys:String x:Key="presetMacaron">Macaron</sys:String>
 </ResourceDictionary>

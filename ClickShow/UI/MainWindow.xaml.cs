@@ -234,6 +234,7 @@ namespace ClickShow
             Setting.Language = code;
             App.ApplyLanguage(code);
             RefreshEasingCombo();
+            RefreshPresetCombo();
             SaveSettings();
         }
 

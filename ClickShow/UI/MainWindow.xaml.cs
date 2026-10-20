@@ -123,13 +123,19 @@ namespace ClickShow
             CreateNotifyIcon();
         }
 
+        /// <summary>取当前语言的文案，找不到键时回退键名。</summary>
+        private string L(string key)
+        {
+            return TryFindResource(key) as string ?? key;
+        }
+
         #region 加载/保存
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             LoadSetting();
             LoadAutoStartStatus();
-            Title = $"ClickShow 设置 {Assembly.GetExecutingAssembly().GetName().Version}";
+            Title = $"ClickShow {L("settingsTitle")} {Assembly.GetExecutingAssembly().GetName().Version}";
             VersionText.Text = $"ClickShow v{Assembly.GetExecutingAssembly().GetName().Version.ToString(2)}";
             ApplySettings();
 
@@ -152,6 +158,11 @@ namespace ClickShow
             if (!string.IsNullOrEmpty(notice))
             {
                 _notifyIcon.ShowBalloonTip(3000, "ClickShow", notice, System.Windows.Forms.ToolTipIcon.Warning);
+            }
+            if (string.IsNullOrEmpty(setting.Language))
+            {
+                // 首次启动：按系统语言解析并固化
+                setting.Language = Languages.Resolve(null);
             }
             Setting = setting;
             HookSettingEvents(setting);
@@ -196,7 +207,27 @@ namespace ClickShow
             ProcessList = new ObservableCollection<string>(Setting.SilentProcesses);
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
             SyncAllHexBoxes();
+            LanguageCombo.ItemsSource = Languages.NativeNames;
+            LanguageCombo.DisplayMemberPath = "Value";
+            LanguageCombo.SelectedValuePath = "Key";
+            LanguageCombo.SelectedValue = Setting.Language;
             OnPropertyChanged(nameof(Setting));
+        }
+
+        private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Setting == null)
+            {
+                return;
+            }
+            var code = LanguageCombo.SelectedValue as string;
+            if (code == null || code == Setting.Language)
+            {
+                return;
+            }
+            Setting.Language = code;
+            App.ApplyLanguage(code);
+            SaveSettings();
         }
 
         private void SaveSettings()
@@ -207,7 +238,7 @@ namespace ClickShow
             }
             catch (Exception ex)
             {
-                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "设置保存出错：" + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", L("saveError") + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
             }
         }
 
@@ -695,7 +726,7 @@ namespace ClickShow
             MouseHook.MouseHook.ForceCrossCursor = true;
             Cursor = System.Windows.Input.Cursors.Cross;
             CaptureHint.Visibility = Visibility.Visible;
-            CaptureButton.Content = "取消捕捉";
+            CaptureButton.Content = L("captureCancel");
         }
 
         private void DisarmCapture()
@@ -707,7 +738,7 @@ namespace ClickShow
             MouseHook.MouseHook.ForceCrossCursor = false;
             Cursor = null;
             CaptureHint.Visibility = Visibility.Collapsed;
-            CaptureButton.Content = "抓取前台";
+            CaptureButton.Content = L("captureStart");
             if (markJustDisarmed)
             {
                 _captureDisarmedAt = DateTime.Now;
@@ -720,7 +751,7 @@ namespace ClickShow
             if (string.IsNullOrEmpty(exe) || exe == OwnProcessExe)
             {
                 _notifyIcon.ShowBalloonTip(2500, "ClickShow",
-                    "已取消捕捉（点击的是本程序窗口或未能识别目标程序）。",
+                    L("captureNone"),
                     System.Windows.Forms.ToolTipIcon.Info);
                 return;
             }
@@ -797,7 +828,7 @@ namespace ClickShow
             }
             catch (Exception ex)
             {
-                MessageBox.Show("无法加载开机自动启动状态。" + ex.Message);
+                MessageBox.Show(L("autoStartLoadError") + ex.Message);
             }
         }
 
@@ -816,7 +847,7 @@ namespace ClickShow
             }
             catch (Exception ex)
             {
-                MessageBox.Show("无法保存开机自动启动状态。" + ex.Message);
+                MessageBox.Show(L("autoStartSaveError") + ex.Message);
             }
         }
 
@@ -832,11 +863,11 @@ namespace ClickShow
                 try
                 {
                     File.WriteAllText(dlg.FileName, MyJsonConverter.Serialize(Setting));
-                    _notifyIcon.ShowBalloonTip(2000, "ClickShow", "配置已导出：" + dlg.FileName, System.Windows.Forms.ToolTipIcon.Info);
+                    _notifyIcon.ShowBalloonTip(2000, "ClickShow", L("exportDone") + dlg.FileName, System.Windows.Forms.ToolTipIcon.Info);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("导出失败：" + ex.Message);
+                    MessageBox.Show(L("exportFail") + ex.Message);
                 }
             }
         }
@@ -856,17 +887,17 @@ namespace ClickShow
                 BindSetting();
                 ApplySettings();
                 SaveSettings();
-                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "配置已导入。", System.Windows.Forms.ToolTipIcon.Info);
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", L("importDone"), System.Windows.Forms.ToolTipIcon.Info);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("导入失败，文件格式不正确。" + ex.Message);
+                MessageBox.Show(L("importFail") + ex.Message);
             }
         }
 
         private void ResetDefault_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("确定恢复全部默认设置吗？静默列表也会清空。", "ClickShow", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            if (MessageBox.Show(L("resetConfirm"), "ClickShow", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             {
                 return;
             }
@@ -941,12 +972,12 @@ namespace ClickShow
                 _notifyIcon.Icon = new System.Drawing.Icon(iconStream);
             }
 
-            _notifyIcon.BalloonTipText = "ClickShow\n鼠标点击提示器\n点击打开设置";
+            _notifyIcon.BalloonTipText = "ClickShow\n" + L("trayBalloon");
             _notifyIcon.Click += NotifyIconOnClick;
             _notifyIcon.Visible = true;
 
             var contextMenu = new System.Windows.Forms.ContextMenuStrip();
-            var menuItem = new System.Windows.Forms.ToolStripMenuItem("退出(Exit)", null, (sender, args) =>
+            var menuItem = new System.Windows.Forms.ToolStripMenuItem(L("trayExit"), null, (sender, args) =>
             {
                 _forceClose = true;
                 this.Close();
@@ -1037,7 +1068,7 @@ namespace ClickShow
             }
             catch (Exception ex)
             {
-                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "应用设置出错，已重置设置。" + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", L("applyError") + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
             }
         }
 

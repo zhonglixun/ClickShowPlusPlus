@@ -109,6 +109,7 @@ namespace ClickShow.Settings
     public class AppSetting : INotifyPropertyChanged
     {
         private ProfileMode _profileMode = ProfileMode.System;
+        private string _language = "";
         private bool _silenceEnabled = true;
         private bool _fullscreenHide = true;
         private List<string> _silentProcesses = new List<string>();
@@ -123,6 +124,15 @@ namespace ClickShow.Settings
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ActiveAppearance));
             }
+        }
+
+        /// <summary>
+        /// 界面语言代码（空 = 首次启动按系统语言解析并固化；用户显式选择后优先于系统语言）。
+        /// </summary>
+        public string Language
+        {
+            get => _language;
+            set { _language = value; OnPropertyChanged(); }
         }
 
         public AppearanceSetting Light { get; set; } = new AppearanceSetting();

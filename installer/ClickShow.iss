@@ -21,11 +21,52 @@ RestartApplications=no
 WizardStyle=modern
 
 [Languages]
-Name: "chinesesimplified"; MessagesFile: "ChineseSimplified.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "zhcn"; MessagesFile: "ChineseSimplified.isl"
+Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl"
+Name: "ko"; MessagesFile: "compiler:Languages\Korean.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl"
+Name: "ptbr"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"
+
+[CustomMessages]
+en.taskDesktop=Create a &desktop shortcut
+en.taskStartMenu=Create a &Start Menu item
+en.runApp=&Launch ClickShow
+zhcn.taskDesktop=创建桌面快捷方式(&D)
+zhcn.taskStartMenu=创建开始菜单项(&S)
+zhcn.runApp=运行 ClickShow(&R)
+ja.taskDesktop=デスクトップにショートカットを作成(&D)
+ja.taskStartMenu=スタートメニューに項目を作成(&S)
+ja.runApp=ClickShow を起動(&L)
+ko.taskDesktop=바탕 화면 바로 가기 만들기(&D)
+ko.taskStartMenu=시작 메뉴 항목 만들기(&S)
+ko.runApp=ClickShow 실행(&R)
+es.taskDesktop=Crear acceso &directo en el escritorio
+es.taskStartMenu=Crear elemento en el menú &Inicio
+es.runApp=&Ejecutar ClickShow
+fr.taskDesktop=Créer un raccourci sur le &bureau
+fr.taskStartMenu=Créer un élément dans le menu &Démarrer
+fr.runApp=&Lancer ClickShow
+de.taskDesktop=&Desktopverknüpfung erstellen
+de.taskStartMenu=Eintrag im &Startmenü erstellen
+de.runApp=&ClickShow starten
+ptbr.taskDesktop=Criar atalho na &área de trabalho
+ptbr.taskStartMenu=Criar item no menu &Iniciar
+ptbr.runApp=&Executar o ClickShow
+ru.taskDesktop=Создать ярлык на &рабочем столе
+ru.taskStartMenu=Создать пункт в меню «&Пуск»
+ru.runApp=&Запустить ClickShow
+it.taskDesktop=Crea &collegamento sul desktop
+it.taskStartMenu=Crea voce nel menu &Start
+it.runApp=&Avvia ClickShow
 
 [Tasks]
-Name: "desktopicon"; Description: "创建桌面快捷方式(&D)"; GroupDescription: "附加任务:"
-Name: "startmenuicon"; Description: "创建开始菜单项(&S)"; GroupDescription: "附加任务:"
+Name: "desktopicon"; Description: "{cm:taskDesktop}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "startmenuicon"; Description: "{cm:taskStartMenu}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -36,7 +77,7 @@ Name: "{group}\卸载 {#MyAppName}"; Filename: "{uninstallexe}"; Tasks: startmen
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "运行 {#MyAppName}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:runApp}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 // 根目录保护：用户选择磁盘根目录时自动套一层 ClickShow 文件夹

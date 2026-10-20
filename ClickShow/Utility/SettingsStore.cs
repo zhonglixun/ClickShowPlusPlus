@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Windows.Forms;
 using System.Windows.Media;
 using ClickShow.Settings;
+using System.Windows;
 
 namespace ClickShow.Utility
 {
@@ -41,7 +42,7 @@ namespace ClickShow.Utility
                 }
                 catch (Exception ex)
                 {
-                    notice = "配置文件损坏了，设置已恢复为默认值。" + ex.Message;
+                    notice = Res("configCorrupt", "Settings file is corrupted; defaults restored. ") + ex.Message;
                     return new AppSetting();
                 }
             }
@@ -57,12 +58,35 @@ namespace ClickShow.Utility
                 }
                 catch (Exception ex)
                 {
-                    notice = "旧配置迁移失败，已使用默认设置。" + ex.Message;
+                    notice = Res("migrateFail", "Failed to migrate legacy settings; defaults are in use. ") + ex.Message;
                     return new AppSetting();
                 }
             }
 
             return new AppSetting();
+        }
+
+        /// <summary>
+        /// 轻量读取已保存的语言代码（未保存过返回 null，交由 Languages.Resolve 按系统语言决定）。
+        /// </summary>
+        public static string ReadLanguageCode()
+        {
+            try
+            {
+                if (!File.Exists(NewPath))
+                {
+                    return null;
+                }
+                using var doc = JsonDocument.Parse(File.ReadAllText(NewPath));
+                if (doc.RootElement.TryGetProperty("Language", out var el) && el.ValueKind == JsonValueKind.String)
+                {
+                    return el.GetString();
+                }
+            }
+            catch
+            {
+            }
+            return null;
         }
 
         public static void Save(AppSetting setting)
@@ -91,6 +115,11 @@ namespace ClickShow.Utility
         /// 解析旧版 DataContractJsonSerializer 生成的配置。
         /// 字典序列化为 [{"Key":1048576,"Value":{"Color":"...","IsEnabled":true}}, ...]
         /// </summary>
+        private static string Res(string key, string fallback)
+        {
+            return System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+        }
+
         private static AppearanceSetting ParseLegacy(string json)
         {
             var appearance = new AppearanceSetting();

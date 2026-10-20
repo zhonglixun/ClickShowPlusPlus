@@ -6,13 +6,13 @@
     xmlns:local="clr-namespace:ClickShow"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utility="clr-namespace:ClickShow.Utility"
-    Title="ClickShow 设置"
+    Title="ClickShow"
     Width="580"
     SizeToContent="Height"
     Background="{DynamicResource Bg}"
     MinHeight="400"
-    ResizeMode="CanMinimize"
     PreviewKeyDown="Window_PreviewKeyDown"
+    ResizeMode="CanMinimize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Window.Resources>
@@ -22,30 +22,28 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="18,12,18,18">
 
-            <!--  配置方案  -->
-            <TextBlock Style="{StaticResource SectionTitle}" Text="配置方案" />
-            <StackPanel Orientation="Horizontal">
-                <RadioButton x:Name="ModeSystemRadio" Checked="ModeRadio_Checked" Content="跟随系统" GroupName="Mode" IsChecked="True" Style="{StaticResource PillRadio}" Tag="System" />
-                <RadioButton x:Name="ModeLightRadio" Margin="8,0,0,0" Checked="ModeRadio_Checked" Content="始终浅色" GroupName="Mode" Style="{StaticResource PillRadio}" Tag="Light" />
-                <RadioButton x:Name="ModeDarkRadio" Margin="8,0,0,0" Checked="ModeRadio_Checked" Content="始终深色" GroupName="Mode" Style="{StaticResource PillRadio}" Tag="Dark" />
-            </StackPanel>
-            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <TextBlock Style="{StaticResource FieldLabel}" Text="正在编辑" />
-                <RadioButton x:Name="EditLightRadio" Margin="10,0,0,0" Checked="EditRadio_Checked" Content="浅色配置" GroupName="Edit" IsChecked="True" Style="{StaticResource PillRadio}" Tag="Light" />
-                <RadioButton x:Name="EditDarkRadio" Margin="8,0,0,0" Checked="EditRadio_Checked" Content="深色配置" GroupName="Edit" Style="{StaticResource PillRadio}" Tag="Dark" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="跟随系统时两套外观都生效，在此切换要编辑哪套" />
-            </StackPanel>
+            <TextBlock Style="{StaticResource SectionTitle}" Text="{DynamicResource secConfig}" />
+            <WrapPanel Orientation="Horizontal">
+                <RadioButton x:Name="ModeSystemRadio" Checked="ModeRadio_Checked" Content="{DynamicResource followSystem}" GroupName="Mode" IsChecked="True" Style="{StaticResource PillRadio}" Tag="System" />
+                <RadioButton x:Name="ModeLightRadio" Margin="8,0,0,0" Checked="ModeRadio_Checked" Content="{DynamicResource alwaysLight}" GroupName="Mode" Style="{StaticResource PillRadio}" Tag="Light" />
+                <RadioButton x:Name="ModeDarkRadio" Margin="8,0,0,0" Checked="ModeRadio_Checked" Content="{DynamicResource alwaysDark}" GroupName="Mode" Style="{StaticResource PillRadio}" Tag="Dark" />
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource editingLabel}" />
+                <RadioButton x:Name="EditLightRadio" Margin="10,0,0,0" Checked="EditRadio_Checked" Content="{DynamicResource editLight}" GroupName="Edit" IsChecked="True" Style="{StaticResource PillRadio}" Tag="Light" />
+                <RadioButton x:Name="EditDarkRadio" Margin="8,0,0,0" Checked="EditRadio_Checked" Content="{DynamicResource editDark}" GroupName="Edit" Style="{StaticResource PillRadio}" Tag="Dark" />
+                <TextBlock MaxWidth="300" Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource editingHint}" />
+            </WrapPanel>
             <Separator Margin="0,14" />
 
-            <!--  点击波纹  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="点击波纹" />
+                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="{DynamicResource secRipple}" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用" />
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="{DynamicResource enableLabel}" />
                     <CheckBox IsChecked="{Binding Editing.EnableClickCircle}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
             </Grid>
@@ -57,13 +55,9 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Background="#FFFFFF" />
                     <Border Grid.Column="1" Background="#101114" />
-                    <Canvas
-                        x:Name="PreviewCanvas"
-                        Grid.ColumnSpan="2"
-                        Background="Transparent"
-                        ClipToBounds="True" />
-                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#9AA0AA" Text="浅色场景 · 点击预览" />
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#6B7280" Text="深色场景 · 点击预览" />
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#9AA0AA" Text="{DynamicResource previewLightHint}" />
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#6B7280" Text="{DynamicResource previewDarkHint}" />
+                    <Canvas x:Name="PreviewCanvas" Grid.ColumnSpan="2" Background="Transparent" ClipToBounds="True" />
                 </Grid>
             </Border>
             <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
@@ -72,34 +66,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="波纹大小" />
+                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource rippleSize}" />
                 <Grid Grid.Column="1" Margin="12,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="5*" />
                     </Grid.ColumnDefinitions>
                     <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="400" Minimum="50" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding IndicatorSize}" />
-                    <Rectangle
-                        Grid.Column="0"
-                        Width="2"
-                        Height="12"
-                        Margin="0,0,-1,0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Fill="{DynamicResource TextSecondary}"
-                        IsHitTestVisible="False" />
-                    <Button
-                        Grid.Column="0"
-                        Width="12"
-                        Height="18"
-                        Margin="0,0,-5,0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="IndicatorDefault_Click"
-                        Cursor="Hand"
-                        ToolTip="默认值 150，点击恢复" />
+                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
+                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="IndicatorDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
                 </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding IndicatorSize, StringFormat={}{0:0} px}" />
             </Grid>
@@ -113,31 +88,31 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Left].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Left" ToolTip="点击修改左键波纹颜色" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Left].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Left" ToolTip="{DynamicResource swatchLeftTip}" />
                     <TextBox x:Name="HexLeft" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Left" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
-                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="左键" />
+                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="{DynamicResource tileLeft}" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Left].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Middle].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Middle" ToolTip="点击修改中键波纹颜色" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Middle].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Middle" ToolTip="{DynamicResource swatchMiddleTip}" />
                     <TextBox x:Name="HexMiddle" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Middle" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
-                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="中键" />
+                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="{DynamicResource tileMiddle}" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Middle].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Right].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Right" ToolTip="点击修改右键波纹颜色" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Right].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Right" ToolTip="{DynamicResource swatchRightTip}" />
                     <TextBox x:Name="HexRight" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Right" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
-                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="右键" />
+                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="{DynamicResource tileRight}" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Right].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton1].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton1" ToolTip="点击修改 X1 波纹颜色" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton1].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton1" ToolTip="{DynamicResource swatchX1Tip}" />
                     <TextBox x:Name="HexX1" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="XButton1" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X1" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton1].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="4" HorizontalAlignment="Center">
-                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton2].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton2" ToolTip="点击修改 X2 波纹颜色" />
+                    <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton2].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton2" ToolTip="{DynamicResource swatchX2Tip}" />
                     <TextBox x:Name="HexX2" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="XButton2" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X2" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton2].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
@@ -145,15 +120,14 @@
             </Grid>
             <Separator Margin="0,14" />
 
-            <!--  鼠标浮标  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="鼠标浮标" />
+                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="{DynamicResource secHoverDot}" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用" />
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="{DynamicResource enableLabel}" />
                     <CheckBox IsChecked="{Binding Editing.EnableHoverDot}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
             </Grid>
@@ -166,63 +140,43 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="浮标大小" />
+                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource hoverDotSize}" />
                 <Grid Grid.Column="1" Margin="12,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="7*" />
                     </Grid.ColumnDefinitions>
                     <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
-                    <Rectangle
-                        Grid.Column="0"
-                        Width="2"
-                        Height="12"
-                        Margin="0,0,-1,0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Fill="{DynamicResource TextSecondary}"
-                        IsHitTestVisible="False" />
-                    <Button
-                        Grid.Column="0"
-                        Width="12"
-                        Height="18"
-                        Margin="0,0,-5,0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="HoverDotDefault_Click"
-                        Cursor="Hand"
-                        ToolTip="默认值 60，点击恢复" />
+                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
+                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="HoverDotDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
                 </Grid>
                 <TextBlock Grid.Column="2" Margin="0,0,12,0" Style="{StaticResource HintText}" Text="{Binding HoverDotSize, StringFormat={}{0:0} px}" />
-                <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="点击修改浮标颜色" />
+                <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="{DynamicResource swatchDotTip}" />
                 <TextBox x:Name="HexDot" Grid.Column="4" Width="76" Height="20" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="HoverDotFill" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
-                <TextBlock Grid.Column="5" Style="{StaticResource FieldLabel}" Text="颜色" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="5" Style="{StaticResource FieldLabel}" Text="{DynamicResource colorLabel}" VerticalAlignment="Center" />
             </Grid>
             <Separator Margin="0,14" />
 
-            <!--  静默  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="静默" />
+                <TextBlock Grid.Column="0" Style="{StaticResource SectionTitle}" Text="{DynamicResource secSilence}" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="启用静默" />
+                    <TextBlock Margin="0,0,8,0" Style="{StaticResource HintText}" Text="{DynamicResource enableSilence}" />
                     <CheckBox IsChecked="{Binding Setting.SilenceEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
             </Grid>
-            <TextBlock Style="{StaticResource HintText}" Text="总开关：关闭后，下面的全屏隐藏与指定程序列表都不生效" />
+            <TextBlock Style="{StaticResource HintText}" Text="{DynamicResource silenceMasterHint}" />
             <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
                 <CheckBox IsChecked="{Binding Setting.FullscreenHide}" Style="{StaticResource SwitchCheckBox}" />
-                <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="全屏自动隐藏" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="前台窗口铺满显示器时不显示特效" />
+                <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="{DynamicResource fullscreenHide}" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource fullscreenHideHint}" />
             </StackPanel>
             <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <TextBlock Style="{StaticResource FieldLabel}" Text="指定程序静默" />
-                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="列表中的程序在前台时始终隐藏特效（不限全屏）" />
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource processSilence}" />
+                <TextBlock Margin="12,0,0,0" Style="{StaticResource HintText}" Text="{DynamicResource processSilenceHint}" />
             </StackPanel>
             <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding ProcessList}">
                 <ItemsControl.ItemsPanel>
@@ -241,42 +195,38 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+            <WrapPanel Margin="0,4,0,0" Orientation="Horizontal">
                 <TextBox x:Name="AddProcessBox" Width="220" KeyDown="AddProcessBox_KeyDown" Style="{StaticResource TextInput}" />
-                <Button Margin="8,0,0,0" Click="AddProcess_Click" Content="添加" Style="{StaticResource GhostButton}" />
-                <Button Margin="8,0,0,0" Click="BrowseProcess_Click" Content="浏览" Style="{StaticResource GhostButton}" />
-                <Button x:Name="CaptureButton" Margin="8,0,0,0" Click="CaptureForeground_Click" Content="抓取前台" Style="{StaticResource GhostButton}" ToolTip="进入待捕捉后，到目标程序里点击一下即可加入列表" />
-                <TextBlock
-                    x:Name="CaptureHint"
-                    Margin="12,0,0,0"
-                    Foreground="{DynamicResource Danger}"
-                    Style="{StaticResource HintText}"
-                    Text="待捕捉中：到目标程序里点击一下即可加入列表；点击本窗口或按 ESC 取消"
-                    VerticalAlignment="Center"
-                    Visibility="Collapsed" />
-            </StackPanel>
+                <Button Margin="8,0,0,0" Click="AddProcess_Click" Content="{DynamicResource addButton}" Style="{StaticResource GhostButton}" />
+                <Button Margin="8,0,0,0" Click="BrowseProcess_Click" Content="{DynamicResource browseButton}" Style="{StaticResource GhostButton}" />
+                <Button x:Name="CaptureButton" Margin="8,0,0,0" Click="CaptureForeground_Click" Content="{DynamicResource captureStart}" Style="{StaticResource GhostButton}" ToolTip="{DynamicResource captureHint}" />
+                <TextBlock x:Name="CaptureHint" Margin="0,8,0,0" Foreground="{DynamicResource Danger}" Style="{StaticResource HintText}" Text="{DynamicResource captureHint}" VerticalAlignment="Center" Visibility="Collapsed" />
+            </WrapPanel>
             <Separator Margin="0,14" />
 
-            <!--  通用  -->
-            <TextBlock Style="{StaticResource SectionTitle}" Text="通用" />
-            <Grid Margin="0,4,0,0">
+            <TextBlock Style="{StaticResource SectionTitle}" Text="{DynamicResource secGeneral}" />
+            <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource languageLabel}" VerticalAlignment="Center" />
+                <ComboBox x:Name="LanguageCombo" Width="190" Margin="12,0,0,0" FontSize="12" SelectionChanged="LanguageCombo_SelectionChanged" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <CheckBox IsChecked="{Binding AutoStart}" Style="{StaticResource SwitchCheckBox}" />
-                    <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="开机自启" />
+                    <TextBlock Margin="8,0,0,0" Style="{StaticResource FieldLabel}" Text="{DynamicResource autoStartLabel}" />
                 </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Click="Export_Click" Content="导出配置" Style="{StaticResource GhostButton}" />
-                    <Button Margin="8,0,0,0" Click="Import_Click" Content="导入配置" Style="{StaticResource GhostButton}" />
-                    <Button Margin="8,0,0,0" Click="ResetDefault_Click" Content="恢复默认设置" Style="{StaticResource GhostButton}" />
-                </StackPanel>
+                <WrapPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Click="Export_Click" Content="{DynamicResource exportButton}" Style="{StaticResource GhostButton}" />
+                    <Button Margin="8,0,0,0" Click="Import_Click" Content="{DynamicResource importButton}" Style="{StaticResource GhostButton}" />
+                    <Button Margin="8,0,0,0" Click="ResetDefault_Click" Content="{DynamicResource resetButton}" Style="{StaticResource GhostButton}" />
+                </WrapPanel>
             </Grid>
             <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
                 <TextBlock x:Name="VersionText" Style="{StaticResource HintText}" Text="ClickShow" />
-                <TextBlock x:Name="LblNewVersion" Margin="12,0,0,0" FontWeight="Bold" Foreground="{DynamicResource Danger}" Style="{StaticResource HintText}" Text="已有新版本!" Visibility="Collapsed" />
+                <TextBlock x:Name="LblNewVersion" Margin="12,0,0,0" FontWeight="Bold" Foreground="{DynamicResource Danger}" Style="{StaticResource HintText}" Text="{DynamicResource updateAvailable}" Visibility="Collapsed" />
             </StackPanel>
 
         </StackPanel>

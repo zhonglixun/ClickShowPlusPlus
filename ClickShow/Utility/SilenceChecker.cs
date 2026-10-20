@@ -30,6 +30,18 @@ namespace ClickShow.Utility
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int GetClassName(IntPtr hWnd, StringBuilder sb, int max);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(POINT point);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        private static readonly int OwnProcessId = Process.GetCurrentProcess().Id;
+
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
         {
@@ -54,6 +66,30 @@ namespace ClickShow.Utility
         public static IntPtr GetForegroundWindowHandle()
         {
             return GetForegroundWindow();
+        }
+
+        /// <summary>屏幕坐标下窗口所属进程的 exe 名（小写，含 .exe），失败返回 null。</summary>
+        public static string GetProcessExeAtPoint(int x, int y)
+        {
+            try
+            {
+                var hwnd = WindowFromPoint(new POINT { x = x, y = y });
+                if (hwnd == IntPtr.Zero)
+                {
+                    return null;
+                }
+                GetWindowThreadProcessId(hwnd, out var pid);
+                if (pid == 0)
+                {
+                    return null;
+                }
+                var name = Process.GetProcessById((int)pid).ProcessName;
+                return string.IsNullOrEmpty(name) ? null : (name + ".exe").ToLowerInvariant();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>前台窗口进程的 exe 名（小写，含 .exe），失败返回 null。</summary>
@@ -93,15 +129,22 @@ namespace ClickShow.Utility
                 return false;
             }
 
+            GetWindowThreadProcessId(hwnd, out var foregroundPid);
+
+            // 本程序自己的界面不显示特效（预览区负责演示，避免双重触发）
+            if (foregroundPid == OwnProcessId)
+            {
+                return true;
+            }
+
             // 指定程序静默：前台进程在列表中即静默（不限全屏）
             if (setting.SilentProcesses != null && setting.SilentProcesses.Count > 0)
             {
                 try
                 {
-                    GetWindowThreadProcessId(hwnd, out var pid);
-                    if (pid != 0)
+                    if (foregroundPid != 0)
                     {
-                        var processName = Process.GetProcessById((int)pid).ProcessName;
+                        var processName = Process.GetProcessById((int)foregroundPid).ProcessName;
                         if (!string.IsNullOrEmpty(processName))
                         {
                             var exe = (processName + ".exe").ToLowerInvariant();

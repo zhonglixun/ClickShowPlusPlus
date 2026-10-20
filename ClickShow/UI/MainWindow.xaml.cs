@@ -49,8 +49,7 @@ namespace ClickShow
         private DebounceDispatcher _settingDebounceDispatcher;
         private bool _suppressRadioEvents;
         private bool _suppressHexSync;
-        private DispatcherTimer _foregroundTracker;
-        private string _lastForeignForegroundExe;
+        private volatile bool _captureArmed;
         private static readonly HttpClient UpdateHttpClient = new();
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
@@ -138,22 +137,6 @@ namespace ClickShow
             _mouseHook.MouseMove += MouseHookOnMouseMove;
             _mouseHook.MouseUp += MouseHookOnMouseUp;
             _mouseHook.Start();
-
-            // 记录最近一次非本程序的前台窗口，供“抓取前台”使用
-            _foregroundTracker = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
-            _foregroundTracker.Tick += (s, e) =>
-            {
-                if (!IsVisible)
-                {
-                    return;
-                }
-                var exe = SilenceChecker.GetForegroundProcessExe();
-                if (exe != null && exe != OwnProcessExe)
-                {
-                    _lastForeignForegroundExe = exe;
-                }
-            };
-            _foregroundTracker.Start();
 
             Task.Run(async () =>
             {
@@ -561,6 +544,14 @@ namespace ClickShow
 
         private void MouseHookOnMouseDown(object sender, MouseEventArgs e)
         {
+            if (_captureArmed)
+            {
+                // 待捕捉状态下的下一次点击：抓取该坐标下的程序
+                var targetExe = SilenceChecker.GetProcessExeAtPoint(e.Location.X, e.Location.Y);
+                Dispatcher.InvokeAsync(() => FinishCapture(targetExe));
+                return;
+            }
+
             var point = e.Location;
             var button = e.Button;
             var suppressed = SilenceChecker.ShouldSuppress(Setting);
@@ -584,6 +575,11 @@ namespace ClickShow
 
         private void MouseHookOnMouseUp(object sender, MouseEventArgs e)
         {
+            if (_captureArmed)
+            {
+                return;
+            }
+
             var downState = _buttonStates[e.Button];
             var suppressed = downState.Suppressed || SilenceChecker.ShouldSuppress(Setting);
             downState.Suppressed = false;
@@ -675,23 +671,62 @@ namespace ClickShow
 
         private void CaptureForeground_Click(object sender, RoutedEventArgs e)
         {
-            var exe = _lastForeignForegroundExe;
-            if (exe == null)
+            if (_captureArmed)
             {
-                var current = SilenceChecker.GetForegroundProcessExe();
-                if (current != null && current != OwnProcessExe)
-                {
-                    exe = current;
-                }
+                DisarmCapture();
+                return;
             }
-            if (exe == null || exe == OwnProcessExe)
+
+            _captureArmed = true;
+            Cursor = System.Windows.Input.Cursors.Cross;
+            CaptureHint.Visibility = Visibility.Visible;
+            CaptureButton.Content = "取消捕捉";
+        }
+
+        private void DisarmCapture()
+        {
+            _captureArmed = false;
+            Cursor = null;
+            CaptureHint.Visibility = Visibility.Collapsed;
+            CaptureButton.Content = "抓取前台";
+        }
+
+        private void FinishCapture(string exe)
+        {
+            DisarmCapture();
+            if (string.IsNullOrEmpty(exe) || exe == OwnProcessExe)
             {
                 _notifyIcon.ShowBalloonTip(2500, "ClickShow",
-                    "没有抓到其他程序：请先到目标程序里点一下鼠标，再回来点抓取前台。",
+                    "已取消捕捉（点击的是本程序窗口或未能识别目标程序）。",
                     System.Windows.Forms.ToolTipIcon.Info);
                 return;
             }
             AddProcess(exe);
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && _captureArmed)
+            {
+                DisarmCapture();
+                e.Handled = true;
+            }
+        }
+
+        private void IndicatorDefault_Click(object sender, RoutedEventArgs e)
+        {
+            if (Editing != null)
+            {
+                Editing.IndicatorSize = 150;
+            }
+        }
+
+        private void HoverDotDefault_Click(object sender, RoutedEventArgs e)
+        {
+            if (Editing != null)
+            {
+                Editing.HoverDotSize = 60;
+            }
         }
 
         private void ChipRemove_Click(object sender, RoutedEventArgs e)
@@ -928,7 +963,7 @@ namespace ClickShow
                 _mouseHook.Stop();
             }
 
-            _foregroundTracker?.Stop();
+            _captureArmed = false;
 
             if (_notifyIcon != null)
             {

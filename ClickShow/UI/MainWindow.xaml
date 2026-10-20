@@ -12,6 +12,7 @@
     Background="{DynamicResource Bg}"
     MinHeight="400"
     ResizeMode="CanMinimize"
+    PreviewKeyDown="Window_PreviewKeyDown"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Window.Resources>
@@ -67,7 +68,34 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="波纹大小" />
-                <Slider Grid.Column="1" Margin="12,0" IsSnapToTickEnabled="True" Maximum="400" Minimum="50" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding IndicatorSize}" />
+                <Grid Grid.Column="1" Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="5*" />
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="400" Minimum="50" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding IndicatorSize}" />
+                    <Rectangle
+                        Grid.Column="0"
+                        Width="2"
+                        Height="12"
+                        Margin="0,0,-1,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource TextSecondary}"
+                        IsHitTestVisible="False" />
+                    <Button
+                        Grid.Column="0"
+                        Width="12"
+                        Height="18"
+                        Margin="0,0,-5,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="IndicatorDefault_Click"
+                        Cursor="Hand"
+                        ToolTip="默认值 150，点击恢复" />
+                </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding IndicatorSize, StringFormat={}{0:0} px}" />
             </Grid>
 
@@ -134,7 +162,34 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="浮标大小" />
-                <Slider Grid.Column="1" Margin="12,0" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
+                <Grid Grid.Column="1" Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="7*" />
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
+                    <Rectangle
+                        Grid.Column="0"
+                        Width="2"
+                        Height="12"
+                        Margin="0,0,-1,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource TextSecondary}"
+                        IsHitTestVisible="False" />
+                    <Button
+                        Grid.Column="0"
+                        Width="12"
+                        Height="18"
+                        Margin="0,0,-5,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="HoverDotDefault_Click"
+                        Cursor="Hand"
+                        ToolTip="默认值 60，点击恢复" />
+                </Grid>
                 <TextBlock Grid.Column="2" Margin="0,0,12,0" Style="{StaticResource HintText}" Text="{Binding HoverDotSize, StringFormat={}{0:0} px}" />
                 <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="点击修改浮标颜色" />
                 <TextBox x:Name="HexDot" Grid.Column="4" Width="76" Height="20" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="HoverDotFill" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
@@ -185,7 +240,15 @@
                 <TextBox x:Name="AddProcessBox" Width="220" KeyDown="AddProcessBox_KeyDown" Style="{StaticResource TextInput}" />
                 <Button Margin="8,0,0,0" Click="AddProcess_Click" Content="添加" Style="{StaticResource GhostButton}" />
                 <Button Margin="8,0,0,0" Click="BrowseProcess_Click" Content="浏览" Style="{StaticResource GhostButton}" />
-                <Button Margin="8,0,0,0" Click="CaptureForeground_Click" Content="抓取前台" Style="{StaticResource GhostButton}" ToolTip="记录你最近点击过的其他程序" />
+                <Button x:Name="CaptureButton" Margin="8,0,0,0" Click="CaptureForeground_Click" Content="抓取前台" Style="{StaticResource GhostButton}" ToolTip="进入待捕捉后，到目标程序里点击一下即可加入列表" />
+                <TextBlock
+                    x:Name="CaptureHint"
+                    Margin="12,0,0,0"
+                    Foreground="{DynamicResource Danger}"
+                    Style="{StaticResource HintText}"
+                    Text="待捕捉中：到目标程序里点击一下即可加入列表；点击本窗口或按 ESC 取消"
+                    VerticalAlignment="Center"
+                    Visibility="Collapsed" />
             </StackPanel>
             <Separator Margin="0,14" />
 

@@ -22,6 +22,10 @@ namespace ClickShow.Entities
         /// </summary>
         public Point DownPosition { get; set; }
 
+        /// <summary>
+        /// 该次按下被静默（抬起时也应静默，避免用旧状态误触发）
+        /// </summary>
+        public bool Suppressed { get; set; }
 
     }
 }

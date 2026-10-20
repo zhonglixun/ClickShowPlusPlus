@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using ClickShow.Settings;
 
 namespace ClickShow.Utility
@@ -25,6 +26,9 @@ namespace ClickShow.Utility
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder sb, int max);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -124,6 +128,14 @@ namespace ClickShow.Utility
 
             try
             {
+                // 桌面（Progman/WorkerW）铺满显示器但不是"全屏应用"，桌面点击要正常显示特效
+                var className = new StringBuilder(64);
+                GetClassName(hwnd, className, 64);
+                if (className.ToString() is "Progman" or "WorkerW")
+                {
+                    return false;
+                }
+
                 if (!GetWindowRect(hwnd, out var wr))
                 {
                     return false;

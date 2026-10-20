@@ -81,26 +81,31 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                     <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Left].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Left" ToolTip="点击修改左键波纹颜色" />
+                    <TextBox x:Name="HexLeft" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Left" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="左键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Left].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                     <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Middle].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Middle" ToolTip="点击修改中键波纹颜色" />
+                    <TextBox x:Name="HexMiddle" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Middle" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="中键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Middle].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                     <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[Right].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="Right" ToolTip="点击修改右键波纹颜色" />
+                    <TextBox x:Name="HexRight" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="Right" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="右键" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[Right].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                     <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton1].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton1" ToolTip="点击修改 X1 波纹颜色" />
+                    <TextBox x:Name="HexX1" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="XButton1" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X1" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton1].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
                 <StackPanel Grid.Column="4" HorizontalAlignment="Center">
                     <Button Width="48" Height="24" HorizontalAlignment="Center" Background="{Binding MouseButtonSettings[XButton2].Color, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="XButton2" ToolTip="点击修改 X2 波纹颜色" />
+                    <TextBox x:Name="HexX2" Width="76" Height="18" Margin="0,3,0,0" HorizontalAlignment="Center" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="XButton2" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
                     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextPrimary}" Text="X2" />
                     <CheckBox HorizontalAlignment="Center" IsChecked="{Binding MouseButtonSettings[XButton2].IsEnabled}" Style="{StaticResource SwitchCheckBox}" />
                 </StackPanel>
@@ -126,12 +131,14 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="浮标大小" />
                 <Slider Grid.Column="1" Margin="12,0" IsSnapToTickEnabled="True" Maximum="200" Minimum="20" Style="{StaticResource ModernSlider}" TickFrequency="5" Value="{Binding HoverDotSize}" />
                 <TextBlock Grid.Column="2" Margin="0,0,12,0" Style="{StaticResource HintText}" Text="{Binding HoverDotSize, StringFormat={}{0:0} px}" />
                 <Button Grid.Column="3" Width="48" Height="24" Margin="0,0,8,0" Background="{Binding HoverDotFill, Converter={StaticResource StringToBrush}, Mode=OneWay}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Click="Swatch_Click" Content="" Cursor="Hand" Tag="HoverDotFill" ToolTip="点击修改浮标颜色" />
-                <TextBlock Grid.Column="4" Style="{StaticResource FieldLabel}" Text="颜色" VerticalAlignment="Center" />
+                <TextBox x:Name="HexDot" Grid.Column="4" Width="76" Height="20" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" FontFamily="Consolas" FontSize="10" Foreground="{DynamicResource TextPrimary}" KeyDown="HexBox_KeyDown" LostFocus="HexBox_LostFocus" Padding="0" Tag="HoverDotFill" TextAlignment="Center" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
+                <TextBlock Grid.Column="5" Style="{StaticResource FieldLabel}" Text="颜色" VerticalAlignment="Center" />
             </Grid>
             <Separator Margin="0,14" />
 

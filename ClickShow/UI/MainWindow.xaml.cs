@@ -29,6 +29,7 @@ using Point = System.Drawing.Point;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Button = System.Windows.Controls.Button;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace ClickShow
 {
@@ -47,6 +48,7 @@ namespace ClickShow
         private bool _forceClose = false;
         private DebounceDispatcher _settingDebounceDispatcher;
         private bool _suppressRadioEvents;
+        private bool _suppressHexSync;
         private DispatcherTimer _foregroundTracker;
         private string _lastForeignForegroundExe;
         private static readonly HttpClient UpdateHttpClient = new();
@@ -209,6 +211,7 @@ namespace ClickShow
 
             ProcessList = new ObservableCollection<string>(Setting.SilentProcesses);
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
+            SyncAllHexBoxes();
             OnPropertyChanged(nameof(Setting));
         }
 
@@ -247,6 +250,7 @@ namespace ClickShow
             }
             _editingKey = (string)((RadioButton)sender).Tag;
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
+            SyncAllHexBoxes();
         }
 
         #endregion
@@ -451,13 +455,120 @@ namespace ClickShow
             }
         }
 
+        #region 十六进制颜色输入
+
+        private void HexBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_suppressHexSync || Editing == null)
+            {
+                return;
+            }
+            var box = (TextBox)sender;
+            var text = box.Text.Trim();
+            if (IsValidHexColor(text))
+            {
+                SetColorByKey((string)box.Tag, NormalizeHex(text));
+            }
+        }
+
+        private void HexBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SyncHexBox((TextBox)sender);
+        }
+
+        private void HexBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter)
+            {
+                return;
+            }
+            e.Handled = true;
+            SyncHexBox((TextBox)sender);
+        }
+
+        private void SyncHexBox(TextBox box)
+        {
+            _suppressHexSync = true;
+            box.Text = GetColorByKey((string)box.Tag);
+            box.CaretIndex = box.Text.Length;
+            _suppressHexSync = false;
+        }
+
+        private void SyncAllHexBoxes()
+        {
+            foreach (var box in new[] { HexLeft, HexMiddle, HexRight, HexX1, HexX2, HexDot })
+            {
+                SyncHexBox(box);
+            }
+        }
+
+        private static bool IsValidHexColor(string text)
+        {
+            if (text == null)
+            {
+                return false;
+            }
+            return System.Text.RegularExpressions.Regex.IsMatch(text, "^#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$");
+        }
+
+        private static string NormalizeHex(string text)
+        {
+            var hex = text.Trim().TrimStart('#').ToUpperInvariant();
+            if (hex.Length == 6)
+            {
+                hex = "FF" + hex;
+            }
+            return "#" + hex;
+        }
+
+        private string GetColorByKey(string key)
+        {
+            if (Editing == null)
+            {
+                return "#FF808080";
+            }
+            if (key == "HoverDotFill")
+            {
+                return Editing.HoverDotFill;
+            }
+            return Editing.MouseButtonSettings.TryGetValue((MouseButtons)Enum.Parse(typeof(MouseButtons), key), out var bs)
+                ? bs.Color
+                : "#FF808080";
+        }
+
+        private void SetColorByKey(string key, string value)
+        {
+            if (Editing == null)
+            {
+                return;
+            }
+            if (key == "HoverDotFill")
+            {
+                Editing.HoverDotFill = value;
+                return;
+            }
+            if (Editing.MouseButtonSettings.TryGetValue((MouseButtons)Enum.Parse(typeof(MouseButtons), key), out var bs))
+            {
+                bs.Color = value;
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region 鼠标hook处理
 
         private void MouseHookOnMouseDown(object sender, MouseEventArgs e)
         {
-            if (SilenceChecker.ShouldSuppress(Setting))
+            var point = e.Location;
+            var button = e.Button;
+            var suppressed = SilenceChecker.ShouldSuppress(Setting);
+
+            _buttonStates[button].DownPosition = point;
+            _buttonStates[button].DownTimeTicks = Environment.TickCount;
+            _buttonStates[button].Suppressed = suppressed;
+            if (suppressed)
             {
                 return;
             }
@@ -467,19 +578,16 @@ namespace ClickShow
             {
                 return;
             }
-
-            var point = e.Location;
-            var button = e.Button;
-
-            _buttonStates[button].DownPosition = point;
-            _buttonStates[button].DownTimeTicks = Environment.TickCount;
 
             Dispatcher.InvokeAsync(() => { ShowIndicator(button, point, true); });
         }
 
         private void MouseHookOnMouseUp(object sender, MouseEventArgs e)
         {
-            if (SilenceChecker.ShouldSuppress(Setting))
+            var downState = _buttonStates[e.Button];
+            var suppressed = downState.Suppressed || SilenceChecker.ShouldSuppress(Setting);
+            downState.Suppressed = false;
+            if (suppressed)
             {
                 return;
             }
@@ -491,7 +599,6 @@ namespace ClickShow
             }
 
             var point = e.Location;
-            var downState = _buttonStates[e.Button];
             if (((point.X - downState.DownPosition.X) * (point.X - downState.DownPosition.X)
                  + (point.Y - downState.DownPosition.Y) * (point.Y - downState.DownPosition.Y)) > UP_SHOW_DISTANCE * UP_SHOW_DISTANCE
                 || (Environment.TickCount > (downState.DownTimeTicks + UP_TICKS_DELTA)))

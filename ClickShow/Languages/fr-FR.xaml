@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">Impossible d'enregistrer l'état de démarrage.</sys:String>
     <sys:String x:Key="configCorrupt">Le fichier de paramètres est corrompu ; valeurs par défaut restaurées.</sys:String>
     <sys:String x:Key="migrateFail">Échec de la migration des anciens paramètres ; valeurs par défaut utilisées.</sys:String>
-    <sys:String x:Key="rippleDuration">Durée de l'animation</sys:String>
+<sys:String x:Key="rippleDuration">Durée de l'animation</sys:String>
+<sys:String x:Key="hookFailed">Échec de l'installation du hook souris ; veuillez redémarrer l'application.</sys:String>
+    <sys:String x:Key="easingStyle">Style de diffusion</sys:String>
+    <sys:String x:Key="easingLinear">Linéaire</sys:String>
+    <sys:String x:Key="easingDecel">Décélération (naturelle)</sys:String>
+    <sys:String x:Key="easingExpo">Forte décélération (eau)</sys:String>
+    <sys:String x:Key="easingBack">Léger rebond</sys:String>
+    <sys:String x:Key="easingElastic">Élastique</sys:String>
 </ResourceDictionary>

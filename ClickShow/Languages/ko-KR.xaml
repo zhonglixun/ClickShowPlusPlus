@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">시작 프로그램 상태를 저장할 수 없습니다.</sys:String>
     <sys:String x:Key="configCorrupt">설정 파일이 손상되어 기본값으로 복원되었습니다.</sys:String>
     <sys:String x:Key="migrateFail">이전 설정 마이그레이션 실패, 기본값을 사용합니다.</sys:String>
-    <sys:String x:Key="rippleDuration">애니메이션 길이</sys:String>
+<sys:String x:Key="rippleDuration">애니메이션 길이</sys:String>
+<sys:String x:Key="hookFailed">마우스 후크 설치에 실패했습니다. 앱을 다시 시작해 주세요.</sys:String>
+    <sys:String x:Key="easingStyle">확산 스타일</sys:String>
+    <sys:String x:Key="easingLinear">등속</sys:String>
+    <sys:String x:Key="easingDecel">감속(자연)</sys:String>
+    <sys:String x:Key="easingExpo">강한 감속(물결)</sys:String>
+    <sys:String x:Key="easingBack">살짝 튕김</sys:String>
+    <sys:String x:Key="easingElastic">탄성</sys:String>
 </ResourceDictionary>

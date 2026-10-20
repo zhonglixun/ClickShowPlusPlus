@@ -144,6 +144,10 @@ namespace ClickShow
             _mouseHook.MouseMove += MouseHookOnMouseMove;
             _mouseHook.MouseUp += MouseHookOnMouseUp;
             _mouseHook.Start();
+            if (!_mouseHook.IsStarted)
+            {
+                _notifyIcon.ShowBalloonTip(4000, "ClickShow", L("hookFailed"), System.Windows.Forms.ToolTipIcon.Error);
+            }
 
             Task.Run(async () =>
             {

@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">Startstatus konnte nicht gespeichert werden.</sys:String>
     <sys:String x:Key="configCorrupt">Einstellungsdatei beschädigt; Standardeinstellungen wiederhergestellt.</sys:String>
     <sys:String x:Key="migrateFail">Migration alter Einstellungen fehlgeschlagen; Standardwerte aktiv.</sys:String>
-    <sys:String x:Key="rippleDuration">Animationsdauer</sys:String>
+<sys:String x:Key="rippleDuration">Animationsdauer</sys:String>
+<sys:String x:Key="hookFailed">Maus-Hook konnte nicht installiert werden; bitte App neu starten.</sys:String>
+    <sys:String x:Key="easingStyle">Ausbreitungsstil</sys:String>
+    <sys:String x:Key="easingLinear">Linear</sys:String>
+    <sys:String x:Key="easingDecel">Abbremsen (natürlich)</sys:String>
+    <sys:String x:Key="easingExpo">Stark abbremsen (Wasser)</sys:String>
+    <sys:String x:Key="easingBack">Leicht überschwingen</sys:String>
+    <sys:String x:Key="easingElastic">Elastisch</sys:String>
 </ResourceDictionary>

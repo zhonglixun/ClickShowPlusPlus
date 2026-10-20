@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">无法保存开机自动启动状态。</sys:String>
     <sys:String x:Key="configCorrupt">配置文件损坏了，设置已恢复为默认值。</sys:String>
     <sys:String x:Key="migrateFail">旧配置迁移失败，已使用默认设置。</sys:String>
-    <sys:String x:Key="rippleDuration">动画时长</sys:String>
+<sys:String x:Key="rippleDuration">动画时长</sys:String>
+<sys:String x:Key="hookFailed">鼠标钩子安装失败，点击波纹与浮标暂不可用，请重启程序重试。</sys:String>
+    <sys:String x:Key="easingStyle">扩散样式</sys:String>
+    <sys:String x:Key="easingLinear">匀速</sys:String>
+    <sys:String x:Key="easingDecel">减速（自然）</sys:String>
+    <sys:String x:Key="easingExpo">强减速（水波）</sys:String>
+    <sys:String x:Key="easingBack">轻微回弹</sys:String>
+    <sys:String x:Key="easingElastic">弹性波动</sys:String>
 </ResourceDictionary>

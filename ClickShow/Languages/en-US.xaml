@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">Failed to save startup state.</sys:String>
     <sys:String x:Key="configCorrupt">Settings file is corrupted; defaults restored.</sys:String>
     <sys:String x:Key="migrateFail">Failed to migrate legacy settings; defaults are in use.</sys:String>
-    <sys:String x:Key="rippleDuration">Animation duration</sys:String>
+<sys:String x:Key="rippleDuration">Animation duration</sys:String>
+<sys:String x:Key="hookFailed">Mouse hook failed to install — ripple and dot are unavailable. Please restart the app.</sys:String>
+    <sys:String x:Key="easingStyle">Spread style</sys:String>
+    <sys:String x:Key="easingLinear">Linear</sys:String>
+    <sys:String x:Key="easingDecel">Decelerate (natural)</sys:String>
+    <sys:String x:Key="easingExpo">Strong ease-out (water)</sys:String>
+    <sys:String x:Key="easingBack">Slight overshoot</sys:String>
+    <sys:String x:Key="easingElastic">Elastic</sys:String>
 </ResourceDictionary>

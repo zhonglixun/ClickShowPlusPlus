@@ -63,5 +63,12 @@
     <sys:String x:Key="autoStartSaveError">Impossibile salvare lo stato di avvio.</sys:String>
     <sys:String x:Key="configCorrupt">File impostazioni danneggiato; ripristinati i valori predefiniti.</sys:String>
     <sys:String x:Key="migrateFail">Migrazione vecchie impostazioni non riuscita; in uso i valori predefiniti.</sys:String>
-    <sys:String x:Key="rippleDuration">Durata dell'animazione</sys:String>
+<sys:String x:Key="rippleDuration">Durata dell'animazione</sys:String>
+<sys:String x:Key="hookFailed">Installazione dell'hook del mouse non riuscita; riavvia l'app.</sys:String>
+    <sys:String x:Key="easingStyle">Stile di diffusione</sys:String>
+    <sys:String x:Key="easingLinear">Lineare</sys:String>
+    <sys:String x:Key="easingDecel">Decelerazione (naturale)</sys:String>
+    <sys:String x:Key="easingExpo">Forte decelerazione (acqua)</sys:String>
+    <sys:String x:Key="easingBack">Leggero rimbalzo</sys:String>
+    <sys:String x:Key="easingElastic">Elastico</sys:String>
 </ResourceDictionary>

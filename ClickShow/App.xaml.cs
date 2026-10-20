@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Windows;
 using ClickShow.Utility;
 
@@ -12,10 +13,28 @@ namespace ClickShow
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            // 单实例保护：双开会导致双重波纹与配置文件写入竞态
+            _instanceMutex = new Mutex(true, "Local\\ClickShow.SingleInstance", out var createdNew);
+            if (!createdNew)
+            {
+                MessageBox.Show("ClickShow 已经在运行，请先退出已运行的实例。", "ClickShow",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
             // 语言按设置（未设置时按系统语言）解析；槽位 0 = 语言，槽位 1 = 主题
             ApplyLanguage(Languages.Resolve(SettingsStore.ReadLanguageCode()));
             ApplyTheme(ThemeWatcher.IsLightTheme);
             ThemeWatcher.ThemeChanged += () => Dispatcher.Invoke(() => ApplyTheme(ThemeWatcher.IsLightTheme));
+        }
+
+        private Mutex _instanceMutex;
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            _instanceMutex?.ReleaseMutex();
+            _instanceMutex?.Dispose();
+            base.OnExit(e);
         }
 
         public static void ApplyLanguage(string code)

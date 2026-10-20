@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -9,252 +10,241 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Navigation;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ClickShow.Settings;
-using ClickShow.UI;
 using ClickShow.Utility;
 using Microsoft.Win32;
+using System.Windows.Forms;
 using Brush = System.Windows.Media.Brush;
-using Brushes = System.Windows.Media.Brushes;
 using Exception = System.Exception;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 using MouseButtonState = ClickShow.Entities.MouseButtonState;
 using Point = System.Drawing.Point;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using RadioButton = System.Windows.Controls.RadioButton;
 
 namespace ClickShow
 {
-
-
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// 单窗口设置界面 + 特效调度。
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private const long UP_SHOW_DISTANCE = 200;  //移动超过多少像素后显示抬起特效
         private const long UP_TICKS_DELTA = 500;   //长按多久后抬起显示抬起特效
 
-
         private MouseHook.MouseHook _mouseHook;
-
-        // 窗口缓存,解决连续点击的显示问题
-
-
-        private NotifyIcon _notifyIcon = null;
-
-        /// <summary>
-        /// 强制关闭窗口
-        /// </summary>
+        private readonly IList<ClickIndicator> _clickIndicators = new List<ClickIndicator>();
+        private HoverDot _hoverDot = null;
+        private System.Windows.Forms.NotifyIcon _notifyIcon = null;
         private bool _forceClose = false;
+        private DebounceDispatcher _settingDebounceDispatcher;
+        private bool _suppressRadioEvents;
+        private static readonly HttpClient UpdateHttpClient = new();
 
-        /// <summary>
-        /// 程序设置
-        /// </summary>
-        public AppSetting AppSetting { get; private set; }
+        private readonly IDictionary<MouseButtons, Brush> _buttonBrushes =
+            new Dictionary<MouseButtons, Brush>()
+            {
+                {MouseButtons.None, System.Windows.Media.Brushes.Black},
+                {MouseButtons.Left, System.Windows.Media.Brushes.DodgerBlue},
+                {MouseButtons.Middle, System.Windows.Media.Brushes.Green},
+                {MouseButtons.Right, System.Windows.Media.Brushes.OrangeRed},
+                {MouseButtons.XButton1, System.Windows.Media.Brushes.Gray},
+                {MouseButtons.XButton2, System.Windows.Media.Brushes.BlueViolet},
+            };
 
+        private readonly IDictionary<MouseButtons, MouseButtonState> _buttonStates =
+            new Dictionary<MouseButtons, MouseButtonState>()
+            {
+                {MouseButtons.Left, new MouseButtonState()},
+                {MouseButtons.Middle, new MouseButtonState()},
+                {MouseButtons.Right, new MouseButtonState()},
+                {MouseButtons.XButton1, new MouseButtonState()},
+                {MouseButtons.XButton2, new MouseButtonState()},
+            };
 
-        #region 窗口事件
+        private AppSetting _setting;
+        private AppearanceSetting _editing;
+        private string _editingKey = "Light";
+        private ObservableCollection<string> _processList = new ObservableCollection<string>();
+        private bool _autoStart;
+
+        public AppSetting Setting
+        {
+            get => _setting;
+            private set { _setting = value; OnPropertyChanged(nameof(Setting)); OnPropertyChanged(nameof(Editing)); }
+        }
+
+        /// <summary>当前正在编辑的外观套（浅色/深色）。</summary>
+        public AppearanceSetting Editing
+        {
+            get => _editing;
+            private set { _editing = value; OnPropertyChanged(nameof(Editing)); }
+        }
+
+        public ObservableCollection<string> ProcessList
+        {
+            get => _processList;
+            private set { _processList = value; OnPropertyChanged(nameof(ProcessList)); }
+        }
+
+        /// <summary>开机自启（注册表）。</summary>
+        public bool AutoStart
+        {
+            get => _autoStart;
+            set
+            {
+                _autoStart = value;
+                SaveAutoStart();
+                OnPropertyChanged(nameof(AutoStart));
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-
-
+            DataContext = this;
             Loaded += OnLoaded;
             Closing += OnClosing;
             Closed += OnClosed;
             StateChanged += OnStateChanged;
-
             CreateNotifyIcon();
         }
 
+        #region 加载/保存
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            LoadSettings();
-
-            WindowState = WindowState.Minimized;
-
-            // update auto startup checkbox
+            LoadSetting();
             LoadAutoStartStatus();
-
-            // 设置
-            PnlSettings.DataContext = AppSetting;
-            
-
-            //
-            Title = $"ClickShow {Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
-
-
+            Title = $"ClickShow 设置 {Assembly.GetExecutingAssembly().GetName().Version}";
+            VersionText.Text = $"ClickShow v{Assembly.GetExecutingAssembly().GetName().Version.ToString(2)}";
             ApplySettings();
 
-
-            // 最后启动挂钩
             _mouseHook = new MouseHook.MouseHook();
             _mouseHook.MouseDown += MouseHookOnMouseDown;
             _mouseHook.MouseMove += MouseHookOnMouseMove;
             _mouseHook.MouseUp += MouseHookOnMouseUp;
             _mouseHook.Start();
 
-            // 检查版本更新
             Task.Run(async () =>
             {
-                await Task.Delay(1000 * 10 );
+                await Task.Delay(1000 * 10);
                 CheckUpdate();
             });
-            
         }
 
-        public Version NewVersion { get; set; }
-
-        /// <summary>
-        /// 检查版本更新
-        /// </summary>
-        private static readonly HttpClient UpdateHttpClient = new();
-
-        private void CheckUpdate()
+        private void LoadSetting()
         {
-            string updateUrl = "https://github.com/cuiliang/ClickShow/releases";
+            var setting = SettingsStore.Load(out var notice);
+            if (!string.IsNullOrEmpty(notice))
+            {
+                _notifyIcon.ShowBalloonTip(3000, "ClickShow", notice, System.Windows.Forms.ToolTipIcon.Warning);
+            }
+            Setting = setting;
+            HookSettingEvents(setting);
+            BindSetting();
+        }
 
+        private void HookSettingEvents(AppSetting setting)
+        {
+            setting.PropertyChanged += (s, e) => OnSettingPropertyChanged();
+            foreach (var appearance in new[] { setting.Light, setting.Dark })
+            {
+                appearance.PropertyChanged += (s, e) => OnSettingPropertyChanged();
+                foreach (var bs in appearance.MouseButtonSettings.Values)
+                {
+                    bs.PropertyChanged += (s, e) => OnSettingPropertyChanged();
+                }
+            }
+        }
+
+        private void OnSettingPropertyChanged()
+        {
+            if (_settingDebounceDispatcher == null)
+            {
+                _settingDebounceDispatcher = new DebounceDispatcher();
+            }
+            _settingDebounceDispatcher.Debounce(100, o =>
+            {
+                SaveSettings();
+                ApplySettings();
+            });
+        }
+
+        /// <summary>把当前 Setting 绑定到界面（切套/导入/重置后调用）。</summary>
+        private void BindSetting()
+        {
+            _suppressRadioEvents = true;
+            ModeSystemRadio.IsChecked = Setting.ProfileMode == ProfileMode.System;
+            ModeLightRadio.IsChecked = Setting.ProfileMode == ProfileMode.Light;
+            ModeDarkRadio.IsChecked = Setting.ProfileMode == ProfileMode.Dark;
+            _suppressRadioEvents = false;
+
+            ProcessList = new ObservableCollection<string>(Setting.SilentProcesses);
+            Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
+            OnPropertyChanged(nameof(Setting));
+        }
+
+        private void SaveSettings()
+        {
             try
             {
-                // 下载版本信息字符串。可能格式：（1）只有版本号。 （2）版本号|网址
-                var versionStr = UpdateHttpClient
-                    .GetStringAsync("https://helperservice.getquicker.cn/clickshow/version").Result;
-
-                if (versionStr.Contains("|"))
-                {
-                    string[] parts = versionStr.Split('|');
-                    NewVersion = new Version(parts[0]);
-                    updateUrl = String.IsNullOrEmpty(parts[1]) ? updateUrl : parts[1];
-                }
-                else
-                {
-                    NewVersion = new Version(versionStr);
-                }
-
-                // 版本落后了
-                if (NewVersion > Assembly.GetExecutingAssembly().GetName().Version)
-                {
-                    // 如果之前已经提示了此版本，则不再提示，不然每次开机都会有一个提示了。
-                    if (String.Equals(AppSetting.LastNotifiedVersion, versionStr))
-                    {
-                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
-                    }
-                    else
-                    {
-                        AppSetting.LastNotifiedVersion = versionStr;
-                        SaveSettings();
-
-                        if (MessageBox.Show($"ClickShow有新版本（{versionStr}），是否立即打开网页？", "ClickShow", MessageBoxButton.YesNo, MessageBoxImage.Information) != MessageBoxResult.Yes)
-                        {
-                            return;
-                        }
-                        try
-                        {
-                            Process.Start(new ProcessStartInfo(updateUrl) { UseShellExecute = true });
-                        }
-                        catch
-                        {
-                            MessageBox.Show($"无法打开网址：{updateUrl}");
-                        }
-                    }
-                }
+                SettingsStore.Save(Setting);
             }
             catch (Exception ex)
             {
-                // ignore error
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "设置保存出错：" + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
             }
         }
 
-        /// <summary>
-        /// 如果是点了x关闭窗口，则隐藏窗口而不是退出程序。
-        /// </summary>
-        private void OnClosing(object sender, CancelEventArgs e)
+        #endregion
+
+        #region 配置方案/编辑切换
+
+        private void ModeRadio_Checked(object sender, RoutedEventArgs e)
         {
-            if (!_forceClose)
+            if (_suppressRadioEvents || Setting == null)
             {
-                e.Cancel = true;
-                this.Hide();
+                return;
             }
-        }
-
-        private void OnClosed(object sender, EventArgs e)
-        {
+            Setting.ProfileMode = (ProfileMode)Enum.Parse(typeof(ProfileMode), (string)((RadioButton)sender).Tag);
+            ApplySettings();
             SaveSettings();
-            _mouseHook.MouseMove -= MouseHookOnMouseMove;
-            _mouseHook.MouseDown -= MouseHookOnMouseDown;
-            _mouseHook.Stop();
-
-            _notifyIcon.Visible = false;
-
-            foreach (var x in _clickIndicators)
-            {
-                x.Close();
-            }
-
-            _hoverDot?.Close();
-
-
         }
 
-        /// <summary>
-        /// 窗口状态改变了
-        /// </summary>
-        private void OnStateChanged(object sender, EventArgs e)
+        private void EditRadio_Checked(object sender, RoutedEventArgs e)
         {
-            if (WindowState == WindowState.Minimized)
+            if (Setting == null)
             {
-                this.Hide();
+                return;
             }
-        }
-
-        private void BtnClose_OnClick(object sender, RoutedEventArgs e)
-        {
-            _forceClose = true;
-            this.Close();
-        }
-
-        /// <summary>
-        /// 打开主页
-        /// </summary>
-        private void HyperlinkOpenHomepage_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo("https://github.com/cuiliang/clickshow") { UseShellExecute = true });
-            }
-            catch
-            {
-                MessageBox.Show("无法打开网址：https://github.com/cuiliang/clickshow");
-            }
+            _editingKey = (string)((RadioButton)sender).Tag;
+            Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
         }
 
         #endregion
 
         #region 鼠标位置浮标
 
-        // 浮标窗口
-        private HoverDot _hoverDot = null;
-
-        /// <summary>
-        /// 更新浮标的可见性
-        /// </summary>
         private void UpdateHoverDot()
         {
-            if (AppSetting.EnableHoverDot)
+            var appearance = Setting.ActiveAppearance;
+            if (appearance.EnableHoverDot)
             {
                 if (_hoverDot == null)
                 {
                     _hoverDot = new HoverDot();
                 }
 
-                _hoverDot.Width = _hoverDot.Height = AppSetting.HoverDotSize;
-                _hoverDot.SetDotBrush(AppSetting.HoverDotFill.ToBrush());
-
+                _hoverDot.Width = _hoverDot.Height = appearance.HoverDotSize;
+                _hoverDot.SetDotBrush(appearance.HoverDotFill.ToBrush());
                 _hoverDot.Show();
             }
             else
@@ -271,89 +261,42 @@ namespace ClickShow
 
         #region 点击波纹效果
 
-        /// <summary>
-        /// 可用的波纹窗口
-        /// </summary>
-        private IList<ClickIndicator> _clickIndicators = new List<ClickIndicator>();
-
-        /// <summary>
-        /// 各个鼠标按键对应的颜色画刷
-        /// </summary>
-        private IDictionary<MouseButtons, Brush> _buttonBrushes = new Dictionary<MouseButtons, Brush>()
+        private ClickIndicator GetClickIndicatorWindow(double size)
         {
-            {MouseButtons.None, Brushes.Black},
-            {MouseButtons.Left, Brushes.DodgerBlue},
-            {MouseButtons.Middle, Brushes.Green},
-            {MouseButtons.Right, Brushes.OrangeRed},
-            {MouseButtons.XButton1, Brushes.Gray},
-            {MouseButtons.XButton2, Brushes.BlueViolet},
-        };
-
-        /// <summary>
-        /// 各按键的状态，用于判断是否应该显示抬起特效。
-        /// </summary>
-        private readonly IDictionary<MouseButtons, MouseButtonState> _buttonStates =
-            new Dictionary<MouseButtons, MouseButtonState>()
-            {
-                {MouseButtons.Left, new MouseButtonState()},
-                {MouseButtons.Middle, new MouseButtonState()},
-                {MouseButtons.Right, new MouseButtonState()},
-                {MouseButtons.XButton1, new MouseButtonState()},
-                {MouseButtons.XButton2, new MouseButtonState()},
-            };
-
-        /// <summary>
-        /// 获取一个可用的波纹窗口。
-        /// </summary>
-        /// <returns>波纹窗口对象</returns>
-        private ClickIndicator GetClickIndicatorWindow()
-        {
-
-            var indicator = _clickIndicators.FirstOrDefault(x => x.IsIdle 
-                                                                 && x.Width > AppSetting.IndicatorSize -1
-                                                                 && x.Width < AppSetting.IndicatorSize +1);
+            var indicator = _clickIndicators.FirstOrDefault(x => x.IsIdle
+                                                                 && x.Width > size - 1
+                                                                 && x.Width < size + 1);
             if (indicator != null)
             {
                 indicator.Prepare();
-
                 KillDeadWindow();
                 return indicator;
             }
-            else
+
+            indicator = new ClickIndicator(size)
             {
-                indicator = new ClickIndicator(AppSetting.IndicatorSize)
-                {
-                    WindowStartupLocation = WindowStartupLocation.Manual,
-                    Topmost = true,
-                    ShowActivated = false
-                };
-                _clickIndicators.Add(indicator);
-
-                KillDeadWindow();
-                return indicator;
-            }
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                Topmost = true,
+                ShowActivated = false
+            };
+            _clickIndicators.Add(indicator);
+            KillDeadWindow();
+            return indicator;
         }
 
-        /// <summary>
-        /// 显示波纹特效
-        /// </summary>
-        /// <param name="button">按键</param>
-        /// <param name="point">位置</param>
-        /// <param name="isDown">是否按下</param>
         private void ShowIndicator(MouseButtons button, Point point, bool isDown)
         {
             try
             {
+                var appearance = Setting.ActiveAppearance;
                 // 先查目标显示器 DPI，一次落位，避免跨屏时尺寸/位置错乱
                 var dpi = MonitorHelper.GetDpiScaleForPoint(point.X, point.Y);
-                var indicator = GetClickIndicatorWindow();
+                var indicator = GetClickIndicatorWindow(appearance.IndicatorSize);
 
                 Brush brush = _buttonBrushes[button];
-
                 indicator.Play(brush, isDown);
 
-                var size = (int)Math.Round(AppSetting.IndicatorSize * dpi);
-
+                var size = (int)Math.Round(appearance.IndicatorSize * dpi);
                 MoveWindowWrapper(indicator,
                     point.X - (int)(size / 2),
                     point.Y - (int)(size / 2), size, size);
@@ -363,16 +306,12 @@ namespace ClickShow
             }
         }
 
-        /// <summary>
-        /// 关闭长时间未使用的indicator
-        /// </summary>
+        /// <summary>关闭长时间未使用的indicator</summary>
         private void KillDeadWindow()
         {
             var deadIndicators = _clickIndicators
-                .Where(x => x.IsIdle 
-                            && (Environment.TickCount - x.LastLiveTime) / 1000 > 5)
+                .Where(x => x.IsIdle && (Environment.TickCount - x.LastLiveTime) / 1000 > 5)
                 .ToList();
-
             foreach (var i in deadIndicators)
             {
                 i.Close();
@@ -380,87 +319,116 @@ namespace ClickShow
             }
         }
 
+        #endregion
+
+        #region 波纹预览
+
+        private void PreviewArea_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MouseButtons button;
+            switch (e.ChangedButton)
+            {
+                case MouseButton.Left: button = MouseButtons.Left; break;
+                case MouseButton.Middle: button = MouseButtons.Middle; break;
+                case MouseButton.Right: button = MouseButtons.Right; break;
+                case MouseButton.XButton1: button = MouseButtons.XButton1; break;
+                case MouseButton.XButton2: button = MouseButtons.XButton2; break;
+                default: return;
+            }
+
+            e.Handled = true;
+            if (Editing == null || !Editing.MouseButtonSettings.TryGetValue(button, out var bs) || !bs.IsEnabled)
+            {
+                return;
+            }
+
+            SpawnPreviewRipple(e.GetPosition(PreviewArea), bs.Color.ToBrush());
+        }
+
+        private void SpawnPreviewRipple(System.Windows.Point center, Brush stroke)
+        {
+            var size = Editing.IndicatorSize;
+            var circle = new System.Windows.Shapes.Ellipse
+            {
+                Width = size,
+                Height = size,
+                Stroke = stroke,
+                StrokeThickness = 3,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
+                VerticalAlignment = System.Windows.VerticalAlignment.Top,
+                RenderTransformOrigin = new System.Windows.Point(0.5, 0.5)
+            };
+            var scale = new ScaleTransform(0.2, 0.2);
+            circle.RenderTransform = scale;
+            circle.Margin = new Thickness(center.X - size / 2, center.Y - size / 2, 0, 0);
+
+            var duration = new Duration(TimeSpan.FromSeconds(0.45));
+            var fade = new DoubleAnimation(0, duration);
+            var grow = new DoubleAnimation(1, duration);
+            PreviewArea.Children.Add(circle);
+            circle.BeginAnimation(OpacityProperty, fade);
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, grow);
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, grow);
+            fade.Completed += (s, e) => PreviewArea.Children.Remove(circle);
+        }
 
         #endregion
 
         #region 鼠标hook处理
 
-
-        /// <summary>
-        /// 鼠标按下事件
-        /// </summary>
         private void MouseHookOnMouseDown(object sender, MouseEventArgs e)
         {
-            if (SilenceChecker.ShouldSuppress(AppSetting))
+            if (SilenceChecker.ShouldSuppress(Setting))
             {
                 return;
             }
 
-            if (!AppSetting.EnableClickCircle
-                || !AppSetting.MouseButtonSettings[e.Button].IsEnabled)
+            var appearance = Setting.ActiveAppearance;
+            if (!appearance.EnableClickCircle || !appearance.MouseButtonSettings[e.Button].IsEnabled)
             {
                 return;
             }
-
 
             var point = e.Location;
-
             var button = e.Button;
 
-            // 记录按下状态（时间与位置）
             _buttonStates[button].DownPosition = point;
             _buttonStates[button].DownTimeTicks = Environment.TickCount;
 
-
-            // 显示特效
             Dispatcher.InvokeAsync(() => { ShowIndicator(button, point, true); });
         }
 
-        /// <summary>
-        /// 鼠标抬起
-        /// </summary>
         private void MouseHookOnMouseUp(object sender, MouseEventArgs e)
         {
-            if (SilenceChecker.ShouldSuppress(AppSetting))
+            if (SilenceChecker.ShouldSuppress(Setting))
             {
                 return;
             }
 
-            if (!AppSetting.EnableClickCircle
-                || !AppSetting.MouseButtonSettings[e.Button].IsEnabled)
+            var appearance = Setting.ActiveAppearance;
+            if (!appearance.EnableClickCircle || !appearance.MouseButtonSettings[e.Button].IsEnabled)
             {
                 return;
             }
 
             var point = e.Location;
-
             var downState = _buttonStates[e.Button];
-            // 距离超过设定，或者抬起时间超过设定，显示抬起特效。
             if (((point.X - downState.DownPosition.X) * (point.X - downState.DownPosition.X)
                  + (point.Y - downState.DownPosition.Y) * (point.Y - downState.DownPosition.Y)) > UP_SHOW_DISTANCE * UP_SHOW_DISTANCE
-                || (Environment.TickCount > (downState.DownTimeTicks + UP_TICKS_DELTA))
-                )
+                || (Environment.TickCount > (downState.DownTimeTicks + UP_TICKS_DELTA)))
             {
-                Dispatcher.InvokeAsync(() =>
-                {
-                    ShowIndicator(e.Button, point, false);
-                });
+                Dispatcher.InvokeAsync(() => { ShowIndicator(e.Button, point, false); });
             }
         }
 
-        /// <summary>
-        /// 鼠标移动处理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MouseHookOnMouseMove(object sender, MouseEventArgs e)
         {
-            if (AppSetting.EnableHoverDot
-                && _hoverDot != null)
+            var appearance = Setting.ActiveAppearance;
+            if (appearance.EnableHoverDot && _hoverDot != null)
             {
                 Dispatcher.InvokeAsync(() =>
                 {
-                    var size = (int)(AppSetting.HoverDotSize * _hoverDot.GetDpiScale());
+                    var size = (int)(appearance.HoverDotSize * _hoverDot.GetDpiScale());
                     MoveWindowWrapper(_hoverDot,
                         e.Location.X - (int)(size / 2),
                         e.Location.Y - (int)(size / 2), size, size);
@@ -468,6 +436,239 @@ namespace ClickShow
             }
         }
 
+        #endregion
+
+        #region 指定程序静默
+
+        private void AddProcess(string name)
+        {
+            name = (name ?? "").Trim().ToLowerInvariant();
+            if (name.Length == 0)
+            {
+                return;
+            }
+            if (!name.EndsWith(".exe"))
+            {
+                name += ".exe";
+            }
+            if (Setting.SilentProcesses.Contains(name))
+            {
+                return;
+            }
+            Setting.SilentProcesses.Add(name);
+            ProcessList.Add(name);
+            SaveSettings();
+        }
+
+        private void AddProcess_Click(object sender, RoutedEventArgs e)
+        {
+            AddProcess(AddProcessBox.Text);
+            AddProcessBox.Text = "";
+        }
+
+        private void AddProcessBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                AddProcess(AddProcessBox.Text);
+                AddProcessBox.Text = "";
+            }
+        }
+
+        private void BrowseProcess_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "程序 (*.exe)|*.exe"
+            };
+            if (dlg.ShowDialog(this) == true)
+            {
+                AddProcess(System.IO.Path.GetFileName(dlg.FileName));
+            }
+        }
+
+        private void CaptureForeground_Click(object sender, RoutedEventArgs e)
+        {
+            var exe = SilenceChecker.GetForegroundProcessExe();
+            if (exe != null)
+            {
+                AddProcess(exe);
+            }
+        }
+
+        private void ChipRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is string name)
+            {
+                Setting.SilentProcesses.Remove(name);
+                ProcessList.Remove(name);
+                SaveSettings();
+            }
+        }
+
+        #endregion
+
+        #region 通用
+
+        // The path to the key where Windows looks for startup applications
+        private readonly RegistryKey _runKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        private const string AppName = "ClickShow";
+
+        private void LoadAutoStartStatus()
+        {
+            try
+            {
+                var existing = _runKey.GetValue(AppName) as string;
+                if (string.IsNullOrEmpty(existing))
+                {
+                    _autoStart = false;
+                }
+                else
+                {
+                    // 旧安装路径已删除时，把自启指向修复为当前程序
+                    var target = existing.Trim('"');
+                    if (!File.Exists(target))
+                    {
+                        var current = Process.GetCurrentProcess().MainModule?.FileName;
+                        if (!string.IsNullOrEmpty(current))
+                        {
+                            _runKey.SetValue(AppName, current);
+                        }
+                    }
+                    _autoStart = true;
+                }
+                OnPropertyChanged(nameof(AutoStart));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("无法加载开机自动启动状态。" + ex.Message);
+            }
+        }
+
+        private void SaveAutoStart()
+        {
+            try
+            {
+                if (_autoStart)
+                {
+                    _runKey.SetValue(AppName, Process.GetCurrentProcess().MainModule?.FileName ?? AppName);
+                }
+                else
+                {
+                    _runKey.DeleteValue(AppName, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("无法保存开机自动启动状态。" + ex.Message);
+            }
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "ClickShow 配置 (*.json)|*.json",
+                FileName = "clickshow-setting.json"
+            };
+            if (dlg.ShowDialog(this) == true)
+            {
+                try
+                {
+                    File.WriteAllText(dlg.FileName, MyJsonConverter.Serialize(Setting));
+                    _notifyIcon.ShowBalloonTip(2000, "ClickShow", "配置已导出：" + dlg.FileName, System.Windows.Forms.ToolTipIcon.Info);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导出失败：" + ex.Message);
+                }
+            }
+        }
+
+        private void Import_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog { Filter = "ClickShow 配置 (*.json)|*.json|旧版配置 (*.setting)|*.setting" };
+            if (dlg.ShowDialog(this) != true)
+            {
+                return;
+            }
+            try
+            {
+                var setting = SettingsStore.ImportFrom(dlg.FileName);
+                Setting = setting;
+                HookSettingEvents(setting);
+                BindSetting();
+                ApplySettings();
+                SaveSettings();
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "配置已导入。", System.Windows.Forms.ToolTipIcon.Info);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("导入失败，文件格式不正确。" + ex.Message);
+            }
+        }
+
+        private void ResetDefault_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("确定恢复全部默认设置吗？静默列表也会清空。", "ClickShow", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+            Setting = new AppSetting();
+            HookSettingEvents(Setting);
+            BindSetting();
+            ApplySettings();
+            SaveSettings();
+        }
+
+        #endregion
+
+        #region 版本更新
+
+        private void CheckUpdate()
+        {
+            string updateUrl = "https://github.com/cuiliang/ClickShow/releases";
+            try
+            {
+                var versionStr = UpdateHttpClient
+                    .GetStringAsync("https://helperservice.getquicker.cn/clickshow/version").Result;
+
+                Version newVersion;
+                if (versionStr.Contains("|"))
+                {
+                    string[] parts = versionStr.Split('|');
+                    newVersion = new Version(parts[0]);
+                    updateUrl = String.IsNullOrEmpty(parts[1]) ? updateUrl : parts[1];
+                }
+                else
+                {
+                    newVersion = new Version(versionStr);
+                }
+
+                NewVersionValue = newVersion;
+
+                // 版本落后了
+                if (newVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                {
+                    if (String.Equals(Setting.LastNotifiedVersion, versionStr))
+                    {
+                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
+                    }
+                    else
+                    {
+                        Setting.LastNotifiedVersion = versionStr;
+                        SaveSettings();
+                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // ignore error
+            }
+        }
+
+        private Version NewVersionValue;
 
         #endregion
 
@@ -477,14 +678,14 @@ namespace ClickShow
         {
             _notifyIcon = new System.Windows.Forms.NotifyIcon();
             using (Stream iconStream = System.Windows.Application
-                .GetResourceStream(new Uri(
-                    $"pack://application:,,,/{Assembly.GetEntryAssembly().GetName().Name};component/clickshow.ico"))
-                .Stream)
+                       .GetResourceStream(new Uri(
+                           $"pack://application:,,,/{Assembly.GetEntryAssembly().GetName().Name};component/clickshow.ico"))
+                       .Stream)
             {
                 _notifyIcon.Icon = new System.Drawing.Icon(iconStream);
             }
 
-            _notifyIcon.BalloonTipText = "ClickShow\n鼠标点击提示器\n点击打开";
+            _notifyIcon.BalloonTipText = "ClickShow\n鼠标点击提示器\n点击打开设置";
             _notifyIcon.Click += NotifyIconOnClick;
             _notifyIcon.Visible = true;
 
@@ -495,13 +696,11 @@ namespace ClickShow
                 this.Close();
             });
             contextMenu.Items.Add(menuItem);
-
             _notifyIcon.ContextMenuStrip = contextMenu;
         }
 
         private void NotifyIconOnClick(object sender, EventArgs e)
         {
-
             this.Show();
             this.Activate();
             this.WindowState = WindowState.Normal;
@@ -509,224 +708,88 @@ namespace ClickShow
 
         #endregion
 
+        #region 窗口事件
 
-        #region 自动启动
-
-        // The path to the key where Windows looks for startup applications
-        RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        private string AppName = "ClickShow";
-        private void LoadAutoStartStatus()
+        private void OnClosing(object sender, CancelEventArgs e)
         {
-            try
+            if (!_forceClose)
             {
-                // Check to see the current state (running at startup or not)
-                if (rkApp.GetValue(AppName) == null)
-                {
-                    // The value doesn't exist, the application is not set to run at startup
-                    ChkStartWithWindows.IsChecked = false;
-                }
-                else
-                {
-                    // The value exists, the application is set to run at startup
-                    ChkStartWithWindows.IsChecked = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("无法加载开机自动启动状态。" + ex.Message);
+                e.Cancel = true;
+                this.Hide();
             }
         }
 
-
-        private void SaveAutoStart()
+        private void OnClosed(object sender, EventArgs e)
         {
-            try
+            SaveSettings();
+            if (_mouseHook != null)
             {
-                if (ChkStartWithWindows.IsChecked == true)
-                {
-                    // Add the value in the registry so that the application runs at startup
-                    rkApp.SetValue(AppName, Process.GetCurrentProcess().MainModule.FileName);
-                }
-                else
-                {
-                    // Remove the value from the registry so that the application doesn't start
-                    rkApp.DeleteValue(AppName, false);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("无法保存开机自动启动状态。" + ex.Message);
+                _mouseHook.MouseMove -= MouseHookOnMouseMove;
+                _mouseHook.MouseDown -= MouseHookOnMouseDown;
+                _mouseHook.MouseUp -= MouseHookOnMouseUp;
+                _mouseHook.Stop();
             }
 
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Visible = false;
+            }
+
+            foreach (var x in _clickIndicators)
+            {
+                x.Close();
+            }
+
+            _hoverDot?.Close();
         }
 
-        /// <summary>
-        /// 点击切换了自动启动选项
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChkStartWithWindows_OnClick(object sender, RoutedEventArgs e)
+        private void OnStateChanged(object sender, EventArgs e)
         {
-            SaveAutoStart();
+            if (WindowState == WindowState.Minimized)
+            {
+                this.Hide();
+            }
         }
-        #endregion
-
-
-        #region Native 调用
 
         public void MoveWindowWrapper(Window window, int X, int Y, int nWidth, int nHeight)
         {
             var handle = new WindowInteropHelper(window).Handle;
-
             WindowHelper.SetWindowPos(handle,
                 (IntPtr)WindowHelper.SpecialWindowHandles.HWND_TOPMOST,
                 X, Y,
                 nWidth, nHeight,
                 WindowHelper.SetWindowPosFlags.SWP_NOACTIVATE
-                );
-
-            //MoveWindow(handle, X, Y, nWidth, nHeight, false);
+            );
         }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-
 
         #endregion
 
-        #region 设置读写
+        #region 设置应用
 
-        /// <summary>
-        /// 配置文件位置
-        /// </summary>
-        /// <returns></returns>
-        private string GetSettingFilePath()
-        {
-            var docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            return Path.Combine(docPath, "ClickShow.setting");
-        }
-
-        /// <summary>
-        /// 读取设置
-        /// </summary>
-        private void LoadSettings()
-        {
-            string settingFilePath = GetSettingFilePath();
-            if (File.Exists(settingFilePath))
-            {
-                try
-                {
-                    var data = File.ReadAllText(settingFilePath);
-                    AppSetting = MyJsonConverter.Deserialize<AppSetting>(data);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("配置文件损坏了，设置已恢复为默认值。" + ex.Message);
-                    AppSetting = new AppSetting();
-
-                    SaveSettings();
-                }
-
-            }
-            else
-            {
-                AppSetting = new AppSetting();
-            }
-
-            // 监听设置变更消息
-            AppSetting.PropertyChanged += OnAppSettingChanged;
-            foreach (var item in AppSetting.MouseButtonSettings)
-            {
-                item.Value.PropertyChanged += OnAppSettingChanged;
-            }
-        }
-
-
-        /// <summary>
-        /// 延迟更新
-        /// </summary>
-        private DebounceDispatcher _settingDebounceDispatcher;
-
-        /// <summary>
-        /// 设置改变后立即应用并保存
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnAppSettingChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (_settingDebounceDispatcher == null)
-            {
-                _settingDebounceDispatcher = new DebounceDispatcher();
-            }
-
-            _settingDebounceDispatcher.Debounce(100, o =>
-            {
-                SaveSettings();
-                ApplySettings();
-            });
-        }
-
-        /// <summary>
-        /// 应用设置
-        /// </summary>
         private void ApplySettings()
         {
-            void ApplySettingsInternal()
+            try
             {
-                UpdateHoverDot();
-
-                foreach (var pair in AppSetting.MouseButtonSettings)
+                var appearance = Setting.ActiveAppearance;
+                foreach (var pair in appearance.MouseButtonSettings)
                 {
                     _buttonBrushes[pair.Key] = pair.Value.Color.ToBrush();
                 }
-            }
-
-            try
-            {
-                ApplySettingsInternal();
+                UpdateHoverDot();
             }
             catch (Exception ex)
             {
-
-                _notifyIcon.ShowBalloonTip(2000,"ClickShow", "应用设置出错，已重置设置。错误：" + ex.Message, ToolTipIcon.Warning);
-
-                //如果遇到了问题，重置设置
-                AppSetting = new AppSetting();
-
-                ApplySettingsInternal();
-
-                SaveSettings();
+                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "应用设置出错，已重置设置。" + ex.Message, System.Windows.Forms.ToolTipIcon.Warning);
             }
-
         }
 
-        /// <summary>
-        /// 保存设置
-        /// </summary>
-        private void SaveSettings()
+        #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            try
-            {
-                File.WriteAllText(GetSettingFilePath(), MyJsonConverter.Serialize(AppSetting));
-            }
-            catch (Exception ex)
-            {
-                _notifyIcon.ShowBalloonTip(2000, "ClickShow", "设置保存出错：" + ex.Message, ToolTipIcon.Warning);
-            }
-            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-#endregion
-
-
-
-        private void BtnSettings_OnClick(object sender, RoutedEventArgs e)
-        {
-            var dlg = new SettingsWindow(AppSetting);
-            dlg.Owner = this;
-
-            dlg.ShowDialog();
-        }
-
     }
 }

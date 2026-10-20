@@ -46,6 +46,36 @@ namespace ClickShow.Utility
 
         private const uint MONITOR_DEFAULTTONEAREST = 2;
 
+        /// <summary>前台窗口句柄（供“抓取前台程序”等功能复用）。</summary>
+        public static IntPtr GetForegroundWindowHandle()
+        {
+            return GetForegroundWindow();
+        }
+
+        /// <summary>前台窗口进程的 exe 名（小写，含 .exe），失败返回 null。</summary>
+        public static string GetForegroundProcessExe()
+        {
+            try
+            {
+                var hwnd = GetForegroundWindow();
+                if (hwnd == IntPtr.Zero)
+                {
+                    return null;
+                }
+                GetWindowThreadProcessId(hwnd, out var pid);
+                if (pid == 0)
+                {
+                    return null;
+                }
+                var name = Process.GetProcessById((int)pid).ProcessName;
+                return string.IsNullOrEmpty(name) ? null : (name + ".exe").ToLowerInvariant();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static bool ShouldSuppress(AppSetting setting)
         {
             if (setting == null || !setting.SilenceEnabled)

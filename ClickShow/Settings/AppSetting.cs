@@ -32,6 +32,12 @@ namespace ClickShow.Settings
         private double _hoverDotSize = 60;
         private string _hoverDotFill = "#60FFFF5A";
 
+        private bool _silenceEnabled = true;
+
+        private bool _fullscreenHide = true;
+
+        private List<string> _silentProcesses = new List<string>();
+
         /// <summary>
         /// 开启波纹特效
         /// </summary>
@@ -102,6 +108,45 @@ namespace ClickShow.Settings
             set
             {
                 _hoverDotFill = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 启用静默功能（全屏/指定程序时隐藏特效）
+        /// </summary>
+        public bool SilenceEnabled
+        {
+            get => _silenceEnabled;
+            set
+            {
+                _silenceEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 前台窗口全屏时隐藏特效
+        /// </summary>
+        public bool FullscreenHide
+        {
+            get => _fullscreenHide;
+            set
+            {
+                _fullscreenHide = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 指定静默的程序（exe 名，前台时始终隐藏特效）
+        /// </summary>
+        public List<string> SilentProcesses
+        {
+            get => _silentProcesses;
+            set
+            {
+                _silentProcesses = value;
                 OnPropertyChanged();
             }
         }

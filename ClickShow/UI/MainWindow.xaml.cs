@@ -391,6 +391,11 @@ namespace ClickShow
         /// </summary>
         private void MouseHookOnMouseDown(object sender, MouseEventArgs e)
         {
+            if (SilenceChecker.ShouldSuppress(AppSetting))
+            {
+                return;
+            }
+
             if (!AppSetting.EnableClickCircle
                 || !AppSetting.MouseButtonSettings[e.Button].IsEnabled)
             {
@@ -416,6 +421,11 @@ namespace ClickShow
         /// </summary>
         private void MouseHookOnMouseUp(object sender, MouseEventArgs e)
         {
+            if (SilenceChecker.ShouldSuppress(AppSetting))
+            {
+                return;
+            }
+
             if (!AppSetting.EnableClickCircle
                 || !AppSetting.MouseButtonSettings[e.Button].IsEnabled)
             {

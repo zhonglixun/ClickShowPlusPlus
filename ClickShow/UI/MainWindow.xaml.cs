@@ -207,6 +207,7 @@ namespace ClickShow
             ProcessList = new ObservableCollection<string>(Setting.SilentProcesses);
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
             SyncAllHexBoxes();
+            RefreshEasingCombo();
             LanguageCombo.ItemsSource = Languages.NativeNames;
             LanguageCombo.DisplayMemberPath = "Value";
             LanguageCombo.SelectedValuePath = "Key";
@@ -227,7 +228,40 @@ namespace ClickShow
             }
             Setting.Language = code;
             App.ApplyLanguage(code);
+            RefreshEasingCombo();
             SaveSettings();
+        }
+
+        private void RefreshEasingCombo()
+        {
+            var items = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("Linear", L("easingLinear")),
+                new KeyValuePair<string, string>("CubicOut", L("easingDecel")),
+                new KeyValuePair<string, string>("ExponentialOut", L("easingExpo")),
+                new KeyValuePair<string, string>("BackOut", L("easingBack")),
+                new KeyValuePair<string, string>("ElasticOut", L("easingElastic"))
+            };
+            EasingCombo.ItemsSource = items;
+            EasingCombo.DisplayMemberPath = "Value";
+            EasingCombo.SelectedValuePath = "Key";
+            if (Editing != null)
+            {
+                EasingCombo.SelectedValue = Editing.RippleEasing;
+            }
+        }
+
+        private void EasingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Editing == null)
+            {
+                return;
+            }
+            var code = EasingCombo.SelectedValue as string;
+            if (code != null && code != Editing.RippleEasing)
+            {
+                Editing.RippleEasing = code;
+            }
         }
 
         private void SaveSettings()
@@ -333,7 +367,7 @@ namespace ClickShow
                 var indicator = GetClickIndicatorWindow(appearance.IndicatorSize);
 
                 Brush brush = _buttonBrushes[button];
-                indicator.Play(brush, isDown, appearance.RippleDurationMs / 1000.0);
+                indicator.Play(brush, isDown, appearance.RippleDurationMs / 1000.0, RippleEasingFactory.Create(appearance.RippleEasing));
 
                 var size = (int)Math.Round(appearance.IndicatorSize * dpi);
                 MoveWindowWrapper(indicator,
@@ -404,6 +438,7 @@ namespace ClickShow
             var duration = new Duration(TimeSpan.FromSeconds(Editing.RippleDurationMs / 1000.0));
             var fade = new DoubleAnimation(0, duration);
             var grow = new DoubleAnimation(1, duration);
+            grow.EasingFunction = RippleEasingFactory.Create(Editing.RippleEasing);
             circle.BeginAnimation(OpacityProperty, fade);
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, grow);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, grow);
@@ -853,7 +888,9 @@ namespace ClickShow
             try
             {
                 var setting = SettingsStore.ImportFrom(dlg.FileName);
+                var keepLanguage = Setting.Language;
                 Setting = setting;
+                Setting.Language = keepLanguage;
                 HookSettingEvents(setting);
                 BindSetting();
                 ApplySettings();
@@ -872,7 +909,9 @@ namespace ClickShow
             {
                 return;
             }
+            var keepLanguage = Setting.Language;
             Setting = new AppSetting();
+            Setting.Language = keepLanguage;
             HookSettingEvents(Setting);
             BindSetting();
             ApplySettings();

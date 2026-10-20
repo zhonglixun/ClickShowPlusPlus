@@ -39,6 +39,7 @@ namespace ClickShow.Settings
 
         private double _indicatorSize = 150;
         private double _rippleDurationMs = 400;
+        private string _rippleEasing = "Linear";
         private double _hoverDotSize = 60;
         private string _hoverDotFill = "#60FFFF5A";
 
@@ -73,6 +74,13 @@ namespace ClickShow.Settings
             set { _rippleDurationMs = value; OnPropertyChanged(); }
         }
 
+        /// <summary>波纹扩散样式（缓动函数代码）。</summary>
+        public string RippleEasing
+        {
+            get => _rippleEasing;
+            set { _rippleEasing = value; OnPropertyChanged(); }
+        }
+
         public double HoverDotSize
         {
             get => _hoverDotSize;
@@ -93,6 +101,7 @@ namespace ClickShow.Settings
                 EnableHoverDot = EnableHoverDot,
                 IndicatorSize = IndicatorSize,
                 RippleDurationMs = RippleDurationMs,
+                RippleEasing = RippleEasing,
                 HoverDotSize = HoverDotSize,
                 HoverDotFill = HoverDotFill,
                 MouseButtonSettings = new Dictionary<MouseButtons, ButtonSetting>()

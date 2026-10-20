@@ -98,6 +98,21 @@
                 </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding RippleDurationMs, StringFormat={}{0:0} ms}" />
             </Grid>
+            <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource easingStyle}" />
+                <ComboBox
+                    x:Name="EasingCombo"
+                    Grid.Column="1"
+                    Width="190"
+                    Margin="12,0,0,0"
+                    FontSize="12"
+                    SelectionChanged="EasingCombo_SelectionChanged"
+                    VerticalContentAlignment="Center" />
+            </Grid>
 
             <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
                 <Grid.ColumnDefinitions>

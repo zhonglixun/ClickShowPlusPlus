@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using ClickShow.Utility;
 
 namespace ClickShow
 {
@@ -37,7 +38,7 @@ namespace ClickShow
             IsIdle = false;
         }
 
-        public void Play(Brush circleBrush, bool isDown, double durationSeconds)
+        public void Play(Brush circleBrush, bool isDown, double durationSeconds, IEasingFunction easing)
         {
             this.LastLiveTime = Environment.TickCount;
             IsIdle = false;
@@ -47,19 +48,19 @@ namespace ClickShow
             CircleScale.ScaleX = CircleScale.ScaleY = StartScale;
 
             var seconds = isDown ? durationSeconds : durationSeconds * UpDurationRatio;
-            var storyboard = BuildStoryboard(seconds);
+            var storyboard = BuildStoryboard(seconds, easing);
             storyboard.Begin(this);
 
             this.Show();
         }
 
         // 每次播放按当前设置构建（点击频率低，无 GC 压力），时长可随设置实时变化
-        private Storyboard BuildStoryboard(double seconds)
+        private Storyboard BuildStoryboard(double seconds, IEasingFunction easing)
         {
             var sb = new Storyboard { FillBehavior = FillBehavior.Stop };
 
-            sb.Children.Add(CreateScaleAnimation("ScaleX", seconds));
-            sb.Children.Add(CreateScaleAnimation("ScaleY", seconds));
+            sb.Children.Add(CreateScaleAnimation("ScaleX", seconds, easing));
+            sb.Children.Add(CreateScaleAnimation("ScaleY", seconds, easing));
 
             var fade = new DoubleAnimation(toValue: 0, new Duration(TimeSpan.FromSeconds(seconds)));
             Timeline.SetDesiredFrameRate(fade, DesiredFrameRate);
@@ -77,10 +78,11 @@ namespace ClickShow
             return sb;
         }
 
-        private DoubleAnimation CreateScaleAnimation(string property, double seconds)
+        private DoubleAnimation CreateScaleAnimation(string property, double seconds, IEasingFunction easing)
         {
             var anim = new DoubleAnimation(toValue: 1, new Duration(TimeSpan.FromSeconds(seconds)));
             Timeline.SetDesiredFrameRate(anim, DesiredFrameRate);
+            anim.EasingFunction = easing;
             Storyboard.SetTargetName(anim, "CircleScale");
             Storyboard.SetTargetProperty(anim, new PropertyPath(property));
             return anim;

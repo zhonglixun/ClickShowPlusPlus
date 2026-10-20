@@ -333,7 +333,7 @@ namespace ClickShow
                 var indicator = GetClickIndicatorWindow(appearance.IndicatorSize);
 
                 Brush brush = _buttonBrushes[button];
-                indicator.Play(brush, isDown);
+                indicator.Play(brush, isDown, appearance.RippleDurationMs / 1000.0);
 
                 var size = (int)Math.Round(appearance.IndicatorSize * dpi);
                 MoveWindowWrapper(indicator,
@@ -401,7 +401,7 @@ namespace ClickShow
             System.Windows.Controls.Canvas.SetLeft(circle, center.X - size / 2);
             System.Windows.Controls.Canvas.SetTop(circle, center.Y - size / 2);
 
-            var duration = new Duration(TimeSpan.FromSeconds(0.45));
+            var duration = new Duration(TimeSpan.FromSeconds(Editing.RippleDurationMs / 1000.0));
             var fade = new DoubleAnimation(0, duration);
             var grow = new DoubleAnimation(1, duration);
             circle.BeginAnimation(OpacityProperty, fade);
@@ -772,6 +772,7 @@ namespace ClickShow
             if (Editing != null)
             {
                 Editing.IndicatorSize = 150;
+                Editing.RippleDurationMs = 400;
             }
         }
 

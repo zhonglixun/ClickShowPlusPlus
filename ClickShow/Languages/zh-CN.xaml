@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">无法保存开机自动启动状态。</sys:String>
     <sys:String x:Key="configCorrupt">配置文件损坏了，设置已恢复为默认值。</sys:String>
     <sys:String x:Key="migrateFail">旧配置迁移失败，已使用默认设置。</sys:String>
+    <sys:String x:Key="rippleDuration">动画时长</sys:String>
 </ResourceDictionary>

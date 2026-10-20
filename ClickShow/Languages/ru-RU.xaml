@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">Не удалось сохранить состояние автозапуска.</sys:String>
     <sys:String x:Key="configCorrupt">Файл настроек повреждён; восстановлены значения по умолчанию.</sys:String>
     <sys:String x:Key="migrateFail">Ошибка миграции старых настроек; используются значения по умолчанию.</sys:String>
+    <sys:String x:Key="rippleDuration">Длительность анимации</sys:String>
 </ResourceDictionary>

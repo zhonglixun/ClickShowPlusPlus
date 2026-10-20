@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">Failed to save startup state.</sys:String>
     <sys:String x:Key="configCorrupt">Settings file is corrupted; defaults restored.</sys:String>
     <sys:String x:Key="migrateFail">Failed to migrate legacy settings; defaults are in use.</sys:String>
+    <sys:String x:Key="rippleDuration">Animation duration</sys:String>
 </ResourceDictionary>

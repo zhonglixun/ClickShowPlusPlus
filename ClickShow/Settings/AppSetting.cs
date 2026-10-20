@@ -38,6 +38,7 @@ namespace ClickShow.Settings
             };
 
         private double _indicatorSize = 150;
+        private double _rippleDurationMs = 400;
         private double _hoverDotSize = 60;
         private string _hoverDotFill = "#60FFFF5A";
 
@@ -65,6 +66,13 @@ namespace ClickShow.Settings
             set { _indicatorSize = value; OnPropertyChanged(); }
         }
 
+        /// <summary>波纹动画时长（毫秒）。</summary>
+        public double RippleDurationMs
+        {
+            get => _rippleDurationMs;
+            set { _rippleDurationMs = value; OnPropertyChanged(); }
+        }
+
         public double HoverDotSize
         {
             get => _hoverDotSize;
@@ -84,6 +92,7 @@ namespace ClickShow.Settings
                 EnableClickCircle = EnableClickCircle,
                 EnableHoverDot = EnableHoverDot,
                 IndicatorSize = IndicatorSize,
+                RippleDurationMs = RippleDurationMs,
                 HoverDotSize = HoverDotSize,
                 HoverDotFill = HoverDotFill,
                 MouseButtonSettings = new Dictionary<MouseButtons, ButtonSetting>()

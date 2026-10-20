@@ -8,6 +8,7 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <NoWarn>$(NoWarn);CA1416;WFAC010</NoWarn>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>

@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">Não foi possível salvar o estado de inicialização.</sys:String>
     <sys:String x:Key="configCorrupt">Arquivo de ajustes corrompido; padrões restaurados.</sys:String>
     <sys:String x:Key="migrateFail">Falha ao migrar configurações antigas; usando padrões.</sys:String>
+    <sys:String x:Key="rippleDuration">Duração da animação</sys:String>
 </ResourceDictionary>

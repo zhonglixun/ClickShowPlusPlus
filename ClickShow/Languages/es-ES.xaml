@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">No se pudo guardar el estado de inicio.</sys:String>
     <sys:String x:Key="configCorrupt">El archivo de ajustes está dañado; se restauraron los valores predeterminados.</sys:String>
     <sys:String x:Key="migrateFail">Error al migrar la configuración antigua; se usan los valores predeterminados.</sys:String>
+    <sys:String x:Key="rippleDuration">Duración de la animación</sys:String>
 </ResourceDictionary>

@@ -78,6 +78,24 @@
                 </Grid>
                 <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding IndicatorSize, StringFormat={}{0:0} px}" />
             </Grid>
+            <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="{DynamicResource rippleDuration}" />
+                <Grid Grid.Column="1" Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.ColumnSpan="2" IsSnapToTickEnabled="True" Maximum="800" Minimum="100" Style="{StaticResource ModernSlider}" TickFrequency="25" Value="{Binding RippleDurationMs}" />
+                    <Rectangle Grid.Column="0" Width="2" Height="12" Margin="0,0,-1,0" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{DynamicResource TextSecondary}" IsHitTestVisible="False" />
+                    <Button Grid.Column="0" Width="12" Height="18" Margin="0,0,-5,0" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Click="IndicatorDefault_Click" Cursor="Hand" ToolTip="{DynamicResource defaultTickTip}" />
+                </Grid>
+                <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="{Binding RippleDurationMs, StringFormat={}{0:0} ms}" />
+            </Grid>
 
             <Grid Margin="0,10,0,0" DataContext="{Binding Editing}">
                 <Grid.ColumnDefinitions>

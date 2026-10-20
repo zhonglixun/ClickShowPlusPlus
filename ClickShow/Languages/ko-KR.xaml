@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">시작 프로그램 상태를 저장할 수 없습니다.</sys:String>
     <sys:String x:Key="configCorrupt">설정 파일이 손상되어 기본값으로 복원되었습니다.</sys:String>
     <sys:String x:Key="migrateFail">이전 설정 마이그레이션 실패, 기본값을 사용합니다.</sys:String>
+    <sys:String x:Key="rippleDuration">애니메이션 길이</sys:String>
 </ResourceDictionary>

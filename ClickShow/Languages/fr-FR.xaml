@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">Impossible d'enregistrer l'état de démarrage.</sys:String>
     <sys:String x:Key="configCorrupt">Le fichier de paramètres est corrompu ; valeurs par défaut restaurées.</sys:String>
     <sys:String x:Key="migrateFail">Échec de la migration des anciens paramètres ; valeurs par défaut utilisées.</sys:String>
+    <sys:String x:Key="rippleDuration">Durée de l'animation</sys:String>
 </ResourceDictionary>

@@ -63,4 +63,5 @@
     <sys:String x:Key="autoStartSaveError">スタートアップ状態を保存できません。</sys:String>
     <sys:String x:Key="configCorrupt">設定ファイルが壊れているため既定値に戻しました。</sys:String>
     <sys:String x:Key="migrateFail">旧設定の移行に失敗、既定値を使用します。</sys:String>
+    <sys:String x:Key="rippleDuration">アニメーションの長さ</sys:String>
 </ResourceDictionary>

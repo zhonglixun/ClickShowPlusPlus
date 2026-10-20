@@ -50,6 +50,7 @@ namespace ClickShow
         private bool _suppressRadioEvents;
         private bool _suppressHexSync;
         private volatile bool _captureArmed;
+        private DateTime _captureDisarmedAt = DateTime.MinValue;
         private static readonly HttpClient UpdateHttpClient = new();
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
@@ -361,22 +362,21 @@ namespace ClickShow
                 Height = size,
                 Stroke = stroke,
                 StrokeThickness = 3,
-                HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
-                VerticalAlignment = System.Windows.VerticalAlignment.Top,
                 RenderTransformOrigin = new System.Windows.Point(0.5, 0.5)
             };
             var scale = new ScaleTransform(0.2, 0.2);
             circle.RenderTransform = scale;
-            circle.Margin = new Thickness(center.X - size / 2, center.Y - size / 2, 0, 0);
+            PreviewCanvas.Children.Add(circle);
+            System.Windows.Controls.Canvas.SetLeft(circle, center.X - size / 2);
+            System.Windows.Controls.Canvas.SetTop(circle, center.Y - size / 2);
 
             var duration = new Duration(TimeSpan.FromSeconds(0.45));
             var fade = new DoubleAnimation(0, duration);
             var grow = new DoubleAnimation(1, duration);
-            PreviewArea.Children.Add(circle);
             circle.BeginAnimation(OpacityProperty, fade);
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, grow);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, grow);
-            fade.Completed += (s, e) => PreviewArea.Children.Remove(circle);
+            fade.Completed += (s, e) => PreviewCanvas.Children.Remove(circle);
         }
 
         /// <summary>色块按钮：打开系统取色对话框修改对应颜色。</summary>
@@ -548,7 +548,15 @@ namespace ClickShow
             {
                 // 待捕捉状态下的下一次点击：抓取该坐标下的程序
                 var targetExe = SilenceChecker.GetProcessExeAtPoint(e.Location.X, e.Location.Y);
-                Dispatcher.InvokeAsync(() => FinishCapture(targetExe));
+                if (targetExe == OwnProcessExe)
+                {
+                    // 点的是本程序窗口：只取消捕捉，并抑制按钮随后的 Click 重新开启
+                    Dispatcher.InvokeAsync(() => DisarmCapture(true));
+                }
+                else
+                {
+                    Dispatcher.InvokeAsync(() => FinishCapture(targetExe));
+                }
                 return;
             }
 
@@ -677,18 +685,33 @@ namespace ClickShow
                 return;
             }
 
+            // 点本窗口取消捕捉后，抑制紧随的按钮 Click 重新进入捕捉
+            if ((DateTime.Now - _captureDisarmedAt).TotalMilliseconds < 200)
+            {
+                return;
+            }
+
             _captureArmed = true;
+            MouseHook.MouseHook.ForceCrossCursor = true;
             Cursor = System.Windows.Input.Cursors.Cross;
             CaptureHint.Visibility = Visibility.Visible;
             CaptureButton.Content = "取消捕捉";
         }
 
         private void DisarmCapture()
+            => DisarmCapture(false);
+
+        private void DisarmCapture(bool markJustDisarmed)
         {
             _captureArmed = false;
+            MouseHook.MouseHook.ForceCrossCursor = false;
             Cursor = null;
             CaptureHint.Visibility = Visibility.Collapsed;
             CaptureButton.Content = "抓取前台";
+            if (markJustDisarmed)
+            {
+                _captureDisarmedAt = DateTime.Now;
+            }
         }
 
         private void FinishCapture(string exe)

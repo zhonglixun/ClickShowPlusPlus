@@ -57,6 +57,11 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Background="#FFFFFF" />
                     <Border Grid.Column="1" Background="#101114" />
+                    <Canvas
+                        x:Name="PreviewCanvas"
+                        Grid.ColumnSpan="2"
+                        Background="Transparent"
+                        ClipToBounds="True" />
                     <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#9AA0AA" Text="浅色场景 · 点击预览" />
                     <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Style="{StaticResource HintText}" Foreground="#6B7280" Text="深色场景 · 点击预览" />
                 </Grid>

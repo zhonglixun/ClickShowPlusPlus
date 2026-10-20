@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -113,18 +113,17 @@ namespace ClickShow
         /// <summary>
         /// 检查版本更新
         /// </summary>
+        private static readonly HttpClient UpdateHttpClient = new();
+
         private void CheckUpdate()
         {
-            // 版本号检查网址
-            string url = "https://helperservice.getquicker.cn/clickshow/version";
             string updateUrl = "https://github.com/cuiliang/ClickShow/releases";
 
             try
             {
-                var client = new WebClient();
-                
                 // 下载版本信息字符串。可能格式：（1）只有版本号。 （2）版本号|网址
-                var versionStr = client.DownloadString(url);
+                var versionStr = UpdateHttpClient
+                    .GetStringAsync("https://helperservice.getquicker.cn/clickshow/version").Result;
 
                 if (versionStr.Contains("|"))
                 {
@@ -137,20 +136,13 @@ namespace ClickShow
                     NewVersion = new Version(versionStr);
                 }
 
-
-              
-
                 // 版本落后了
                 if (NewVersion > Assembly.GetExecutingAssembly().GetName().Version)
                 {
                     // 如果之前已经提示了此版本，则不再提示，不然每次开机都会有一个提示了。
                     if (String.Equals(AppSetting.LastNotifiedVersion, versionStr))
                     {
-                        Dispatcher.InvokeAsync(() =>
-                        {
-                            LblNewVersion.Visibility = Visibility.Visible;
-
-                        });
+                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
                     }
                     else
                     {
@@ -163,7 +155,7 @@ namespace ClickShow
                         }
                         try
                         {
-                            Process.Start(updateUrl);
+                            Process.Start(new ProcessStartInfo(updateUrl) { UseShellExecute = true });
                         }
                         catch
                         {
@@ -176,7 +168,6 @@ namespace ClickShow
             {
                 // ignore error
             }
-
         }
 
         /// <summary>
@@ -234,7 +225,7 @@ namespace ClickShow
         {
             try
             {
-                Process.Start("https://github.com/cuiliang/clickshow");
+                Process.Start(new ProcessStartInfo("https://github.com/cuiliang/clickshow") { UseShellExecute = true });
             }
             catch
             {
@@ -353,26 +344,19 @@ namespace ClickShow
         {
             try
             {
+                // 先查目标显示器 DPI，一次落位，避免跨屏时尺寸/位置错乱
+                var dpi = MonitorHelper.GetDpiScaleForPoint(point.X, point.Y);
                 var indicator = GetClickIndicatorWindow();
 
                 Brush brush = _buttonBrushes[button];
 
                 indicator.Play(brush, isDown);
 
-                var size = (int)(AppSetting.IndicatorSize * indicator.GetDpiScale());
+                var size = (int)Math.Round(AppSetting.IndicatorSize * dpi);
 
                 MoveWindowWrapper(indicator,
                     point.X - (int)(size / 2),
                     point.Y - (int)(size / 2), size, size);
-
-                if (indicator.DpiHasChanged)
-                {
-                    size = (int)(AppSetting.IndicatorSize * indicator.GetDpiScale());
-                    // 
-                    MoveWindowWrapper(indicator,
-                        point.X - (int)(size / 2),
-                        point.Y - (int)(size / 2), size, size);
-                }
             }
             catch
             {
@@ -494,15 +478,15 @@ namespace ClickShow
             _notifyIcon.Click += NotifyIconOnClick;
             _notifyIcon.Visible = true;
 
-            var contextMenu = new System.Windows.Forms.ContextMenu();
-            var menuItem = new System.Windows.Forms.MenuItem("退出(Exit)", (sender, args) =>
+            var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+            var menuItem = new System.Windows.Forms.ToolStripMenuItem("退出(Exit)", null, (sender, args) =>
             {
                 _forceClose = true;
                 this.Close();
             });
-            contextMenu.MenuItems.Add(menuItem);
+            contextMenu.Items.Add(menuItem);
 
-            _notifyIcon.ContextMenu = contextMenu;
+            _notifyIcon.ContextMenuStrip = contextMenu;
         }
 
         private void NotifyIconOnClick(object sender, EventArgs e)

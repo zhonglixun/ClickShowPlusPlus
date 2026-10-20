@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ClickShow
 {
     /// <summary>
-    /// Interaction logic for ClickIndicator.xaml
+    /// 波纹特效窗口。动画驱动缩放与透明度（渲染线程），不触发布局重算。
     /// </summary>
     public partial class ClickIndicator : Window
     {
+        // 高刷屏上限意愿值；实际帧率由显示器刷新率封顶
+        private const int DesiredFrameRate = 120;
+
         private Storyboard _mouseDownStoryBoard;
         private Storyboard _mouseUpStoryBoard;
+
         public int LastLiveTime { get; set; } = Environment.TickCount;
 
         public ClickIndicator(double size)
@@ -35,107 +28,53 @@ namespace ClickShow
             this.Height = size;
 
             SourceInitialized += OnSourceInitialized;
-            DpiChanged += OnDpiChanged;
 
-            RenderOptions.SetBitmapScalingMode(TheCircle, BitmapScalingMode.LowQuality);
-
-            CreateMouseDownStoryBoard();
-            CreateMouseUpStoryBoard();
-            //Play();
+            _mouseDownStoryBoard = CreateStoryboard(0.4);
+            _mouseUpStoryBoard = CreateStoryboard(0.3);
         }
 
-        /// <summary>
-        /// 鼠标抬起特效
-        /// </summary>
-        private void CreateMouseUpStoryBoard()
+        private Storyboard CreateStoryboard(double seconds)
         {
-            // 初始化动画
-            double interval = 0.3;
-            _mouseUpStoryBoard = new Storyboard();
-            _mouseUpStoryBoard.FillBehavior = FillBehavior.Stop;
+            var sb = new Storyboard { FillBehavior = FillBehavior.Stop };
 
+            sb.Children.Add(CreateScaleAnimation("ScaleX", seconds));
+            sb.Children.Add(CreateScaleAnimation("ScaleY", seconds));
 
-            var widthAnimation = new DoubleAnimation(toValue: this.Width / 2, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
-            Storyboard.SetTarget(widthAnimation, TheCircle);
-            _mouseUpStoryBoard.Children.Add(widthAnimation);
+            var fade = new DoubleAnimation(toValue: 0, new Duration(TimeSpan.FromSeconds(seconds)))
+                ;
+            Timeline.SetDesiredFrameRate(fade, DesiredFrameRate);
+            Storyboard.SetTarget(fade, TheCircle);
+            Storyboard.SetTargetProperty(fade, new PropertyPath("Opacity"));
+            sb.Children.Add(fade);
 
-            var heightAnimation = new DoubleAnimation(toValue: this.Height / 2, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(heightAnimation, new PropertyPath("Height"));
-            Storyboard.SetTarget(heightAnimation, TheCircle);
-            _mouseUpStoryBoard.Children.Add(heightAnimation);
-
-            var opacityAnimation = new DoubleAnimation(toValue: 0, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
-            Storyboard.SetTarget(opacityAnimation, TheCircle);
-            _mouseUpStoryBoard.Children.Add(opacityAnimation);
-
-            _mouseUpStoryBoard.Completed += MouseDownStoryBoardOnCompleted;
-            if (_mouseUpStoryBoard.CanFreeze)
+            sb.Completed += (s, e) =>
             {
-                _mouseUpStoryBoard.Freeze();
-            }
-        }
+                CircleScale.ScaleX = CircleScale.ScaleY = StartScale;
+                this.Opacity = 0;
+                IsIdle = true;
+            };
 
-        /// <summary>
-        /// 鼠标按下特效
-        /// </summary>
-        private void CreateMouseDownStoryBoard()
-        {
-            // 初始化动画
-            double interval = 0.4;
-            _mouseDownStoryBoard = new Storyboard();
-            _mouseDownStoryBoard.FillBehavior = FillBehavior.Stop;
-
-
-            var widthAnimation = new DoubleAnimation(toValue: this.Width, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
-            Storyboard.SetTarget(widthAnimation, TheCircle);
-            _mouseDownStoryBoard.Children.Add(widthAnimation);
-
-            var heightAnimation = new DoubleAnimation(toValue: this.Height, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(heightAnimation, new PropertyPath("Height"));
-            Storyboard.SetTarget(heightAnimation, TheCircle);
-            _mouseDownStoryBoard.Children.Add(heightAnimation);
-
-            var opacityAnimation = new DoubleAnimation(toValue: 0, new Duration(TimeSpan.FromSeconds(interval)));
-            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
-            Storyboard.SetTarget(opacityAnimation, TheCircle);
-            _mouseDownStoryBoard.Children.Add(opacityAnimation);
-
-            _mouseDownStoryBoard.Completed += MouseDownStoryBoardOnCompleted;
-            if (_mouseDownStoryBoard.CanFreeze)
+            if (sb.CanFreeze)
             {
-                _mouseDownStoryBoard.Freeze();
-            }
-        }
-
-        private void OnDpiChanged(object sender, DpiChangedEventArgs e)
-        {
-            DpiHasChanged = true;
-            _currentDpi = e.NewDpi;
-        }
-
-        public double GetDpiScale()
-        {
-            if (_currentDpi.DpiScaleX < 0.1)
-            {
-                _currentDpi = VisualTreeHelper.GetDpi(this);
-
-
+                sb.Freeze();
             }
 
-            return _currentDpi.DpiScaleX;
+            return sb;
         }
 
+        private DoubleAnimation CreateScaleAnimation(string property, double seconds)
+        {
+            var anim = new DoubleAnimation(toValue: 1, new Duration(TimeSpan.FromSeconds(seconds)))
+                ;
+            Timeline.SetDesiredFrameRate(anim, DesiredFrameRate);
+            Storyboard.SetTargetName(anim, "CircleScale");
+            Storyboard.SetTargetProperty(anim, new PropertyPath(property));
+            return anim;
+        }
+
+        private const double StartScale = 0.2;
 
         public bool IsIdle { get; private set; } = false;
-
-        private DpiScale _currentDpi;
-
-
-
-        public bool DpiHasChanged { get; private set; } = false;
 
         public void Prepare()
         {
@@ -145,46 +84,20 @@ namespace ClickShow
         public void Play(Brush circleBrush, bool isDown)
         {
             this.LastLiveTime = Environment.TickCount;
-            Opacity = isDown ? 0.95 : 0.7;
-
-            // 抬起特效
-
-
-            TheCircle.Stroke = circleBrush;
-
             IsIdle = false;
 
-            if (isDown)
-            {
-                TheCircle.Width = this.Width * 0.2;
-                TheCircle.Height = this.Height * 0.2;
-                _mouseDownStoryBoard.Begin();
-            }
-            else
-            {
-                _mouseUpStoryBoard.Begin();
-            }
+            TheCircle.Stroke = circleBrush;
+            this.Opacity = isDown ? 0.95 : 0.7;
+            CircleScale.ScaleX = CircleScale.ScaleY = StartScale;
 
+            (isDown ? _mouseDownStoryBoard : _mouseUpStoryBoard).Begin(this);
 
             this.Show();
         }
 
-
-
         private void OnSourceInitialized(object sender, EventArgs e)
         {
             WindowHelper.SetWindowExTransparent(new WindowInteropHelper(this).Handle);
-        }
-
-        private void MouseDownStoryBoardOnCompleted(object sender, EventArgs e)
-        {
-
-            TheCircle.Width = 0;
-            TheCircle.Height = 0;
-            this.Opacity = 0;
-
-            IsIdle = true;
-            DpiHasChanged = false;
         }
     }
 }

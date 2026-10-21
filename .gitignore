@@ -164,6 +164,7 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
+publish-fd/
 
 # Publish Web Output
 *.[Pp]ublish.xml

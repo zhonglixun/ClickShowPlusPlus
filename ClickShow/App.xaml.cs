@@ -42,7 +42,9 @@ namespace ClickShow
                     Dispatcher.Invoke(() => (MainWindow as MainWindow)?.ShowSettingsWindow());
                 }
             });
-            MainWindow = new MainWindow();
+            var mainWindow = new MainWindow();
+            mainWindow.StartBackend();
+            MainWindow = mainWindow;
         }
 
         private Mutex _instanceMutex;

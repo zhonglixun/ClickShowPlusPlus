@@ -46,11 +46,15 @@ Windows 10 1809+ ou Windows 11 (x64). Runtime incluído — **não precisa insta
 
 ## Instalação
 
+**Escolha a versão**: `ClickShow-Setup-2.0.0.exe` inclui o runtime .NET (~63 MB) e funciona em qualquer Windows 10/11; `ClickShow-Setup-2.0.0-lite.exe` tem apenas ~2 MB, mas **requer o .NET 8 Desktop Runtime (x64)** — sem ele o aplicativo não inicia (o instalador detecta e oferece o download). Na dúvida, use a completa.
+
+Há também dois portáteis: `ClickShowPlusPlus-Portable-2.0.0.zip` (completo, ~63 MB) e `ClickShowPlusPlus-Portable-2.0.0-lite.zip` (Lite, ~0,6 MB, mesmo requisito).
+
 1. Baixe o ClickShow-Setup-2.0.0.exe na página de Releases deste repositório;
 2. Execute o assistente: caminho de instalação personalizado (a raiz de uma unidade recebe uma pasta automaticamente); atalhos opcionais na área de trabalho e no menu iniciar;
 3. Se houver uma versão antiga em execução, o instalador pedirá para encerrá-la.
 
-Versão portátil: baixe o ClickShow-2.0.0-portable.zip, descompacte e execute — sem instalação; as configurações ficam em %APPDATA%/ClickShow.
+Versão portátil: baixe o ClickShowPlusPlus-Portable-2.0.0.zip, descompacte e execute — sem instalação; as configurações ficam em %APPDATA%/ClickShow.
 
 ## Atualizar da 1.x
 

@@ -4,8 +4,16 @@
 
 ## 下载
 
-- `ClickShow-Setup-2.0.0.exe` — 安装版：自定义安装路径、桌面/开始菜单快捷方式可选、覆盖升级保留配置
-- `ClickShowPlusPlus-Portable-2.0.0.zip` — 便携版：解压即用，无需安装
+**先选版本**：不确定就选前两个完整版。
+
+| 文件 | 大小 | 运行环境 |
+|---|---|---|
+| `ClickShow-Setup-2.0.0.exe` | 约 63 MB | 自带 .NET 运行时，装上就能用 |
+| `ClickShowPlusPlus-Portable-2.0.0.zip` | 约 63 MB | 同上，解压即用 |
+| `ClickShow-Setup-2.0.0-lite.exe` | 约 2 MB | **需要 .NET 8 桌面运行时（x64）** |
+| `ClickShowPlusPlus-Portable-2.0.0-lite.zip` | 约 0.2 MB | **需要 .NET 8 桌面运行时（x64）** |
+
+lite 版不打包运行时；缺少桌面运行时打不开，安装器会先检测并给出下载地址。装过 .NET SDK 的机器通常已包含。
 
 ## 功能
 
@@ -30,12 +38,20 @@ Windows 10 1809+ 或 Windows 11（x64），自包含运行时，无需安装 .NE
 
 ```
 ClickShow-Setup-2.0.0.exe
-852C435CCFD23411338B36F1C2E128332B1736411438FBDDFC053E77CFA9FA53
+547DA20BDAEF416F0ABBB4A8808BA7E9B6081D06C3F047040844C878CEA9F739
 
 ClickShowPlusPlus-Portable-2.0.0.zip
 65E5CA89119DD19D50EDE0D69A1666CC955936779D7BD9B5EAFA62FFEF46016C
+
+ClickShow-Setup-2.0.0-lite.exe
+9663185DB4D4822B41D168C4D58C35A148168993036F6E53BC539A64C206580D
+
+ClickShowPlusPlus-Portable-2.0.0-lite.zip
+92D9E6C88FF42FCF9840A87C95D0678533BD55109F719514596318FD744425D0
 ```
 
 ---
 
-Windows-only click ripple toy: a colored ripple spreads at the cursor on every click. Independent colors for five buttons, 8 color presets, adjustable duration and 5 easing styles, light/dark profiles that follow the system theme, fullscreen and per-program silence, 10 UI languages. Requires Windows 10 1809+ / Windows 11 (x64); the runtime is bundled.
+Windows-only click ripple toy: a colored ripple spreads at the cursor on every click. Independent colors for five buttons, 8 color presets, adjustable duration and 5 easing styles, light/dark profiles that follow the system theme, fullscreen and per-program silence, 10 UI languages. Requires Windows 10 1809+ / Windows 11 (x64).
+
+Two builds: the full packages (~63 MB) bundle the .NET runtime and work anywhere; the `-lite` packages (~2 MB / 0.2 MB) require the .NET 8 Desktop Runtime (x64) and will not start without it — the installer checks and offers the download.

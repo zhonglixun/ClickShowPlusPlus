@@ -46,11 +46,15 @@ Windows 10 1809+ または Windows 11（x64）。ランタイム同梱のため 
 
 ## インストール
 
+**バージョン選択**：`ClickShow-Setup-2.0.0.exe` は .NET ランタイム同梱（約 63MB）で、Windows 10/11 ならそのまま動作します。`ClickShow-Setup-2.0.0-lite.exe` は約 2MB ですが **.NET 8 デスクトップ ランタイム（x64）が必須**で、未導入だと起動できません（インストーラーが検出し、ダウンロード先を案内します）。迷ったら完全版を選んでください。
+
+ポータブル版も 2 種類：`ClickShowPlusPlus-Portable-2.0.0.zip`（完全版・約 63MB）と `ClickShowPlusPlus-Portable-2.0.0-lite.zip`（Lite・約 0.6MB、同じくランタイムが必要）。
+
 1. 本リポジトリの Releases ページから ClickShow-Setup-2.0.0.exe をダウンロード；
 2. ウィザードに従ってインストール：カスタムパス対応（ドライブ直選択時は自動でフォルダーを追加）。デスクトップ / スタートメニューのショートカットは選択可；
 3. 旧バージョンが起動中の場合、終了を促すダイアログが表示されます。
 
-ポータブル版：ClickShow-2.0.0-portable.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
+ポータブル版：ClickShowPlusPlus-Portable-2.0.0.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
 
 ## 1.x からのアップグレード
 

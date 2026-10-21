@@ -46,11 +46,15 @@ Windows 10 1809+ 또는 Windows 11(x64). 런타임 포함으로 **.NET 설치 �
 
 ## 설치
 
+**버전 선택**: `ClickShow-Setup-2.0.0.exe`는 .NET 런타임을 포함(약 63MB)해 Windows 10/11에서 바로 실행됩니다. `ClickShow-Setup-2.0.0-lite.exe`는 약 2MB이지만 **.NET 8 데스크톱 런타임(x64)이 반드시 필요**하며, 없으면 실행되지 않습니다(설치 프로그램이 감지해 다운로드 안내). 확실하지 않으면 전체 버전을 선택하세요.
+
+포터블도 두 가지: `ClickShowPlusPlus-Portable-2.0.0.zip`(전체, 약 63MB)과 `ClickShowPlusPlus-Portable-2.0.0-lite.zip`(Lite, 약 0.6MB, 동일하게 런타임 필요).
+
 1. 이 저장소의 Releases 페이지에서 ClickShow-Setup-2.0.0.exe 다운로드；
 2. 마법사 실행: 사용자 지정 경로 지원(드라이브 루트 선택 시 자동으로 폴더 추가). 바탕 화면/시작 메뉴 바로 가기는 선택 사항；
 3. 이전 버전이 실행 중이면 종료를 안내합니다. 
 
-포터블 버전: ClickShow-2.0.0-portable.zip 다운로드 후 압축 해제하여 바로 사용. 설치 불필요. 설정은 %APPDATA%/ClickShow에 저장. 
+포터블 버전: ClickShowPlusPlus-Portable-2.0.0.zip 다운로드 후 압축 해제하여 바로 사용. 설치 불필요. 설정은 %APPDATA%/ClickShow에 저장. 
 
 ## 1.x에서 업그레이드
 

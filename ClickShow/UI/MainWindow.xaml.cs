@@ -119,7 +119,6 @@ namespace ClickShow
         {
             InitializeComponent();
             DataContext = this;
-            Loaded += OnLoaded;
             SourceInitialized += OnSourceInitialized;
             Closing += OnClosing;
             Closed += OnClosed;
@@ -135,7 +134,8 @@ namespace ClickShow
 
         #region 加载/保存
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        /// <summary>启动后端（配置/托盘/钩子）。窗口保持隐藏，仅托盘常驻。</summary>
+        public void StartBackend()
         {
             LoadSetting();
             LoadAutoStartStatus();
@@ -1065,16 +1065,11 @@ namespace ClickShow
             }
 
             _notifyIcon.BalloonTipText = "ClickShow\n" + L("trayBalloon");
-            _notifyIcon.Click += NotifyIconOnClick;
+            _notifyIcon.MouseClick += NotifyIconOnClick;
             _notifyIcon.Visible = true;
 
             var contextMenu = new System.Windows.Forms.ContextMenuStrip();
-            var openItem = new System.Windows.Forms.ToolStripMenuItem(L("trayOpenSettings"), null, (sender, args) =>
-            {
-                this.Show();
-                this.Activate();
-                this.WindowState = System.Windows.WindowState.Normal;
-            });
+            var openItem = new System.Windows.Forms.ToolStripMenuItem(L("trayOpenSettings"), null, (sender, args) => ShowSettingsWindow());
             var pauseItem = new System.Windows.Forms.ToolStripMenuItem(L("trayPauseRipples"))
             {
                 CheckOnClick = true
@@ -1099,9 +1094,18 @@ namespace ClickShow
 
         private void NotifyIconOnClick(object sender, EventArgs e)
         {
+            if (e is System.Windows.Forms.MouseEventArgs me && me.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                ShowSettingsWindow();
+            }
+        }
+
+        /// <summary>从托盘或第二个实例唤出设置窗口。</summary>
+        public void ShowSettingsWindow()
+        {
             this.Show();
             this.Activate();
-            this.WindowState = WindowState.Normal;
+            this.WindowState = System.Windows.WindowState.Normal;
         }
 
         #endregion

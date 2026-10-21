@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using ClickShow.Utility;
 
@@ -17,8 +18,14 @@ namespace ClickShow
             _instanceMutex = new Mutex(true, "Local\\ClickShow.SingleInstance", out var createdNew);
             if (!createdNew)
             {
-                MessageBox.Show("ClickShow 已经在运行，请先退出已运行的实例。", "ClickShow",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                // 已有实例在运行：通知它显示设置窗口，然后本进程退出
+                try
+                {
+                    EventWaitHandle.OpenExisting("Local\\ClickShow.ShowSettings").Set();
+                }
+                catch (Exception)
+                {
+                }
                 Shutdown();
                 return;
             }
@@ -26,6 +33,16 @@ namespace ClickShow
             ApplyLanguage(Languages.Resolve(SettingsStore.ReadLanguageCode()));
             ApplyTheme(ThemeWatcher.IsLightTheme);
             ThemeWatcher.ThemeChanged += () => Dispatcher.Invoke(() => ApplyTheme(ThemeWatcher.IsLightTheme));
+            // 静默启动：只进托盘不弹窗；托盘左键或第二个实例可唤出设置
+            var showSettings = new EventWaitHandle(false, EventResetMode.AutoReset, "Local\\ClickShow.ShowSettings");
+            Task.Run(() =>
+            {
+                while (showSettings.WaitOne())
+                {
+                    Dispatcher.Invoke(() => (MainWindow as MainWindow)?.ShowSettingsWindow());
+                }
+            });
+            MainWindow = new MainWindow();
         }
 
         private Mutex _instanceMutex;

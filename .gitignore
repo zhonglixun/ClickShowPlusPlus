@@ -337,3 +337,4 @@ ASALocalRun/
 publish/
 publish-log.txt
 installer/Output/
+release-assets/

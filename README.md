@@ -1,8 +1,8 @@
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 简体中文 | [English](README.en-US.md) | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | [Italiano](README.it-IT.md)
 
-鼠标点击波纹美化工具（Windows）。点击鼠标时在光标处扩散一圈彩色波纹，为每次左键、中键、右键、X1、X2 显示不同颜色的反馈。
+系统美化小玩具（Windows）：点击鼠标时在光标处扩散一圈彩色波纹，为每次左键、中键、右键、X1、X2 显示不同颜色的反馈，让每一次点击都有存在感。
 
 > 本项目是 [cuiliang/ClickShow](https://github.com/cuiliang/clickshow) 的现代化重制版（基于 1.4.1），感谢原作者。界面与功能全面重写，仅支持 Windows 10/11。
 

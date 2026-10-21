@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | **Русский** | [Italiano](README.it-IT.md)
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Инструмент украшения кликов мыши для Windows. Каждый клик — левый, средний, правый, X1 и X2 — раскладывает цветную волну прямо у курсора.
 

@@ -1,6 +1,6 @@
 [简体中文](README.md) | **English** | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | [Italiano](README.it-IT.md)
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Mouse-click ripple beautifier for Windows. Every left, middle, right, X1 and X2 click spreads a colored ripple right at the cursor.
 

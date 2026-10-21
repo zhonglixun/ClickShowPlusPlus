@@ -55,6 +55,7 @@ namespace ClickShow
         private int _lastHoverX = int.MinValue;
         private int _lastHoverY = int.MinValue;
         private static readonly HttpClient UpdateHttpClient = new();
+        private const string ReleasesPageUrl = "https://github.com/zhonglixun/ClickShow/releases";
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
         private readonly IDictionary<MouseButtons, Brush> _buttonBrushes =
@@ -139,8 +140,8 @@ namespace ClickShow
         {
             LoadSetting();
             LoadAutoStartStatus();
-            Title = $"ClickShow {L("settingsTitle")} {Assembly.GetExecutingAssembly().GetName().Version}";
-            VersionText.Text = $"ClickShow v{Assembly.GetExecutingAssembly().GetName().Version.ToString(2)}";
+            Title = $"ClickShow++ {L("settingsTitle")} {Assembly.GetExecutingAssembly().GetName().Version}";
+            VersionText.Text = $"ClickShow++ v{Assembly.GetExecutingAssembly().GetName().Version.ToString(2)}";
             ApplySettings();
 
             _mouseHook = new MouseHook.MouseHook();
@@ -1006,27 +1007,23 @@ namespace ClickShow
 
         private void CheckUpdate()
         {
-            string updateUrl = "https://github.com/cuiliang/ClickShow/releases";
+            string updateUrl = "https://github.com/zhonglixun/ClickShow/releases/latest";
             try
             {
-                var versionStr = UpdateHttpClient
-                    .GetStringAsync("https://helperservice.getquicker.cn/clickshow/version").Result;
+                // 没有自有服务器：直接读本仓库的最新 GitHub Release（未登录 60 次/小时，每次启动 1 次足够）
+                var json = UpdateHttpClient.GetStringAsync(
+                    "https://api.github.com/repos/zhonglixun/ClickShow/releases/latest").Result;
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                var tag = doc.RootElement.GetProperty("tag_name").GetString() ?? "";
+                updateUrl = doc.RootElement.GetProperty("html_url").GetString() ?? updateUrl;
 
                 Version newVersion;
-                if (versionStr.Contains("|"))
-                {
-                    string[] parts = versionStr.Split('|');
-                    newVersion = new Version(parts[0]);
-                    updateUrl = String.IsNullOrEmpty(parts[1]) ? updateUrl : parts[1];
-                }
-                else
-                {
-                    newVersion = new Version(versionStr);
-                }
+                newVersion = new Version(tag.TrimStart('v', 'V'));
 
                 NewVersionValue = newVersion;
 
                 // 版本落后了
+                var versionStr = tag;
                 if (newVersion > Assembly.GetExecutingAssembly().GetName().Version)
                 {
                     if (String.Equals(Setting.LastNotifiedVersion, versionStr))
@@ -1047,6 +1044,18 @@ namespace ClickShow
             }
         }
 
+        /// <summary>点击“已有新版本”跳转到本仓库的 Releases 页面。</summary>
+        private void LblNewVersion_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(ReleasesPageUrl) { UseShellExecute = true });
+            }
+            catch
+            {
+            }
+        }
+
         private Version NewVersionValue;
 
         #endregion
@@ -1064,7 +1073,7 @@ namespace ClickShow
                 _notifyIcon.Icon = new System.Drawing.Icon(iconStream);
             }
 
-            _notifyIcon.BalloonTipText = "ClickShow\n" + L("trayBalloon");
+            _notifyIcon.BalloonTipText = "ClickShow++\n" + L("trayBalloon");
             _notifyIcon.MouseClick += NotifyIconOnClick;
             _notifyIcon.Visible = true;
 

@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | [日本語](README.ja-JP.md) | **한국어** | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | [Italiano](README.it-IT.md)
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Windows용 마우스 클릭 물결 미화 도구. 왼쪽/가운데/오른쪽/X1/X2 클릭마다 커서 위치에 색상이 다른 물결을 표시합니다.
 

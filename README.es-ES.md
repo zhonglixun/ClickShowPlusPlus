@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | **Español** | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | [Italiano](README.it-IT.md)
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Embellecedor de clics del ratón para Windows. Cada clic izquierdo, central, derecho, X1 y X2 extiende una onda de color junto al cursor.
 

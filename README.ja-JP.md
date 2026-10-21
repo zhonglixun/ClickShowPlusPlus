@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | **日本語** | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | [Italiano](README.it-IT.md)
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Windows 用マウスクリック波紋ツール。左・中・右・X1・X2 の各クリックごとに、カーソル位置へ色の違う波紋を表示します。
 

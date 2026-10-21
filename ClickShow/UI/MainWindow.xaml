@@ -271,7 +271,7 @@
             </WrapPanel>
             <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
                 <TextBlock x:Name="VersionText" Style="{StaticResource HintText}" Text="ClickShow" />
-                <TextBlock x:Name="LblNewVersion" Margin="12,0,0,0" FontWeight="Bold" Foreground="{DynamicResource Danger}" Style="{StaticResource HintText}" Text="{DynamicResource updateAvailable}" Visibility="Collapsed" />
+                <TextBlock x:Name="LblNewVersion" Margin="12,0,0,0" FontWeight="Bold" Cursor="Hand" Foreground="{DynamicResource Danger}" MouseLeftButtonUp="LblNewVersion_Click" Style="{StaticResource HintText}" Text="{DynamicResource updateAvailable}" TextDecorations="Underline" Visibility="Collapsed" />
             </StackPanel>
 
         </StackPanel>

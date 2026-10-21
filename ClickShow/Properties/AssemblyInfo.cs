@@ -2,10 +2,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-[assembly: AssemblyTitle("ClickShow")]
-[assembly: AssemblyDescription("Show Mouse Clicks.")]
+[assembly: AssemblyTitle("ClickShow++")]
+[assembly: AssemblyDescription("系统美化小玩具：鼠标点击波纹")]
 [assembly: AssemblyCompany("https://github.com/cuiliang")]
-[assembly: AssemblyProduct("ClickShow")]
+[assembly: AssemblyProduct("ClickShow++")]
 [assembly: AssemblyCopyright("Copyright © 2021 By CuiLiang")]
 [assembly: ComVisible(false)]
 

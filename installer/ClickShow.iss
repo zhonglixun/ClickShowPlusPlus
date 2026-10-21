@@ -1,5 +1,5 @@
 ; ClickShow 2.0.0 安装包脚本
-#define MyAppName "ClickShow"
+#define MyAppName "ClickShow++"
 #define MyAppVersion "2.0.0"
 #define MyAppExeName "ClickShow.exe"
 

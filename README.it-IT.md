@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | **Italiano**
 
-# ClickShow 2.0
+# ClickShow++ 2.0
 
 Abbellitore di clic del mouse per Windows. Ogni clic sinistro, centrale, destro, X1 e X2 diffonde un'onda colorata proprio accanto al cursore.
 

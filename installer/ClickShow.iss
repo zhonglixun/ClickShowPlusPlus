@@ -152,6 +152,8 @@ function HasDotNet8DesktopRuntime(): Boolean;
 var
   FindRec: TFindRec;
   BaseDir: String;
+  Names: TArrayOfString;
+  I: Integer;
 begin
   Result := False;
   BaseDir := ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App');
@@ -160,6 +162,22 @@ begin
     Result := True;
     FindClose(FindRec);
   end;
+  if Result then
+    Exit;
+  if RegGetSubkeyNames(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall', Names) then
+    for I := 0 to GetArrayLength(Names) - 1 do
+      if Pos('Microsoft Windows Desktop Runtime - 8.', Names[I]) = 1 then
+      begin
+        Result := True;
+        Exit;
+      end;
+  if RegGetSubkeyNames(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', Names) then
+    for I := 0 to GetArrayLength(Names) - 1 do
+      if Pos('Microsoft Windows Desktop Runtime - 8.', Names[I]) = 1 then
+      begin
+        Result := True;
+        Exit;
+      end;
 end;
 #endif
 

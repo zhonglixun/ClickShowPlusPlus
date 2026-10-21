@@ -55,7 +55,7 @@ namespace ClickShow
         private int _lastHoverX = int.MinValue;
         private int _lastHoverY = int.MinValue;
         private static readonly HttpClient UpdateHttpClient = new();
-        private const string ReleasesPageUrl = "https://github.com/zhonglixun/ClickShow/releases";
+        private const string ReleasesPageUrl = "https://github.com/zhonglixun/ClickShowPlusPlus/releases";
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
 
         private readonly IDictionary<MouseButtons, Brush> _buttonBrushes =
@@ -1007,12 +1007,12 @@ namespace ClickShow
 
         private void CheckUpdate()
         {
-            string updateUrl = "https://github.com/zhonglixun/ClickShow/releases/latest";
+            string updateUrl = "https://github.com/zhonglixun/ClickShowPlusPlus/releases/latest";
             try
             {
                 // 没有自有服务器：直接读本仓库的最新 GitHub Release（未登录 60 次/小时，每次启动 1 次足够）
                 var json = UpdateHttpClient.GetStringAsync(
-                    "https://api.github.com/repos/zhonglixun/ClickShow/releases/latest").Result;
+                    "https://api.github.com/repos/zhonglixun/ClickShowPlusPlus/releases/latest").Result;
                 using var doc = System.Text.Json.JsonDocument.Parse(json);
                 var tag = doc.RootElement.GetProperty("tag_name").GetString() ?? "";
                 updateUrl = doc.RootElement.GetProperty("html_url").GetString() ?? updateUrl;

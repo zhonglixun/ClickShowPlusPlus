@@ -110,26 +110,5 @@ namespace ClickShow.MouseHook
             int nCode,
             IntPtr wParam,
             IntPtr lParam);
-
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern short GetKeyState(int vKey);
-
-
-        [DllImport("user32")]
-        public static extern int GetKeyboardState(byte[] pbKeyState);
-
-
-        [DllImport("user32")]
-        public static extern int ToAscii(
-            int uVirtKey,
-            int uScanCode,
-            byte[] lpbKeyState,
-            byte[] lpwTransKey,
-            int fuState);
-
-
-        [DllImport("user32.dll")]
-        public static extern long GetClipboardSequenceNumber();
     }
 }

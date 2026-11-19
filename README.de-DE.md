@@ -46,15 +46,15 @@ Windows 10 1809+ oder Windows 11 (x64). Laufzeit integriert — **keine .NET-Ins
 
 ## Installation
 
-**Version wählen**: `ClickShow-Setup-2.1.1.exe` enthält die .NET-Laufzeit (~63 MB) und läuft unter jedem Windows 10/11; `ClickShow-Setup-2.1.1-lite.exe` ist nur ~2 MB groß, **benötigt aber die .NET 8 Desktop Runtime (x64)** – ohne sie startet die App nicht (das Setup erkennt das und bietet den Download an). Im Zweifel die vollständige Version nehmen.
+**Version wählen**: `ClickShow-Setup-2.1.2.exe` enthält die .NET-Laufzeit (~63 MB) und läuft unter jedem Windows 10/11; `ClickShow-Setup-2.1.2-lite.exe` ist nur ~2 MB groß, **benötigt aber die .NET 8 Desktop Runtime (x64)** – ohne sie startet die App nicht (das Setup erkennt das und bietet den Download an). Im Zweifel die vollständige Version nehmen.
 
-Portable gibt es ebenfalls in zwei Varianten: `ClickShowPlusPlus-Portable-2.1.1.zip` (vollständig, ~63 MB) und `ClickShowPlusPlus-Portable-2.1.1-lite.zip` (Lite, ~0,6 MB, gleiche Voraussetzung).
+Portable gibt es ebenfalls in zwei Varianten: `ClickShowPlusPlus-Portable-2.1.2.zip` (vollständig, ~63 MB) und `ClickShowPlusPlus-Portable-2.1.2-lite.zip` (Lite, ~0,6 MB, gleiche Voraussetzung).
 
-1. ClickShow-Setup-2.1.1.exe von der Releases-Seite dieses Repositories herunterladen;
+1. ClickShow-Setup-2.1.2.exe von der Releases-Seite dieses Repositories herunterladen;
 2. Assistent ausführen: benutzerdefinierter Installationspfad unterstützt (Wahl eines Laufwerksstammverzeichnisses ergänzt automatisch einen Ordner); Desktop- und Startmenü-Verknüpfungen optional;
 3. Läuft eine ältere Version, bittet das Setup sie zu schließen.
 
-Portable Version: ClickShowPlusPlus-Portable-2.1.1.zip herunterladen, entpacken und starten — keine Installation; Einstellungen liegen in %APPDATA%/ClickShow.
+Portable Version: ClickShowPlusPlus-Portable-2.1.2.zip herunterladen, entpacken und starten — keine Installation; Einstellungen liegen in %APPDATA%/ClickShow.
 
 ## Upgrade von 1.x
 
@@ -77,6 +77,11 @@ Installer: `installer/ClickShow.iss` mit [Inno Setup 6](https://jrsoftware.org/i
 - **Autostart-Eintrag nach der Deinstallation defekt?** Der Deinstaller räumt den Registrierungseintrag automatisch auf.
 
 ## Versionshistorie
+
+### 2.1.2 (2026-11)
+- Verzögertes Nachlaufen des Mauspunkts bei schnellen Bewegungen behoben;
+- Absturz beim Öffnen des Farbwählers behoben; das Hex-Feld wird nicht mehr abgeschnitten;
+- Neue Seitenleisten-Symbole (Aussehen, Stille, Wellen, Punkt); das Punkt-Symbol zeigt die aktuelle Farbe live.
 
 ### 2.1.1 (2026-10)
 - Oberfläche neu geschrieben: Einzelfenster-Einstellungen, helles/dunkles Thema folgt dem System, 10 Oberflächensprachen;

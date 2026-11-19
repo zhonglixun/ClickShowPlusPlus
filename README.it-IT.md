@@ -46,15 +46,15 @@ Windows 10 1809+ o Windows 11 (x64). Runtime incluso — **nessuna installazione
 
 ## Installazione
 
-**Scegli la versione**: `ClickShow-Setup-2.1.1.exe` include il runtime .NET (~63 MB) e funziona su qualsiasi Windows 10/11; `ClickShow-Setup-2.1.1-lite.exe` pesa solo ~2 MB ma **richiede .NET 8 Desktop Runtime (x64)**, altrimenti l'app non si avvia (il programma di installazione lo rileva e propone il download). In dubbio, usa la completa.
+**Scegli la versione**: `ClickShow-Setup-2.1.2.exe` include il runtime .NET (~63 MB) e funziona su qualsiasi Windows 10/11; `ClickShow-Setup-2.1.2-lite.exe` pesa solo ~2 MB ma **richiede .NET 8 Desktop Runtime (x64)**, altrimenti l'app non si avvia (il programma di installazione lo rileva e propone il download). In dubbio, usa la completa.
 
-Anche i portatili sono due: `ClickShowPlusPlus-Portable-2.1.1.zip` (completo, ~63 MB) e `ClickShowPlusPlus-Portable-2.1.1-lite.zip` (Lite, ~0,6 MB, stesso requisito).
+Anche i portatili sono due: `ClickShowPlusPlus-Portable-2.1.2.zip` (completo, ~63 MB) e `ClickShowPlusPlus-Portable-2.1.2-lite.zip` (Lite, ~0,6 MB, stesso requisito).
 
-1. Scarica ClickShow-Setup-2.1.1.exe dalla pagina Releases di questo repository;
+1. Scarica ClickShow-Setup-2.1.2.exe dalla pagina Releases di questo repository;
 2. Esegui la procedura guidata: percorso di installazione personalizzato (la radice di un'unità riceve automaticamente una cartella); scorciatoie opzionali su desktop e menu Start;
 3. Se una versione precedente è in esecuzione, il programma di installazione chiederà di chiuderla.
 
-Versione portatile: scarica ClickShowPlusPlus-Portable-2.1.1.zip, estrai ed esegui — senza installazione; le impostazioni vivono in %APPDATA%/ClickShow.
+Versione portatile: scarica ClickShowPlusPlus-Portable-2.1.2.zip, estrai ed esegui — senza installazione; le impostazioni vivono in %APPDATA%/ClickShow.
 
 ## Aggiornamento dalla 1.x
 
@@ -77,6 +77,11 @@ Programma di installazione: compila `installer/ClickShow.iss` con [Inno Setup 6]
 - **Voce di avvio automatico rotta dopo la disinstallazione?** Il programma di disinstallazione pulisce automaticamente la voce del registro.
 
 ## Cronologia versioni
+
+### 2.1.2 (2026-11)
+- Corretto il ritardo del punto del mouse nei movimenti rapidi;
+- Corretto l'arresto anomalo all'apertura del selettore colore; il campo esadecimale non viene più tagliato;
+- Nuove icone della barra laterale (aspetto, silenzio, onde, punto); quella del punto mostra il colore attuale in tempo reale.
 
 ### 2.1.1 (2026-10)
 - Interfaccia completamente riscritta: impostazioni a finestra singola, temi chiaro/scuro che seguono il sistema, 10 lingue dell'interfaccia;

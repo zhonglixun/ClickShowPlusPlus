@@ -45,15 +45,15 @@ Windows 10 1809+ 或 Windows 11（x64）。自包含运行时，**无需安装 .
 
 ## 安装
 
-**先选版本**：`ClickShow-Setup-2.1.1.exe` 自带 .NET 运行时（约 63MB），Windows 10/11 直接装就能用；`ClickShow-Setup-2.1.1-lite.exe` 只有约 2MB，但**必须先安装 .NET 8 桌面运行时（x64）**，否则打不开——安装器会检测并给出下载地址。不确定就选完整版。
+**先选版本**：`ClickShow-Setup-2.1.2.exe` 自带 .NET 运行时（约 63MB），Windows 10/11 直接装就能用；`ClickShow-Setup-2.1.2-lite.exe` 只有约 2MB，但**必须先安装 .NET 8 桌面运行时（x64）**，否则打不开——安装器会检测并给出下载地址。不确定就选完整版。
 
-便携包同样分两种：`ClickShowPlusPlus-Portable-2.1.1.zip`（完整，约 63MB）和 `ClickShowPlusPlus-Portable-2.1.1-lite.zip`（精简，约 0.6MB，同样需要桌面运行时）。
+便携包同样分两种：`ClickShowPlusPlus-Portable-2.1.2.zip`（完整，约 63MB）和 `ClickShowPlusPlus-Portable-2.1.2-lite.zip`（精简，约 0.6MB，同样需要桌面运行时）。
 
-1. 从本仓库的 Releases 页面下载 ClickShow-Setup-2.1.1.exe；
+1. 从本仓库的 Releases 页面下载 ClickShow-Setup-2.1.2.exe；
 2. 运行安装向导：支持自定义安装路径（选择磁盘根目录时会自动套一层文件夹），桌面与开始菜单快捷方式可选；
 3. 若旧版本正在运行，安装器会提示关闭后继续。
 
-便携版：下载 ClickShowPlusPlus-Portable-2.1.1.zip 解压即用，无需安装；配置同样保存在 %APPDATA%/ClickShow。
+便携版：下载 ClickShowPlusPlus-Portable-2.1.2.zip 解压即用，无需安装；配置同样保存在 %APPDATA%/ClickShow。
 
 ## 从 1.x 升级
 
@@ -76,6 +76,11 @@ dotnet publish ClickShow\ClickShow.csproj -c Release -r win-x64 --self-contained
 - **卸载后自启动失效项？** 卸载器会自动清理开机自启注册表项。
 
 ## 更新历史
+
+### 2.1.2（2026-11）
+- 修复鼠标浮标快速移动时明显拖尾、跟不上的问题；
+- 修复打开取色器即崩溃的问题，十六进制输入框文字不再被裁切；
+- 侧栏图标更新：外观、静默、波纹、浮标改用更直观的图标，浮标图标实时显示当前颜色。
 
 ### 2.1.1（2026-10）
 - 界面全面重写：单窗口设置、明暗主题跟随系统、10 种界面语言；

@@ -89,7 +89,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource hexLabel}" />
-            <TextBox x:Name="HexBox" Grid.Column="1" Height="30" Margin="10,0,0,0" FontFamily="Consolas" FontSize="11.5" Padding="8,5" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
+            <TextBox x:Name="HexBox" Grid.Column="1" MinHeight="30" Margin="10,0,0,0" FontFamily="Consolas" FontSize="11.5" Padding="8,5" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
         </Grid>
 
         <TextBlock Grid.Row="6" Margin="0,12,0,6" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource presetLabel}" />

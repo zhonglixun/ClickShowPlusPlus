@@ -46,15 +46,15 @@ Windows 10 1809+ or Windows 11 (x64). Self-contained runtime — **no .NET insta
 
 ## Install
 
-**Choose a build**: `ClickShow-Setup-2.1.0.exe` bundles the .NET runtime (~63 MB) and works on any Windows 10/11; `ClickShow-Setup-2.1.0-lite.exe` is only ~2 MB but **requires the .NET 8 Desktop Runtime (x64)** — without it the app cannot start (the installer checks and offers the download). Pick the full build if unsure.
+**Choose a build**: `ClickShow-Setup-2.1.1.exe` bundles the .NET runtime (~63 MB) and works on any Windows 10/11; `ClickShow-Setup-2.1.1-lite.exe` is only ~2 MB but **requires the .NET 8 Desktop Runtime (x64)** — without it the app cannot start (the installer checks and offers the download). Pick the full build if unsure.
 
-Portable zips come in both flavours too: `ClickShowPlusPlus-Portable-2.1.0.zip` (full, ~63 MB) and `ClickShowPlusPlus-Portable-2.1.0-lite.zip` (lite, ~0.6 MB, same runtime requirement).
+Portable zips come in both flavours too: `ClickShowPlusPlus-Portable-2.1.1.zip` (full, ~63 MB) and `ClickShowPlusPlus-Portable-2.1.1-lite.zip` (lite, ~0.6 MB, same runtime requirement).
 
-1. Download ClickShow-Setup-2.1.0.exe from the Releases page of this repository;
+1. Download ClickShow-Setup-2.1.1.exe from the Releases page of this repository;
 2. Run the wizard: custom install path supported (choosing a drive root automatically adds a folder); desktop and Start Menu shortcuts are optional;
 3. If an older version is running, the installer will ask to close it first.
 
-Portable: download ClickShowPlusPlus-Portable-2.1.0.zip, unzip and run — no installation needed; settings live in %APPDATA%/ClickShow.
+Portable: download ClickShowPlusPlus-Portable-2.1.1.zip, unzip and run — no installation needed; settings live in %APPDATA%/ClickShow.
 
 ## Upgrading from 1.x
 
@@ -78,7 +78,7 @@ Installer: compile `installer/ClickShow.iss` with [Inno Setup 6](https://jrsoftw
 
 ## Changelog
 
-### 2.1.0 (2026-10)
+### 2.1.1 (2026-10)
 - Fully rewritten UI: single-window settings, system-following light/dark themes, 10 UI languages;
 - Ripple rendering redone: scale-transform animation (full frame rate on high-refresh displays), vector anti-aliasing, adjustable duration and spread styles;
 - 8 color preset themes, independent light & dark profiles;

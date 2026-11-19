@@ -1023,6 +1023,10 @@ namespace ClickShow
 
         private void CheckUpdate()
         {
+            if (TryUpdateFromManifest())
+            {
+                return;
+            }
             try
             {
                 var json = UpdateHttpClient.GetStringAsync(
@@ -1119,6 +1123,74 @@ namespace ClickShow
                 return;
             }
             Task.Run(() => CheckUpdate());
+        }
+
+        /// <summary>优先读取仓库内的静态清单（raw CDN，无 API 配额限制）。</summary>
+        private bool TryUpdateFromManifest()
+        {
+            try
+            {
+                var json = UpdateHttpClient.GetStringAsync(
+                    "https://raw.githubusercontent.com/zhonglixun/ClickShowPlusPlus/main/docs/latest.json").Result;
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                var root = doc.RootElement;
+                var versionText = root.GetProperty("version").GetString() ?? "";
+                var page = root.GetProperty("page").GetString() ?? ReleasesPageUrl;
+                var newVersion = new Version(versionText);
+                var current = Assembly.GetExecutingAssembly().GetName().Version;
+
+                string assetUrl = null, assetName = null, digest = null;
+                long size = 0;
+                if (root.TryGetProperty("assets", out var assets))
+                {
+                    var lite = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).Length < 10L * 1024 * 1024;
+                    foreach (var asset in assets.EnumerateArray())
+                    {
+                        var name = asset.GetProperty("name").GetString() ?? "";
+                        if (!name.Contains("Setup"))
+                        {
+                            continue;
+                        }
+                        var isLite = name.Contains("-lite");
+                        assetUrl = asset.GetProperty("url").GetString();
+                        assetName = name;
+                        size = asset.GetProperty("size").GetInt64();
+                        digest = "sha256:" + asset.GetProperty("sha256").GetString();
+                        if (isLite == lite)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    _updateUrl = page;
+                    _updateAssetUrl = assetUrl;
+                    _updateAssetName = assetName;
+                    _updateAssetDigest = digest;
+                    _updateAssetSize = size;
+                    if (newVersion > current)
+                    {
+                        _updateAvailable = newVersion;
+                        UpdateTitle.Text = string.Format(L("updateFound"), "v" + versionText);
+                        UpdateSub.Text = L("updateAvailable");
+                        UpdateButton.Content = L("updateDownload");
+                    }
+                    else
+                    {
+                        _updateAvailable = null;
+                        UpdateTitle.Text = L("updateLatest");
+                        UpdateSub.Text = "ClickShow++ " + current.ToString(3);
+                        UpdateButton.Content = L("updateCheck");
+                    }
+                });
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private async Task DownloadAndInstallAsync()

@@ -1,0 +1,10 @@
+{
+  "version": "2.1.1",
+  "page": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/tag/v2.1.1",
+  "assets": [
+    { "name": "ClickShow-Setup-2.1.1.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.1/ClickShow-Setup-2.1.1.exe", "sha256": "A71DCE97E15EC2B81289E0FBD6B773BE3F23D8F8FCE451039F1A003FF4BD228C", "size": 65844564 },
+    { "name": "ClickShow-Setup-2.1.1-lite.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.1/ClickShow-Setup-2.1.1-lite.exe", "sha256": "081E45D97245EB9FE8941C6864E163B33496E9C1D4FE3687B4052FD8F00918B4", "size": 2250336 },
+    { "name": "ClickShowPlusPlus-Portable-2.1.1.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.1/ClickShowPlusPlus-Portable-2.1.1.zip", "sha256": "6FB70E7B73056AF8CF2AAC661A51F0D51DE7E8395E87240BF96331B5D7969B31", "size": 66443569 },
+    { "name": "ClickShowPlusPlus-Portable-2.1.1-lite.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.1/ClickShowPlusPlus-Portable-2.1.1-lite.zip", "sha256": "3A38E95FC7233CD8CF3323708DBF0ADF519329D4A100DA4704A81479C595CE75", "size": 158975 }
+  ]
+}

@@ -46,15 +46,15 @@ Windows 10 1809+ または Windows 11（x64）。ランタイム同梱のため 
 
 ## インストール
 
-**バージョン選択**：`ClickShow-Setup-2.1.4.exe` は .NET ランタイム同梱（約 63MB）で、Windows 10/11 ならそのまま動作します。`ClickShow-Setup-2.1.4-lite.exe` は約 2MB ですが **.NET 8 デスクトップ ランタイム（x64）が必須**で、未導入だと起動できません（インストーラーが検出し、ダウンロード先を案内します）。迷ったら完全版を選んでください。
+**バージョン選択**：`ClickShow-Setup-2.1.5.exe` は .NET ランタイム同梱（約 63MB）で、Windows 10/11 ならそのまま動作します。`ClickShow-Setup-2.1.5-lite.exe` は約 2MB ですが **.NET 8 デスクトップ ランタイム（x64）が必須**で、未導入だと起動できません（インストーラーが検出し、ダウンロード先を案内します）。迷ったら完全版を選んでください。
 
-ポータブル版も 2 種類：`ClickShowPlusPlus-Portable-2.1.4.zip`（完全版・約 63MB）と `ClickShowPlusPlus-Portable-2.1.4-lite.zip`（Lite・約 0.6MB、同じくランタイムが必要）。
+ポータブル版も 2 種類：`ClickShowPlusPlus-Portable-2.1.5.zip`（完全版・約 63MB）と `ClickShowPlusPlus-Portable-2.1.5-lite.zip`（Lite・約 0.6MB、同じくランタイムが必要）。
 
-1. 本リポジトリの Releases ページから ClickShow-Setup-2.1.4.exe をダウンロード；
+1. 本リポジトリの Releases ページから ClickShow-Setup-2.1.5.exe をダウンロード；
 2. ウィザードに従ってインストール：カスタムパス対応（ドライブ直選択時は自動でフォルダーを追加）。デスクトップ / スタートメニューのショートカットは選択可；
 3. 旧バージョンが起動中の場合、終了を促すダイアログが表示されます。
 
-ポータブル版：ClickShowPlusPlus-Portable-2.1.4.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
+ポータブル版：ClickShowPlusPlus-Portable-2.1.5.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
 
 ## 1.x からのアップグレード
 
@@ -77,6 +77,10 @@ dotnet publish ClickShow/ClickShow.csproj -c Release -r win-x64 --self-contained
 - **アンインストール後にスタートアップが残る？** アンインストーラーがレジストリを自動削除します。
 
 ## 更新履歴
+
+### 2.1.5（2026-11）
+- テーマプリセットを 8 種類に戻しました（森林・莓果・马卡龙は 2.1 の UI 刷新時に抜けていました）；
+- プリセットやカラーピッカーで色を選ぶと、16 進数の入力欄がすぐ同期します。
 
 ### 2.1.4（2026-11）
 - 表示言語を切り替えると、更新カードのタイトル・状態・ボタンがすぐに切り替わるようになりました；

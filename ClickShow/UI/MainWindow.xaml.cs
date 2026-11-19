@@ -328,6 +328,9 @@ namespace ClickShow
                 { "Candy", PresetCandy },
                 { "Ocean", PresetOcean },
                 { "Sunset", PresetSunset },
+                { "Forest", PresetForest },
+                { "Berry", PresetBerry },
+                { "Macaron", PresetMacaron },
                 { "Custom", PresetCustom }
             };
             if (map.TryGetValue(Editing.RipplePreset ?? "Custom", out var radio))
@@ -360,6 +363,7 @@ namespace ClickShow
                         bs.Color = colors[i];
                     }
                 }
+                SyncAllHexBoxes();
             }
             Editing.RipplePreset = code;
         }
@@ -587,6 +591,7 @@ namespace ClickShow
             {
                 Editing.HoverDotFill = argb;
             }
+            SyncAllHexBoxes();
         }
 
         private static System.Drawing.Color ToDrawingColor(string hex)

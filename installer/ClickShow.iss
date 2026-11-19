@@ -1,6 +1,6 @@
 ; ClickShow++ 安装包脚本（full = 自包含，lite = 需 .NET 8 桌面运行时）
 #define MyAppName "ClickShow++"
-#define MyAppVersion "2.1.2"
+#define MyAppVersion "2.1.3"
 #define MyAppExeName "ClickShow.exe"
 
 #ifndef BuildFlavor

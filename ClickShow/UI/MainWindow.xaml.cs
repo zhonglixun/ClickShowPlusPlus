@@ -1041,7 +1041,7 @@ namespace ClickShow
                 using var doc = System.Text.Json.JsonDocument.Parse(json);
                 var tag = doc.RootElement.GetProperty("tag_name").GetString() ?? "";
                 var url = doc.RootElement.GetProperty("html_url").GetString() ?? ReleasesPageUrl;
-                var match = System.Text.RegularExpressions.Regex.Match(tag, @"d+(?:.d+){1,3}");
+                var match = System.Text.RegularExpressions.Regex.Match(tag, @"\d+(?:\.\d+){1,3}");
                 if (!match.Success)
                 {
                     throw new FormatException("unrecognized version tag: " + tag);
@@ -1208,8 +1208,9 @@ namespace ClickShow
             }
             _isDownloading = true;
             UpdateButton.IsEnabled = false;
-            UpdateProgress.Visibility = Visibility.Visible;
+            UpdateProgressRow.Visibility = Visibility.Visible;
             UpdateProgress.Value = 0;
+            UpdateProgressText.Text = "0%";
 
             var target = Path.Combine(Path.GetTempPath(), _updateAssetName ?? "ClickShow-Setup.exe");
             try
@@ -1219,26 +1220,29 @@ namespace ClickShow
                 var total = response.Content.Headers.ContentLength ?? _updateAssetSize;
 
                 await using var source = await response.Content.ReadAsStreamAsync();
-                await using var destination = File.Create(target);
-                var buffer = new byte[81920];
                 long received = 0;
                 var lastPercent = -1;
-                int count;
-                while ((count = await source.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                // 写完必须先关闭文件句柄，否则后面的校验读不到文件
+                await using (var destination = File.Create(target))
                 {
-                    await destination.WriteAsync(buffer, 0, count);
-                    received += count;
-                    var percent = total > 0 ? (int)(received * 100 / total) : 0;
-                    if (percent != lastPercent)
+                    var buffer = new byte[81920];
+                    int count;
+                    while ((count = await source.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
-                        lastPercent = percent;
-                        var done = received / 1048576.0;
-                        var all = total / 1048576.0;
-                        _ = Dispatcher.InvokeAsync(() =>
+                        await destination.WriteAsync(buffer, 0, count);
+                        received += count;
+                        var percent = total > 0 ? (int)(received * 100 / total) : 0;
+                        if (percent != lastPercent)
                         {
-                            UpdateProgress.Value = percent;
-                            UpdateSub.Text = $"{percent}% · {done:0.0}/{all:0.0} MB";
-                        });
+                            lastPercent = percent;
+                            var done = received / 1048576.0;
+                            var all = total / 1048576.0;
+                            _ = Dispatcher.InvokeAsync(() =>
+                            {
+                                UpdateProgress.Value = percent;
+                                UpdateProgressText.Text = $"{percent}% · {done:0.0}/{all:0.0} MB";
+                            });
+                        }
                     }
                 }
 
@@ -1259,6 +1263,7 @@ namespace ClickShow
 
                 _ = Dispatcher.InvokeAsync(() =>
                 {
+                    UpdateProgressRow.Visibility = Visibility.Collapsed;
                     UpdateSub.Text = L("updateDownloading");
                     try
                     {
@@ -1281,7 +1286,7 @@ namespace ClickShow
                 {
                     UpdateSub.Text = L("updateVerifyFailed");
                     UpdateButton.IsEnabled = true;
-                    UpdateProgress.Visibility = Visibility.Collapsed;
+                    UpdateProgressRow.Visibility = Visibility.Collapsed;
                 });
             }
             catch
@@ -1290,7 +1295,7 @@ namespace ClickShow
                 {
                     UpdateSub.Text = L("updateFailed");
                     UpdateButton.IsEnabled = true;
-                    UpdateProgress.Visibility = Visibility.Collapsed;
+                    UpdateProgressRow.Visibility = Visibility.Collapsed;
                 });
             }
             finally

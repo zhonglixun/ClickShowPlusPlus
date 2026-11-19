@@ -50,6 +50,12 @@ namespace ClickShow.UI
 
         private void UpdatePreview()
         {
+            // XAML 解析阶段 AlphaSlider 的初始值会触发一次 ValueChanged，此时后面的元素尚未创建
+            if (AlphaValue == null || HexBox == null)
+            {
+                return;
+            }
+
             var c = FromHsv(HueSlider.Value, SatSlider.Value / 100, ValSlider.Value / 100);
             _alpha = (byte)Math.Round(AlphaSlider.Value * 2.55);
             var shown = Color.FromArgb(_alpha, c.R, c.G, c.B);

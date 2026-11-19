@@ -79,7 +79,7 @@
                 <ColumnDefinition Width="48" />
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource alphaLabel}" />
-            <Slider x:Name="AlphaSlider" Grid.Column="1" Maximum="100" Minimum="0" Style="{StaticResource ModernSlider}" Value="100" ValueChanged="Slider_ValueChanged" />
+            <Slider x:Name="AlphaSlider" Grid.Column="1" Maximum="100" Minimum="0" Style="{StaticResource ModernSlider}" ValueChanged="Slider_ValueChanged" />
             <TextBlock x:Name="AlphaValue" Grid.Column="2" TextAlignment="Right" VerticalAlignment="Center" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
         </Grid>
 

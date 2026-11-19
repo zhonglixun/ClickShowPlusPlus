@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -63,6 +64,7 @@ namespace ClickShow
         private bool _isDownloading;
         private int _lastHoverX = int.MinValue;
         private int _lastHoverY = int.MinValue;
+        private int _hoverPending;
         private static readonly HttpClient UpdateHttpClient = new();
         private const string ReleasesPageUrl = "https://github.com/zhonglixun/ClickShowPlusPlus/releases";
         private static readonly string OwnProcessExe = (Process.GetCurrentProcess().ProcessName + ".exe").ToLowerInvariant();
@@ -761,23 +763,28 @@ namespace ClickShow
 
         private void MouseHookOnMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Location.X == _lastHoverX && e.Location.Y == _lastHoverY)
+            _lastHoverX = e.Location.X;
+            _lastHoverY = e.Location.Y;
+            // 合并高频移动：同一时刻最多排一个落位任务，避免队列里堆满过期坐标造成浮标拖尾
+            if (Interlocked.Exchange(ref _hoverPending, 1) == 0)
+            {
+                Dispatcher.InvokeAsync(ApplyHoverDotPosition);
+            }
+        }
+
+        private void ApplyHoverDotPosition()
+        {
+            Interlocked.Exchange(ref _hoverPending, 0);
+            var dot = _hoverDot;
+            if (dot == null)
             {
                 return;
             }
-            _lastHoverX = e.Location.X;
-            _lastHoverY = e.Location.Y;
-            var appearance = Setting.ActiveAppearance;
-            if (appearance.EnableHoverDot && _hoverDot != null)
-            {
-                Dispatcher.InvokeAsync(() =>
-                {
-                    var size = (int)(appearance.HoverDotSize * _hoverDot.GetDpiScale());
-                    MoveWindowWrapper(_hoverDot,
-                        e.Location.X - (int)(size / 2),
-                        e.Location.Y - (int)(size / 2), size, size);
-                });
-            }
+
+            var x = _lastHoverX;
+            var y = _lastHoverY;
+            var size = (int)(Setting.ActiveAppearance.HoverDotSize * dot.GetDpiScale());
+            MoveWindowWrapper(dot, x - size / 2, y - size / 2, size, size);
         }
 
         #endregion

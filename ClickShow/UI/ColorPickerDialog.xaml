@@ -1,0 +1,124 @@
+<Window
+    x:Class="ClickShow.UI.ColorPickerDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{DynamicResource colorLabel}"
+    Width="440" Height="470"
+    Background="{DynamicResource Surface}"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" CornerRadius="10" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+            <Border x:Name="Preview" CornerRadius="9">
+                <TextBlock x:Name="PreviewHex" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Consolas" FontSize="13" FontWeight="SemiBold" />
+            </Border>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="76" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource hueLabel}" />
+            <Slider x:Name="HueSlider" Grid.Column="1" Maximum="360" Minimum="0" Style="{StaticResource ModernSlider}" ValueChanged="Slider_ValueChanged">
+                <Slider.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="0" Color="#FF0000" />
+                        <GradientStop Offset="0.17" Color="#FFFF00" />
+                        <GradientStop Offset="0.33" Color="#00FF00" />
+                        <GradientStop Offset="0.5" Color="#00FFFF" />
+                        <GradientStop Offset="0.67" Color="#0000FF" />
+                        <GradientStop Offset="0.83" Color="#FF00FF" />
+                        <GradientStop Offset="1" Color="#FF0000" />
+                    </LinearGradientBrush>
+                </Slider.Background>
+            </Slider>
+            <TextBlock x:Name="HueValue" Grid.Column="2" TextAlignment="Right" VerticalAlignment="Center" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="76" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource satLabel}" />
+            <Slider x:Name="SatSlider" Grid.Column="1" Maximum="100" Minimum="0" Style="{StaticResource ModernSlider}" ValueChanged="Slider_ValueChanged" />
+            <TextBlock x:Name="SatValue" Grid.Column="2" TextAlignment="Right" VerticalAlignment="Center" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+        </Grid>
+
+        <Grid Grid.Row="3" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="76" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource valLabel}" />
+            <Slider x:Name="ValSlider" Grid.Column="1" Maximum="100" Minimum="0" Style="{StaticResource ModernSlider}" ValueChanged="Slider_ValueChanged" />
+            <TextBlock x:Name="ValValue" Grid.Column="2" TextAlignment="Right" VerticalAlignment="Center" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="76" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource alphaLabel}" />
+            <Slider x:Name="AlphaSlider" Grid.Column="1" Maximum="100" Minimum="0" Style="{StaticResource ModernSlider}" Value="100" ValueChanged="Slider_ValueChanged" />
+            <TextBlock x:Name="AlphaValue" Grid.Column="2" TextAlignment="Right" VerticalAlignment="Center" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+        </Grid>
+
+        <Grid Grid.Row="5" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource hexLabel}" />
+            <TextBox x:Name="HexBox" Grid.Column="1" Height="30" Margin="10,0,0,0" FontFamily="Consolas" FontSize="11.5" Padding="8,5" TextChanged="HexBox_TextChanged" VerticalContentAlignment="Center" />
+        </Grid>
+
+        <TextBlock Grid.Row="6" Margin="0,12,0,6" FontSize="11" Foreground="{DynamicResource TextSecondary}" Text="{DynamicResource presetLabel}" />
+
+        <WrapPanel Grid.Row="7" VerticalAlignment="Top">
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF3B82F6" BorderThickness="0" Click="Preset_Click" Tag="#FF3B82F6" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF22C55E" BorderThickness="0" Click="Preset_Click" Tag="#FF22C55E" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFF97316" BorderThickness="0" Click="Preset_Click" Tag="#FFF97316" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF8B5CF6" BorderThickness="0" Click="Preset_Click" Tag="#FF8B5CF6" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFFF2D95" BorderThickness="0" Click="Preset_Click" Tag="#FFFF2D95" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF00E5FF" BorderThickness="0" Click="Preset_Click" Tag="#FF00E5FF" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF39FF14" BorderThickness="0" Click="Preset_Click" Tag="#FF39FF14" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFFFE600" BorderThickness="0" Click="Preset_Click" Tag="#FFFFE600" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF0077B6" BorderThickness="0" Click="Preset_Click" Tag="#FF0077B6" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFE56399" BorderThickness="0" Click="Preset_Click" Tag="#FFE56399" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF4ECDC4" BorderThickness="0" Click="Preset_Click" Tag="#FF4ECDC4" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFFFD166" BorderThickness="0" Click="Preset_Click" Tag="#FFFFD166" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF7C83FD" BorderThickness="0" Click="Preset_Click" Tag="#FF7C83FD" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF9BF6FF" BorderThickness="0" Click="Preset_Click" Tag="#FF9BF6FF" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFB9FBC0" BorderThickness="0" Click="Preset_Click" Tag="#FFB9FBC0" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFCDB4DB" BorderThickness="0" Click="Preset_Click" Tag="#FFCDB4DB" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF9CA3AF" BorderThickness="0" Click="Preset_Click" Tag="#FF9CA3AF" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FF95D5B2" BorderThickness="0" Click="Preset_Click" Tag="#FF95D5B2" />
+            <Button Width="28" Height="28" Margin="0,0,6,6" Background="#FFE76F51" BorderThickness="0" Click="Preset_Click" Tag="#FFE76F51" />
+        </WrapPanel>
+
+        <StackPanel Grid.Row="8" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Click="Cancel_Click" Content="{DynamicResource cancelButton}" Style="{StaticResource GhostButton}" />
+            <Button Margin="8,0,0,0" Click="Ok_Click" Content="{DynamicResource okButton}" Style="{StaticResource PrimaryButton}" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -52,6 +53,14 @@ namespace ClickShow
         private volatile bool _captureArmed;
         private CaptureOverlay _captureOverlay;
         private bool _trayPauseRipples;
+        private System.Windows.Forms.ToolStripMenuItem _pauseMenuItem;
+        private Version _updateAvailable;
+        private string _updateUrl;
+        private string _updateAssetUrl;
+        private string _updateAssetName;
+        private string _updateAssetDigest;
+        private long _updateAssetSize;
+        private bool _isDownloading;
         private int _lastHoverX = int.MinValue;
         private int _lastHoverY = int.MinValue;
         private static readonly HttpClient UpdateHttpClient = new();
@@ -119,6 +128,8 @@ namespace ClickShow
         public MainWindow()
         {
             InitializeComponent();
+            MaxHeight = Math.Max(620, SystemParameters.WorkArea.Height - 40);
+            MaxWidth = Math.Max(900, SystemParameters.WorkArea.Width - 40);
             DataContext = this;
             SourceInitialized += OnSourceInitialized;
             Closing += OnClosing;
@@ -140,8 +151,11 @@ namespace ClickShow
         {
             LoadSetting();
             LoadAutoStartStatus();
-            Title = $"ClickShow++ {L("settingsTitle")} {Assembly.GetExecutingAssembly().GetName().Version}";
-            VersionText.Text = $"ClickShow++ v{Assembly.GetExecutingAssembly().GetName().Version.ToString(2)}";
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            Title = $"ClickShow++ {L("settingsTitle")} {version.ToString(3)}";
+            VersionText.Text = $"v{version.ToString(3)}";
+            VersionPill.Text = "ClickShow++ " + version.ToString(3);
+            SidebarVersion.Text = "v" + version.ToString(3);
             ApplySettings();
 
             _mouseHook = new MouseHook.MouseHook();
@@ -232,12 +246,11 @@ namespace ClickShow
             ProcessList = new ObservableCollection<string>(Setting.SilentProcesses);
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
             SyncAllHexBoxes();
-            RefreshEasingCombo();
-            RefreshPresetCombo();
-            LanguageCombo.ItemsSource = Languages.NativeNames;
-            LanguageCombo.DisplayMemberPath = "Value";
-            LanguageCombo.SelectedValuePath = "Key";
-            LanguageCombo.SelectedValue = Setting.Language;
+            SetEasingSelection();
+            SetPresetSelection();
+            RipplesSwitch.IsChecked = !_trayPauseRipples;
+            LanguageCombo.ItemsSource = Languages.NativeNames.Select(pair => pair.Value).ToList();
+            LanguageCombo.SelectedIndex = Math.Max(0, Languages.NativeNames.FindIndex(pair => pair.Key == Setting.Language));
             OnPropertyChanged(nameof(Setting));
         }
 
@@ -247,81 +260,86 @@ namespace ClickShow
             {
                 return;
             }
-            var code = LanguageCombo.SelectedValue as string;
-            if (code == null || code == Setting.Language)
+            if (LanguageCombo.SelectedIndex < 0 || LanguageCombo.SelectedIndex >= Languages.NativeNames.Count)
+            {
+                return;
+            }
+            var code = Languages.NativeNames[LanguageCombo.SelectedIndex].Key;
+            if (code == Setting.Language)
             {
                 return;
             }
             Setting.Language = code;
             App.ApplyLanguage(code);
-            RefreshEasingCombo();
-            RefreshPresetCombo();
+            SetEasingSelection();
+            SetPresetSelection();
             SaveSettings();
         }
 
-        private void RefreshEasingCombo()
-        {
-            var items = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("Linear", L("easingLinear")),
-                new KeyValuePair<string, string>("CubicOut", L("easingDecel")),
-                new KeyValuePair<string, string>("ExponentialOut", L("easingExpo")),
-                new KeyValuePair<string, string>("BackOut", L("easingBack")),
-                new KeyValuePair<string, string>("ElasticOut", L("easingElastic"))
-            };
-            EasingCombo.ItemsSource = items;
-            EasingCombo.DisplayMemberPath = "Value";
-            EasingCombo.SelectedValuePath = "Key";
-            if (Editing != null)
-            {
-                EasingCombo.SelectedValue = Editing.RippleEasing;
-            }
-        }
-
-        private void EasingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SetEasingSelection()
         {
             if (Editing == null)
             {
                 return;
             }
-            var code = EasingCombo.SelectedValue as string;
-            if (code != null && code != Editing.RippleEasing)
+            var map = new Dictionary<string, RadioButton>
+            {
+                { "Linear", EasingLinear },
+                { "CubicOut", EasingCubic },
+                { "ExponentialOut", EasingExpo },
+                { "BackOut", EasingBack },
+                { "ElasticOut", EasingElastic }
+            };
+            if (map.TryGetValue(Editing.RippleEasing ?? "Linear", out var radio))
+            {
+                radio.IsChecked = true;
+            }
+        }
+
+        private void EasingRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Editing == null || sender is not RadioButton radio || radio.Tag is not string code)
+            {
+                return;
+            }
+            if (Editing.RippleEasing != code)
             {
                 Editing.RippleEasing = code;
             }
         }
 
-        private void RefreshPresetCombo()
-        {
-            var items = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("Custom", L("presetCustom")),
-                new KeyValuePair<string, string>("Classic", L("presetClassic")),
-                new KeyValuePair<string, string>("Neon", L("presetNeon")),
-                new KeyValuePair<string, string>("Candy", L("presetCandy")),
-                new KeyValuePair<string, string>("Ocean", L("presetOcean")),
-                new KeyValuePair<string, string>("Sunset", L("presetSunset")),
-                new KeyValuePair<string, string>("Forest", L("presetForest")),
-                new KeyValuePair<string, string>("Berry", L("presetBerry")),
-                new KeyValuePair<string, string>("Macaron", L("presetMacaron"))
-            };
-            PresetCombo.ItemsSource = items;
-            PresetCombo.DisplayMemberPath = "Value";
-            PresetCombo.SelectedValuePath = "Key";
-            if (Editing != null)
-            {
-                PresetCombo.SelectedValue = Editing.RipplePreset;
-            }
-        }
-
-        private void PresetCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SetPresetSelection()
         {
             if (Editing == null)
             {
                 return;
             }
-            var code = PresetCombo.SelectedValue as string;
-            if (code == null || code == Editing.RipplePreset)
+            var map = new Dictionary<string, RadioButton>
+            {
+                { "Classic", PresetClassic },
+                { "Neon", PresetNeon },
+                { "Candy", PresetCandy },
+                { "Ocean", PresetOcean },
+                { "Sunset", PresetSunset },
+                { "Custom", PresetCustom }
+            };
+            if (map.TryGetValue(Editing.RipplePreset ?? "Custom", out var radio))
+            {
+                radio.IsChecked = true;
+            }
+            else
+            {
+                PresetCustom.IsChecked = true;
+            }
+        }
+
+        private void PresetRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Editing == null || sender is not RadioButton radio || radio.Tag is not string code)
+            {
+                return;
+            }
+            if (code == Editing.RipplePreset)
             {
                 return;
             }
@@ -375,6 +393,8 @@ namespace ClickShow
             _editingKey = (string)((RadioButton)sender).Tag;
             Editing = _editingKey == "Dark" ? Setting.Dark : Setting.Light;
             SyncAllHexBoxes();
+            SetEasingSelection();
+            SetPresetSelection();
         }
 
         #endregion
@@ -545,17 +565,13 @@ namespace ClickShow
                 current = buttonSetting.Color;
             }
 
-            using var dlg = new System.Windows.Forms.ColorDialog
-            {
-                FullOpen = true,
-                Color = ToDrawingColor(current)
-            };
-            if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            var dlg = new ClickShow.UI.ColorPickerDialog(current) { Owner = this };
+            if (dlg.ShowDialog() != true)
             {
                 return;
             }
 
-            var argb = $"#{dlg.Color.A:X2}{dlg.Color.R:X2}{dlg.Color.G:X2}{dlg.Color.B:X2}";
+            var argb = dlg.SelectedColorHex;
             if (buttonSetting != null)
             {
                 buttonSetting.Color = argb;
@@ -1007,56 +1023,202 @@ namespace ClickShow
 
         private void CheckUpdate()
         {
-            string updateUrl = "https://github.com/zhonglixun/ClickShowPlusPlus/releases/latest";
             try
             {
-                // 没有自有服务器：直接读本仓库的最新 GitHub Release（未登录 60 次/小时，每次启动 1 次足够）
                 var json = UpdateHttpClient.GetStringAsync(
                     "https://api.github.com/repos/zhonglixun/ClickShowPlusPlus/releases/latest").Result;
                 using var doc = System.Text.Json.JsonDocument.Parse(json);
                 var tag = doc.RootElement.GetProperty("tag_name").GetString() ?? "";
-                updateUrl = doc.RootElement.GetProperty("html_url").GetString() ?? updateUrl;
-
-                Version newVersion;
-                newVersion = new Version(tag.TrimStart('v', 'V'));
-
-                NewVersionValue = newVersion;
-
-                // 版本落后了
-                var versionStr = tag;
-                if (newVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                var url = doc.RootElement.GetProperty("html_url").GetString() ?? ReleasesPageUrl;
+                var match = System.Text.RegularExpressions.Regex.Match(tag, @"d+(?:.d+){1,3}");
+                if (!match.Success)
                 {
-                    if (String.Equals(Setting.LastNotifiedVersion, versionStr))
+                    throw new FormatException("unrecognized version tag: " + tag);
+                }
+                var newVersion = new Version(match.Value);
+                var current = Assembly.GetExecutingAssembly().GetName().Version;
+
+                string assetUrl = null, assetName = null;
+                string assetDigest = null;
+                long assetSize = 0;
+                if (doc.RootElement.TryGetProperty("assets", out var assets))
+                {
+                    var lite = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).Length < 10L * 1024 * 1024;
+                    foreach (var asset in assets.EnumerateArray())
                     {
-                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
+                        var name = asset.GetProperty("name").GetString() ?? "";
+                        if (!name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || !name.Contains("Setup"))
+                        {
+                            continue;
+                        }
+                        var isLite = name.Contains("-lite");
+                        if (assetUrl == null || isLite == lite)
+                        {
+                            assetUrl = asset.GetProperty("browser_download_url").GetString();
+                            assetName = name;
+                            assetDigest = asset.TryGetProperty("digest", out var digest) ? digest.GetString() : null;
+                            assetSize = asset.GetProperty("size").GetInt64();
+                            if (isLite == lite)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                Dispatcher.InvokeAsync(() =>
+                {
+                    _updateUrl = url;
+                    _updateAssetUrl = assetUrl;
+                    _updateAssetName = assetName;
+                    _updateAssetDigest = assetDigest;
+                    _updateAssetSize = assetSize;
+                    if (newVersion > current)
+                    {
+                        _updateAvailable = newVersion;
+                        UpdateTitle.Text = string.Format(L("updateFound"), tag);
+                        UpdateSub.Text = L("updateAvailable");
+                        UpdateButton.Content = L("updateDownload");
                     }
                     else
                     {
-                        Setting.LastNotifiedVersion = versionStr;
-                        SaveSettings();
-                        Dispatcher.InvokeAsync(() => { LblNewVersion.Visibility = Visibility.Visible; });
+                        _updateAvailable = null;
+                        UpdateTitle.Text = L("updateLatest");
+                        UpdateSub.Text = "ClickShow++ " + current.ToString(3);
+                        UpdateButton.Content = L("updateCheck");
                     }
-                }
+                });
             }
             catch (Exception)
             {
-                // ignore error
+                Dispatcher.InvokeAsync(() =>
+                {
+                    UpdateTitle.Text = L("updateCheck");
+                    UpdateSub.Text = L("checkFailed");
+                    UpdateButton.Content = L("updateCheck");
+                });
             }
         }
 
-        /// <summary>点击“已有新版本”跳转到本仓库的 Releases 页面。</summary>
-        private void LblNewVersion_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void CheckUpdate_Click(object sender, RoutedEventArgs e)
         {
+            if (_updateAvailable != null && !string.IsNullOrEmpty(_updateAssetUrl))
+            {
+                _ = DownloadAndInstallAsync();
+                return;
+            }
+            if (_updateAvailable != null && !string.IsNullOrEmpty(_updateUrl))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(_updateUrl) { UseShellExecute = true });
+                }
+                catch
+                {
+                }
+                return;
+            }
+            Task.Run(() => CheckUpdate());
+        }
+
+        private async Task DownloadAndInstallAsync()
+        {
+            if (_isDownloading)
+            {
+                return;
+            }
+            _isDownloading = true;
+            UpdateButton.IsEnabled = false;
+            UpdateProgress.Visibility = Visibility.Visible;
+            UpdateProgress.Value = 0;
+
+            var target = Path.Combine(Path.GetTempPath(), _updateAssetName ?? "ClickShow-Setup.exe");
             try
             {
-                Process.Start(new ProcessStartInfo(ReleasesPageUrl) { UseShellExecute = true });
+                using var response = await UpdateHttpClient.GetAsync(_updateAssetUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+                var total = response.Content.Headers.ContentLength ?? _updateAssetSize;
+
+                await using var source = await response.Content.ReadAsStreamAsync();
+                await using var destination = File.Create(target);
+                var buffer = new byte[81920];
+                long received = 0;
+                var lastPercent = -1;
+                int count;
+                while ((count = await source.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await destination.WriteAsync(buffer, 0, count);
+                    received += count;
+                    var percent = total > 0 ? (int)(received * 100 / total) : 0;
+                    if (percent != lastPercent)
+                    {
+                        lastPercent = percent;
+                        var done = received / 1048576.0;
+                        var all = total / 1048576.0;
+                        _ = Dispatcher.InvokeAsync(() =>
+                        {
+                            UpdateProgress.Value = percent;
+                            UpdateSub.Text = $"{percent}% · {done:0.0}/{all:0.0} MB";
+                        });
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(_updateAssetDigest))
+                {
+                    var expected = _updateAssetDigest.StartsWith("sha256:")
+                        ? _updateAssetDigest.Substring(7)
+                        : _updateAssetDigest;
+                    using var sha = SHA256.Create();
+                    await using var check = File.OpenRead(target);
+                    var actual = Convert.ToHexString(await sha.ComputeHashAsync(check));
+                    if (!actual.Equals(expected, StringComparison.OrdinalIgnoreCase))
+                    {
+                        File.Delete(target);
+                        throw new InvalidDataException("checksum mismatch");
+                    }
+                }
+
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    UpdateSub.Text = L("updateDownloading");
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+                    }
+                    catch
+                    {
+                        UpdateSub.Text = L("updateFailed");
+                        UpdateButton.IsEnabled = true;
+                        return;
+                    }
+                    // 安装器需要覆盖文件，先退出托盘实例
+                    _forceClose = true;
+                    Close();
+                });
+            }
+            catch (InvalidDataException)
+            {
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    UpdateSub.Text = L("updateVerifyFailed");
+                    UpdateButton.IsEnabled = true;
+                    UpdateProgress.Visibility = Visibility.Collapsed;
+                });
             }
             catch
             {
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    UpdateSub.Text = L("updateFailed");
+                    UpdateButton.IsEnabled = true;
+                    UpdateProgress.Visibility = Visibility.Collapsed;
+                });
+            }
+            finally
+            {
+                _isDownloading = false;
             }
         }
-
-        private Version NewVersionValue;
 
         #endregion
 
@@ -1079,11 +1241,21 @@ namespace ClickShow
 
             var contextMenu = new System.Windows.Forms.ContextMenuStrip();
             var openItem = new System.Windows.Forms.ToolStripMenuItem(L("trayOpenSettings"), null, (sender, args) => ShowSettingsWindow());
-            var pauseItem = new System.Windows.Forms.ToolStripMenuItem(L("trayPauseRipples"))
+            var pauseItem = new System.Windows.Forms.ToolStripMenuItem(L("showRipples"))
             {
-                CheckOnClick = true
+                CheckOnClick = true,
+                Checked = true
             };
-            pauseItem.CheckedChanged += (sender, args) => { _trayPauseRipples = pauseItem.Checked; };
+            _pauseMenuItem = pauseItem;
+            pauseItem.CheckedChanged += (sender, args) =>
+            {
+                var enabled = pauseItem.Checked;
+                _trayPauseRipples = !enabled;
+                if (RipplesSwitch != null && RipplesSwitch.IsChecked != enabled)
+                {
+                    RipplesSwitch.IsChecked = enabled;
+                }
+            };
             contextMenu.Items.Add(openItem);
             contextMenu.Items.Add(pauseItem);
             contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
@@ -1106,6 +1278,44 @@ namespace ClickShow
             if (e is System.Windows.Forms.MouseEventArgs me && me.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 ShowSettingsWindow();
+            }
+        }
+
+        private void RipplesSwitch_Changed(object sender, RoutedEventArgs e)
+        {
+            var enabled = RipplesSwitch.IsChecked == true;
+            _trayPauseRipples = !enabled;
+            if (_pauseMenuItem != null && _pauseMenuItem.Checked != enabled)
+            {
+                _pauseMenuItem.Checked = enabled;
+            }
+        }
+
+        private void Nav_Checked(object sender, RoutedEventArgs e)
+        {
+            if (AppearancePage == null || SilencePage == null || GeneralPage == null)
+            {
+                return;
+            }
+            var tag = (sender as RadioButton)?.Tag as string;
+            AppearancePage.Visibility = tag == "Appearance" ? Visibility.Visible : Visibility.Collapsed;
+            SilencePage.Visibility = tag == "Silence" ? Visibility.Visible : Visibility.Collapsed;
+            GeneralPage.Visibility = tag == "General" ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void OpenRepo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/zhonglixun/ClickShowPlusPlus") { UseShellExecute = true });
+            }
+            catch
+            {
             }
         }
 

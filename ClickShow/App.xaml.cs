@@ -2,7 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using ClickShow.Utility;
+using Microsoft.Win32;
 
 namespace ClickShow
 {
@@ -32,7 +34,11 @@ namespace ClickShow
             // 语言按设置（未设置时按系统语言）解析；槽位 0 = 语言，槽位 1 = 主题
             ApplyLanguage(Languages.Resolve(SettingsStore.ReadLanguageCode()));
             ApplyTheme(ThemeWatcher.IsLightTheme);
-            ThemeWatcher.ThemeChanged += () => Dispatcher.Invoke(() => ApplyTheme(ThemeWatcher.IsLightTheme));
+            ThemeWatcher.ThemeChanged += () => Dispatcher.Invoke(() =>
+            {
+                ApplyTheme(ThemeWatcher.IsLightTheme);
+                ApplySystemAccent(ThemeWatcher.IsLightTheme);
+            });
             // 静默启动：只进托盘不弹窗；托盘左键或第二个实例可唤出设置
             var showSettings = new EventWaitHandle(false, EventResetMode.AutoReset, "Local\\ClickShow.ShowSettings");
             Task.Run(() =>
@@ -82,6 +88,55 @@ namespace ClickShow
             {
                 dicts.Add(theme);
             }
+            ApplySystemAccent(light);
+        }
+
+        /// <summary>跟随 Windows 强调色；读不到时回落到 Windows 11 默认蓝。</summary>
+        private static void ApplySystemAccent(bool light)
+        {
+            var accent = ReadAccentColor(light);
+            var hover = Blend(accent, light ? Colors.Black : Colors.White, 0.14);
+            var soft = Blend(accent, (Current.Resources["Bg"] as SolidColorBrush)?.Color ?? Colors.White, light ? 0.88 : 0.82);
+            var fg = Luminance(accent) > 0.62 ? Colors.Black : Colors.White;
+
+            Current.Resources["Accent"] = Frozen(accent);
+            Current.Resources["AccentHover"] = Frozen(hover);
+            Current.Resources["AccentSoft"] = Frozen(soft);
+            Current.Resources["AccentForeground"] = Frozen(fg);
+        }
+
+        private static Color ReadAccentColor(bool light)
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(@"SoftwareMicrosoftWindowsDWM");
+                if (key?.GetValue("AccentColor") is int v)
+                {
+                    return Color.FromRgb((byte)(v & 0xFF), (byte)((v >> 8) & 0xFF), (byte)((v >> 16) & 0xFF));
+                }
+            }
+            catch
+            {
+            }
+            return light ? Color.FromRgb(0x00, 0x67, 0xC0) : Color.FromRgb(0x4C, 0xC2, 0xFF);
+        }
+
+        private static Color Blend(Color a, Color b, double amountOfB)
+        {
+            byte Mix(byte x, byte y) => (byte)Math.Round(x * (1 - amountOfB) + y * amountOfB);
+            return Color.FromRgb(Mix(a.R, b.R), Mix(a.G, b.G), Mix(a.B, b.B));
+        }
+
+        private static double Luminance(Color c)
+        {
+            return (0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B) / 255.0;
+        }
+
+        private static SolidColorBrush Frozen(Color c)
+        {
+            var b = new SolidColorBrush(c);
+            b.Freeze();
+            return b;
         }
     }
 }

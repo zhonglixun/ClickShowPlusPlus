@@ -10,6 +10,8 @@
     <SolidColorBrush x:Key="Accent" Color="#6B93F5" />
     <SolidColorBrush x:Key="AccentHover" Color="#7FA0F7" />
     <SolidColorBrush x:Key="AccentForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AccentSoft" Color="#1B3448" />
+    <SolidColorBrush x:Key="SidebarBg" Color="#121417" />
     <SolidColorBrush x:Key="ChipBg" Color="#2C2F37" />
     <SolidColorBrush x:Key="ChipBorder" Color="#3B3F49" />
     <SolidColorBrush x:Key="InputBg" Color="#1C1E23" />
@@ -166,6 +168,7 @@
     </Style>
 
     <Style x:Key="ModernSlider" TargetType="Slider">
+        <Setter Property="Background" Value="{DynamicResource SliderTrack}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
@@ -173,7 +176,7 @@
                         <Border
                             Height="4"
                             VerticalAlignment="Center"
-                            Background="{DynamicResource SliderTrack}"
+                            Background="{TemplateBinding Background}"
                             CornerRadius="2" />
                         <Track x:Name="PART_Track">
                             <Track.DecreaseRepeatButton>

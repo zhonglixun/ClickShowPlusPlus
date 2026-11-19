@@ -1,6 +1,6 @@
 [简体中文](README.md) | [English](README.en-US.md) | [日本語](README.ja-JP.md) | [한국어](README.ko-KR.md) | [Español](README.es-ES.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru-RU.md) | **Italiano**
 
-# ClickShow++ 2.0
+# ClickShow++ 2.1
 
 Abbellitore di clic del mouse per Windows. Ogni clic sinistro, centrale, destro, X1 e X2 diffonde un'onda colorata proprio accanto al cursore.
 
@@ -46,15 +46,15 @@ Windows 10 1809+ o Windows 11 (x64). Runtime incluso — **nessuna installazione
 
 ## Installazione
 
-**Scegli la versione**: `ClickShow-Setup-2.0.0.exe` include il runtime .NET (~63 MB) e funziona su qualsiasi Windows 10/11; `ClickShow-Setup-2.0.0-lite.exe` pesa solo ~2 MB ma **richiede .NET 8 Desktop Runtime (x64)**, altrimenti l'app non si avvia (il programma di installazione lo rileva e propone il download). In dubbio, usa la completa.
+**Scegli la versione**: `ClickShow-Setup-2.1.0.exe` include il runtime .NET (~63 MB) e funziona su qualsiasi Windows 10/11; `ClickShow-Setup-2.1.0-lite.exe` pesa solo ~2 MB ma **richiede .NET 8 Desktop Runtime (x64)**, altrimenti l'app non si avvia (il programma di installazione lo rileva e propone il download). In dubbio, usa la completa.
 
-Anche i portatili sono due: `ClickShowPlusPlus-Portable-2.0.0.zip` (completo, ~63 MB) e `ClickShowPlusPlus-Portable-2.0.0-lite.zip` (Lite, ~0,6 MB, stesso requisito).
+Anche i portatili sono due: `ClickShowPlusPlus-Portable-2.1.0.zip` (completo, ~63 MB) e `ClickShowPlusPlus-Portable-2.1.0-lite.zip` (Lite, ~0,6 MB, stesso requisito).
 
-1. Scarica ClickShow-Setup-2.0.0.exe dalla pagina Releases di questo repository;
+1. Scarica ClickShow-Setup-2.1.0.exe dalla pagina Releases di questo repository;
 2. Esegui la procedura guidata: percorso di installazione personalizzato (la radice di un'unità riceve automaticamente una cartella); scorciatoie opzionali su desktop e menu Start;
 3. Se una versione precedente è in esecuzione, il programma di installazione chiederà di chiuderla.
 
-Versione portatile: scarica ClickShowPlusPlus-Portable-2.0.0.zip, estrai ed esegui — senza installazione; le impostazioni vivono in %APPDATA%/ClickShow.
+Versione portatile: scarica ClickShowPlusPlus-Portable-2.1.0.zip, estrai ed esegui — senza installazione; le impostazioni vivono in %APPDATA%/ClickShow.
 
 ## Aggiornamento dalla 1.x
 
@@ -78,7 +78,7 @@ Programma di installazione: compila `installer/ClickShow.iss` con [Inno Setup 6]
 
 ## Cronologia versioni
 
-### 2.0.0 (2026-10)
+### 2.1.0 (2026-10)
 - Interfaccia completamente riscritta: impostazioni a finestra singola, temi chiaro/scuro che seguono il sistema, 10 lingue dell'interfaccia;
 - Rendering dell'onda rifatto: animazione a trasformazione di scala (frequenza frame completa sui display ad alta frequenza), antialiasing vettoriale, durata e stili di diffusione regolabili;
 - 8 temi colore predefiniti, profili chiaro e scuro indipendenti;

@@ -10,6 +10,17 @@
                 <ResourceDictionary Source="Themes/Light.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- 覆盖系统默认的虚线焦点框，改为柔和的圆角描边 -->
+            <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Border Margin="-1" BorderBrush="#883B6EF0" BorderThickness="1.5" CornerRadius="7" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style TargetType="{x:Type ScrollBar}">
                 <Setter Property="Width" Value="8" />
                 <Setter Property="Background" Value="Transparent" />

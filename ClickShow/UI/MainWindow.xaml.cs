@@ -62,6 +62,9 @@ namespace ClickShow
         private string _updateAssetDigest;
         private long _updateAssetSize;
         private bool _isDownloading;
+        // idle / found / downloading / downloadFailed / verifyFailed / latest / checkFailed
+        private string _updateStatus = "idle";
+        private string _updateTag = "";
         private int _lastHoverX = int.MinValue;
         private int _lastHoverY = int.MinValue;
         private int _hoverPending;
@@ -158,6 +161,7 @@ namespace ClickShow
             VersionText.Text = $"v{version.ToString(3)}";
             VersionPill.Text = "ClickShow++ " + version.ToString(3);
             SidebarVersion.Text = "v" + version.ToString(3);
+            ApplyUpdateTexts();
             ApplySettings();
 
             _mouseHook = new MouseHook.MouseHook();
@@ -275,6 +279,7 @@ namespace ClickShow
             App.ApplyLanguage(code);
             SetEasingSelection();
             SetPresetSelection();
+            ApplyUpdateTexts();
             SaveSettings();
         }
 
@@ -1087,26 +1092,23 @@ namespace ClickShow
                     if (newVersion > current)
                     {
                         _updateAvailable = newVersion;
-                        UpdateTitle.Text = string.Format(L("updateFound"), tag);
-                        UpdateSub.Text = L("updateAvailable");
-                        UpdateButton.Content = L("updateDownload");
+                        _updateTag = tag;
+                        _updateStatus = "found";
                     }
                     else
                     {
                         _updateAvailable = null;
-                        UpdateTitle.Text = L("updateLatest");
-                        UpdateSub.Text = "ClickShow++ " + current.ToString(3);
-                        UpdateButton.Content = L("updateCheck");
+                        _updateStatus = "latest";
                     }
+                    ApplyUpdateTexts();
                 });
             }
             catch (Exception)
             {
                 Dispatcher.InvokeAsync(() =>
                 {
-                    UpdateTitle.Text = L("updateCheck");
-                    UpdateSub.Text = L("checkFailed");
-                    UpdateButton.Content = L("updateCheck");
+                    _updateStatus = "checkFailed";
+                    ApplyUpdateTexts();
                 });
             }
         }
@@ -1130,6 +1132,41 @@ namespace ClickShow
                 return;
             }
             Task.Run(() => CheckUpdate());
+        }
+
+        /// <summary>按当前语言重刷更新卡片文字，切换界面语言时立即生效。</summary>
+        private void ApplyUpdateTexts()
+        {
+            var current = Assembly.GetExecutingAssembly().GetName().Version;
+            switch (_updateStatus)
+            {
+                case "found":
+                case "downloading":
+                case "downloadFailed":
+                case "verifyFailed":
+                    UpdateTitle.Text = string.Format(L("updateFound"), _updateTag);
+                    UpdateSub.Text = _updateStatus == "downloading" ? L("updateDownloading")
+                        : _updateStatus == "downloadFailed" ? L("updateFailed")
+                        : _updateStatus == "verifyFailed" ? L("updateVerifyFailed")
+                        : L("updateAvailable");
+                    UpdateButton.Content = L("updateDownload");
+                    break;
+                case "latest":
+                    UpdateTitle.Text = L("updateLatest");
+                    UpdateSub.Text = "ClickShow++ " + current.ToString(3);
+                    UpdateButton.Content = L("updateCheck");
+                    break;
+                case "checkFailed":
+                    UpdateTitle.Text = L("updateCheck");
+                    UpdateSub.Text = L("checkFailed");
+                    UpdateButton.Content = L("updateCheck");
+                    break;
+                default:
+                    UpdateTitle.Text = "ClickShow++ " + current.ToString(3);
+                    UpdateSub.Text = L("updateCheck");
+                    UpdateButton.Content = L("updateCheck");
+                    break;
+            }
         }
 
         /// <summary>优先读取仓库内的静态清单（raw CDN，无 API 配额限制）。</summary>
@@ -1180,17 +1217,15 @@ namespace ClickShow
                     if (newVersion > current)
                     {
                         _updateAvailable = newVersion;
-                        UpdateTitle.Text = string.Format(L("updateFound"), "v" + versionText);
-                        UpdateSub.Text = L("updateAvailable");
-                        UpdateButton.Content = L("updateDownload");
+                        _updateTag = "v" + versionText;
+                        _updateStatus = "found";
                     }
                     else
                     {
                         _updateAvailable = null;
-                        UpdateTitle.Text = L("updateLatest");
-                        UpdateSub.Text = "ClickShow++ " + current.ToString(3);
-                        UpdateButton.Content = L("updateCheck");
+                        _updateStatus = "latest";
                     }
+                    ApplyUpdateTexts();
                 });
                 return true;
             }
@@ -1263,15 +1298,17 @@ namespace ClickShow
 
                 _ = Dispatcher.InvokeAsync(() =>
                 {
+                    _updateStatus = "downloading";
+                    ApplyUpdateTexts();
                     UpdateProgressRow.Visibility = Visibility.Collapsed;
-                    UpdateSub.Text = L("updateDownloading");
                     try
                     {
                         Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
                     }
                     catch
                     {
-                        UpdateSub.Text = L("updateFailed");
+                        _updateStatus = "downloadFailed";
+                        ApplyUpdateTexts();
                         UpdateButton.IsEnabled = true;
                         return;
                     }
@@ -1284,7 +1321,8 @@ namespace ClickShow
             {
                 _ = Dispatcher.InvokeAsync(() =>
                 {
-                    UpdateSub.Text = L("updateVerifyFailed");
+                    _updateStatus = "verifyFailed";
+                    ApplyUpdateTexts();
                     UpdateButton.IsEnabled = true;
                     UpdateProgressRow.Visibility = Visibility.Collapsed;
                 });
@@ -1293,7 +1331,8 @@ namespace ClickShow
             {
                 _ = Dispatcher.InvokeAsync(() =>
                 {
-                    UpdateSub.Text = L("updateFailed");
+                    _updateStatus = "downloadFailed";
+                    ApplyUpdateTexts();
                     UpdateButton.IsEnabled = true;
                     UpdateProgressRow.Visibility = Visibility.Collapsed;
                 });

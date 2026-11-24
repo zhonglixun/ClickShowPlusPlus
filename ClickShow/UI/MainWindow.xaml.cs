@@ -178,7 +178,7 @@ namespace ClickShow
             Task.Run(async () =>
             {
                 await Task.Delay(1000 * 10);
-                CheckUpdate();
+                Dispatcher.Invoke(() => BeginUpdateCheck());
             });
         }
 
@@ -1214,7 +1214,43 @@ namespace ClickShow
                 }
                 return;
             }
-            Task.Run(() => CheckUpdate());
+            BeginUpdateCheck();
+        }
+
+        private bool _checkingUpdate;
+
+        /// <summary>检查更新：按钮转圈并禁用，避免用户以为没反应或重复点击。</summary>
+        private void BeginUpdateCheck()
+        {
+            if (_checkingUpdate)
+            {
+                return;
+            }
+            _checkingUpdate = true;
+            UpdateButton.IsEnabled = false;
+            UpdateSpinner.Visibility = Visibility.Visible;
+            var spin = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(0.9))
+            {
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+            SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, spin);
+            Task.Run(() =>
+            {
+                try
+                {
+                    CheckUpdate();
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        _checkingUpdate = false;
+                        UpdateButton.IsEnabled = true;
+                        SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+                        UpdateSpinner.Visibility = Visibility.Collapsed;
+                    });
+                }
+            });
         }
 
         /// <summary>按当前语言重刷更新卡片文字，切换界面语言时立即生效。</summary>

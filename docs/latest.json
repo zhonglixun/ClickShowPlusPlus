@@ -2,9 +2,9 @@
   "version": "2.1.8",
   "page": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/tag/v2.1.8",
   "assets": [
-    { "name": "ClickShow-Setup-2.1.8.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShow-Setup-2.1.8.exe", "sha256": "0169A6CC3FB490C4562B072F38D1A620E3725ED630FFE6AD282F95C3D145DF3F", "size": 65849567 },
-    { "name": "ClickShow-Setup-2.1.8-lite.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShow-Setup-2.1.8-lite.exe", "sha256": "76213265DE7CBA7F2FF5376D392809C580AB1AF2774459F561B3F8AADD3FA8FA", "size": 2254023 },
-    { "name": "ClickShowPlusPlus-Portable-2.1.8.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShowPlusPlus-Portable-2.1.8.zip", "sha256": "DD95E23781D93A6F85B310ADC9436514CF3A4FC5E839577DD47D269B90F24075", "size": 66447764 },
-    { "name": "ClickShowPlusPlus-Portable-2.1.8-lite.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShowPlusPlus-Portable-2.1.8-lite.zip", "sha256": "F14EDD2E1961413C313FE3CA5D5FD6FA992FADA85FADEFDFBBA246BBFD853C57", "size": 163278 }
+    { "name": "ClickShow-Setup-2.1.8.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShow-Setup-2.1.8.exe", "sha256": "D117AF516055583DFBFF6778297327013A6F79A793266177F2096AAF2EA22C2B", "size": 65847679 },
+    { "name": "ClickShow-Setup-2.1.8-lite.exe", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShow-Setup-2.1.8-lite.exe", "sha256": "E773B5F13A2679BC4207F3B63F872B96D8AFD5CF1DCBD04FFC7E7F8A6B67772F", "size": 2254153 },
+    { "name": "ClickShowPlusPlus-Portable-2.1.8.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShowPlusPlus-Portable-2.1.8.zip", "sha256": "51B4F3B647F8157CCD8B4D56B521D1D2581D6ACBCFD379834BCE300768A1F0ED", "size": 66448124 },
+    { "name": "ClickShowPlusPlus-Portable-2.1.8-lite.zip", "url": "https://github.com/zhonglixun/ClickShowPlusPlus/releases/download/v2.1.8/ClickShowPlusPlus-Portable-2.1.8-lite.zip", "sha256": "82ADF9AE4DDD56C5C8B1C5BBFEC1094F21667B064528A24B2B5F929D6658CA14", "size": 163464 }
   ]
 }

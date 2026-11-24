@@ -60,6 +60,7 @@
             </Style>
 
             <Style TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Padding" Value="9,6" />
                 <Setter Property="FontSize" Value="11.5" />
                 <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
@@ -84,6 +85,7 @@
             </Style>
 
             <Style TargetType="{x:Type ComboBox}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
                 <Setter Property="FontSize" Value="11.5" />
                 <Setter Property="Height" Value="30" />
@@ -122,6 +124,7 @@
             </Style>
 
             <Style TargetType="{x:Type ProgressBar}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Height" Value="4" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -136,6 +139,7 @@
             </Style>
 
             <Style TargetType="{x:Type TextBox}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Background" Value="{DynamicResource InputBg}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
                 <Setter Property="BorderThickness" Value="1" />
@@ -159,6 +163,7 @@
             </Style>
 
             <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Padding" Value="14,7" />
                 <Setter Property="Foreground" Value="{DynamicResource AccentForeground}" />
@@ -180,6 +185,17 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-        </ResourceDictionary>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type Slider}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>        </ResourceDictionary>
     </Application.Resources>
 </Application>

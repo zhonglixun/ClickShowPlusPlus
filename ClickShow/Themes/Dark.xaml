@@ -48,6 +48,7 @@
     </Style>
 
     <Style x:Key="SwitchCheckBox" TargetType="CheckBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
@@ -76,6 +77,7 @@
     </Style>
 
     <Style x:Key="PillRadio" TargetType="RadioButton">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
@@ -106,6 +108,7 @@
     </Style>
 
     <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Padding" Value="12,6" />
         <Setter Property="Template">
@@ -131,6 +134,7 @@
     </Style>
 
     <Style x:Key="ChipCloseButton" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -159,6 +163,7 @@
     </Style>
 
     <Style x:Key="TextInput" TargetType="TextBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Background" Value="{DynamicResource InputBg}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -169,6 +174,7 @@
     </Style>
 
     <Style x:Key="ModernSlider" TargetType="Slider">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Background" Value="{DynamicResource SliderTrack}" />
         <Setter Property="Template">
             <Setter.Value>

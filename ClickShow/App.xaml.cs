@@ -18,6 +18,7 @@ namespace ClickShow
             base.OnStartup(e);
             // 单实例保护：双开会导致双重波纹与配置文件写入竞态
             _instanceMutex = new Mutex(true, "Local\\ClickShow.SingleInstance", out var createdNew);
+            _ownsMutex = createdNew;
             if (!createdNew)
             {
                 // 已有实例在运行：通知它显示设置窗口，然后本进程退出
@@ -28,6 +29,8 @@ namespace ClickShow
                 catch (Exception)
                 {
                 }
+                _instanceMutex.Dispose();
+                _instanceMutex = null;
                 Shutdown();
                 return;
             }
@@ -54,11 +57,23 @@ namespace ClickShow
         }
 
         private Mutex _instanceMutex;
+        private bool _ownsMutex;
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _instanceMutex?.ReleaseMutex();
+            // 只有创建并持有互斥量的实例才能释放；副实例释放会抛异常
+            if (_ownsMutex && _instanceMutex != null)
+            {
+                try
+                {
+                    _instanceMutex.ReleaseMutex();
+                }
+                catch (ApplicationException)
+                {
+                }
+            }
             _instanceMutex?.Dispose();
+            _instanceMutex = null;
             base.OnExit(e);
         }
 

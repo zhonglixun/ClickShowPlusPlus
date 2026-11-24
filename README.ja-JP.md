@@ -46,15 +46,15 @@ Windows 10 1809+ または Windows 11（x64）。ランタイム同梱のため 
 
 ## インストール
 
-**バージョン選択**：`ClickShow-Setup-2.1.6.exe` は .NET ランタイム同梱（約 63MB）で、Windows 10/11 ならそのまま動作します。`ClickShow-Setup-2.1.6-lite.exe` は約 2MB ですが **.NET 8 デスクトップ ランタイム（x64）が必須**で、未導入だと起動できません（インストーラーが検出し、ダウンロード先を案内します）。迷ったら完全版を選んでください。
+**バージョン選択**：`ClickShow-Setup-2.1.7.exe` は .NET ランタイム同梱（約 63MB）で、Windows 10/11 ならそのまま動作します。`ClickShow-Setup-2.1.7-lite.exe` は約 2MB ですが **.NET 8 デスクトップ ランタイム（x64）が必須**で、未導入だと起動できません（インストーラーが検出し、ダウンロード先を案内します）。迷ったら完全版を選んでください。
 
-ポータブル版も 2 種類：`ClickShowPlusPlus-Portable-2.1.6.zip`（完全版・約 63MB）と `ClickShowPlusPlus-Portable-2.1.6-lite.zip`（Lite・約 0.6MB、同じくランタイムが必要）。
+ポータブル版も 2 種類：`ClickShowPlusPlus-Portable-2.1.7.zip`（完全版・約 63MB）と `ClickShowPlusPlus-Portable-2.1.7-lite.zip`（Lite・約 0.6MB、同じくランタイムが必要）。
 
-1. 本リポジトリの Releases ページから ClickShow-Setup-2.1.6.exe をダウンロード；
+1. 本リポジトリの Releases ページから ClickShow-Setup-2.1.7.exe をダウンロード；
 2. ウィザードに従ってインストール：カスタムパス対応（ドライブ直選択時は自動でフォルダーを追加）。デスクトップ / スタートメニューのショートカットは選択可；
 3. 旧バージョンが起動中の場合、終了を促すダイアログが表示されます。
 
-ポータブル版：ClickShowPlusPlus-Portable-2.1.6.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
+ポータブル版：ClickShowPlusPlus-Portable-2.1.7.zip を解凍してすぐ使用可能。インストール不要。設定は %APPDATA%/ClickShow に保存。
 
 ## 1.x からのアップグレード
 
@@ -77,6 +77,12 @@ dotnet publish ClickShow/ClickShow.csproj -c Release -r win-x64 --self-contained
 - **アンインストール後にスタートアップが残る？** アンインストーラーがレジストリを自動削除します。
 
 ## 更新履歴
+
+### 2.1.7（2026-11）
+- ボタンのアイコンをマウス全体の形に刷新し、該当ボタンをハイライト表示。X1/X2 は左側の 2 ボタン；
+- マウスドットは現在の色を表示する丸アイコンに変更；
+- 「カスタム」プリセットは現在の 5 色をリアルタイム表示；
+- 各設定ページ右下の「閉じる」を削除。
 
 ### 2.1.6（2026-11）
 - 自前描画のタイトルバー：ウィンドウボタンを画面右上に統合、最大化時に黒い余白が出ません；

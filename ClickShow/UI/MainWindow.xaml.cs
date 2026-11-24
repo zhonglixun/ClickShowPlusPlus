@@ -272,6 +272,7 @@ namespace ClickShow
         private void ApplyTitleBarTheme()
         {
             DwmHelper.ApplyDarkTitleBar(this, !ThemeWatcher.IsLightTheme);
+            DwmHelper.ApplyRoundedCorners(this);
         }
 
         private void LoadSetting()
@@ -1249,6 +1250,9 @@ namespace ClickShow
                     UpdateButton.Content = L("updateCheck");
                     break;
             }
+            var highlight = _updateStatus == "found" || _updateStatus == "downloading"
+                || _updateStatus == "downloadFailed" || _updateStatus == "verifyFailed";
+            UpdateButton.Style = (Style)FindResource(highlight ? "PrimaryButton" : "GhostButton");
         }
 
         /// <summary>优先读取仓库内的静态清单（raw CDN，无 API 配额限制）。</summary>

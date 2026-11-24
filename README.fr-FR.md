@@ -46,15 +46,15 @@ Windows 10 1809+ ou Windows 11 (x64). Runtime inclus — **aucune installation d
 
 ## Installation
 
-**Choisir la version** : `ClickShow-Setup-2.1.7.exe` inclut le runtime .NET (~63 Mo) et fonctionne sur tout Windows 10/11 ; `ClickShow-Setup-2.1.7-lite.exe` ne fait que ~2 Mo mais **exige .NET 8 Desktop Runtime (x64)**, sinon l'application ne démarre pas (l'installateur le détecte et propose le téléchargement). En cas de doute, prenez la version complète.
+**Choisir la version** : `ClickShow-Setup-2.1.8.exe` inclut le runtime .NET (~63 Mo) et fonctionne sur tout Windows 10/11 ; `ClickShow-Setup-2.1.8-lite.exe` ne fait que ~2 Mo mais **exige .NET 8 Desktop Runtime (x64)**, sinon l'application ne démarre pas (l'installateur le détecte et propose le téléchargement). En cas de doute, prenez la version complète.
 
-Deux versions portables également : `ClickShowPlusPlus-Portable-2.1.7.zip` (complète, ~63 Mo) et `ClickShowPlusPlus-Portable-2.1.7-lite.zip` (Lite, ~0,6 Mo, même prérequis).
+Deux versions portables également : `ClickShowPlusPlus-Portable-2.1.8.zip` (complète, ~63 Mo) et `ClickShowPlusPlus-Portable-2.1.8-lite.zip` (Lite, ~0,6 Mo, même prérequis).
 
-1. Téléchargez ClickShow-Setup-2.1.7.exe depuis la page Releases de ce dépôt ;
+1. Téléchargez ClickShow-Setup-2.1.8.exe depuis la page Releases de ce dépôt ;
 2. Exécutez l'assistant : chemin d'installation personnalisé pris en charge (la racine d'un lecteur ajoute automatiquement un dossier) ; raccourcis bureau et menu Démarrer en option ;
 3. Si une ancienne version est en cours d'exécution, l'installateur demandera de la fermer.
 
-Version portable : téléchargez ClickShowPlusPlus-Portable-2.1.7.zip, décompressez et lancez — sans installation ; les paramètres vivent dans %APPDATA%/ClickShow.
+Version portable : téléchargez ClickShowPlusPlus-Portable-2.1.8.zip, décompressez et lancez — sans installation ; les paramètres vivent dans %APPDATA%/ClickShow.
 
 ## Mise à niveau depuis 1.x
 
@@ -77,6 +77,11 @@ Programme d'installation : compilez `installer/ClickShow.iss` avec [Inno Setup 6
 - **Entrée de démarrage cassée après désinstallation ?** Le désinstallateur nettoie automatiquement l'entrée du registre.
 
 ## Historique des versions
+
+### 2.1.8 (2026-11)
+- Coins arrondis avec une bordure de 1 px, alignée sur les cartes ;
+- La carte « Personnalisé » reflète les cinq couleurs actuelles ;
+- Le bouton de mise à jour passe en couleur d'accent uniquement si une version est disponible.
 
 ### 2.1.7 (2026-11)
 - Icônes de souris complètes avec le bouton concerné en surbrillance ; X1/X2 partagent les deux boutons latéraux gauche ;

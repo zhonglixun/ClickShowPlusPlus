@@ -17,6 +17,7 @@
     <SolidColorBrush x:Key="InputBg" Color="#F9FAFB" />
     <SolidColorBrush x:Key="SwitchOff" Color="#D6D9E0" />
     <SolidColorBrush x:Key="SliderTrack" Color="#E2E4E9" />
+    <SolidColorBrush x:Key="WindowBorder" Color="#22000000" />
     <SolidColorBrush x:Key="Danger" Color="#DC4A4A" />
 
     <Style x:Key="SectionTitle" TargetType="TextBlock">

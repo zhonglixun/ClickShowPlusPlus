@@ -26,5 +26,17 @@ namespace ClickShow.Utility
                 DwmSetWindowAttribute(hwnd, 19, ref value, sizeof(int));
             }
         }
+
+        /// <summary>Win11 圆角窗口（DWMWA_WINDOW_CORNER_PREFERENCE）；Win10 上属性不存在，静默跳过。</summary>
+        public static void ApplyRoundedCorners(Window window)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+            {
+                return;
+            }
+            var value = 2; // DWMWCP_ROUND
+            DwmSetWindowAttribute(hwnd, 33, ref value, sizeof(int));
+        }
     }
 }

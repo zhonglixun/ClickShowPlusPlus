@@ -46,15 +46,15 @@ Windows 10 1809+ 또는 Windows 11(x64). 런타임 포함으로 **.NET 설치 �
 
 ## 설치
 
-**버전 선택**: `ClickShow-Setup-2.1.5.exe`는 .NET 런타임을 포함(약 63MB)해 Windows 10/11에서 바로 실행됩니다. `ClickShow-Setup-2.1.5-lite.exe`는 약 2MB이지만 **.NET 8 데스크톱 런타임(x64)이 반드시 필요**하며, 없으면 실행되지 않습니다(설치 프로그램이 감지해 다운로드 안내). 확실하지 않으면 전체 버전을 선택하세요.
+**버전 선택**: `ClickShow-Setup-2.1.6.exe`는 .NET 런타임을 포함(약 63MB)해 Windows 10/11에서 바로 실행됩니다. `ClickShow-Setup-2.1.6-lite.exe`는 약 2MB이지만 **.NET 8 데스크톱 런타임(x64)이 반드시 필요**하며, 없으면 실행되지 않습니다(설치 프로그램이 감지해 다운로드 안내). 확실하지 않으면 전체 버전을 선택하세요.
 
-포터블도 두 가지: `ClickShowPlusPlus-Portable-2.1.5.zip`(전체, 약 63MB)과 `ClickShowPlusPlus-Portable-2.1.5-lite.zip`(Lite, 약 0.6MB, 동일하게 런타임 필요).
+포터블도 두 가지: `ClickShowPlusPlus-Portable-2.1.6.zip`(전체, 약 63MB)과 `ClickShowPlusPlus-Portable-2.1.6-lite.zip`(Lite, 약 0.6MB, 동일하게 런타임 필요).
 
-1. 이 저장소의 Releases 페이지에서 ClickShow-Setup-2.1.5.exe 다운로드；
+1. 이 저장소의 Releases 페이지에서 ClickShow-Setup-2.1.6.exe 다운로드；
 2. 마법사 실행: 사용자 지정 경로 지원(드라이브 루트 선택 시 자동으로 폴더 추가). 바탕 화면/시작 메뉴 바로 가기는 선택 사항；
 3. 이전 버전이 실행 중이면 종료를 안내합니다. 
 
-포터블 버전: ClickShowPlusPlus-Portable-2.1.5.zip 다운로드 후 압축 해제하여 바로 사용. 설치 불필요. 설정은 %APPDATA%/ClickShow에 저장. 
+포터블 버전: ClickShowPlusPlus-Portable-2.1.6.zip 다운로드 후 압축 해제하여 바로 사용. 설치 불필요. 설정은 %APPDATA%/ClickShow에 저장. 
 
 ## 1.x에서 업그레이드
 
@@ -77,6 +77,12 @@ dotnet publish ClickShow/ClickShow.csproj -c Release -r win-x64 --self-contained
 - **제거 후 시작 프로그램 항목이 남음?** 제거 프로그램이 레지스트리 항목을 자동 정리합니다. 
 
 ## 변경 이력
+
+### 2.1.6 (2026-11)
+- 자체 그린 제목 표시줄: 창 버튼이 화면 오른쪽 위로 통합되고 최대화 시 검은 여백이 없습니다;
+- 테마 프리셋을 카드로 바꿔 다섯 버튼 색을 바로 보여줍니다;
+- 좌/중/우/X1/X2/마우스 점에 마우스 아이콘 추가;
+- 색상 선택기 재구성(채도·명도 사각형, 색상 막대, 불투명도, HEX/RGB 입력, 기본 색상).
 
 ### 2.1.5 (2026-11)
 - 테마 프리셋을 8개로 복원했습니다(森林·莓果·马卡龙은 2.1 UI 개편 때 누락되었습니다);

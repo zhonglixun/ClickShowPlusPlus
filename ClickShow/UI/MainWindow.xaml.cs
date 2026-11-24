@@ -133,8 +133,9 @@ namespace ClickShow
         public MainWindow()
         {
             InitializeComponent();
-            MaxHeight = Math.Max(620, SystemParameters.WorkArea.Height - 40);
-            MaxWidth = Math.Max(900, SystemParameters.WorkArea.Width - 40);
+            // 自绘标题栏后窗口要能真正最大化，这里只限制初始尺寸，不再限制最大尺寸
+            Height = Math.Min(820, SystemParameters.WorkArea.Height - 60);
+            Width = Math.Min(980, SystemParameters.WorkArea.Width - 60);
             DataContext = this;
             SourceInitialized += OnSourceInitialized;
             Closing += OnClosing;
@@ -183,8 +184,84 @@ namespace ClickShow
 
         private void OnSourceInitialized(object sender, EventArgs e)
         {
+            if (PresentationSource.FromVisual(this) is HwndSource source)
+            {
+                source.AddHook(WndProc);
+            }
             ApplyTitleBarTheme();
             ThemeWatcher.ThemeChanged += OnSystemThemeChanged;
+        }
+
+        private const int WM_GETMINMAXINFO = 0x0024;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MI_RECT
+        {
+            public int Left, Top, Right, Bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MI_POINT
+        {
+            public int X, Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public MI_RECT rcMonitor;
+            public MI_RECT rcWork;
+            public uint dwFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MINMAXINFO
+        {
+            public MI_POINT ptReserved;
+            public MI_POINT ptMaxSize;
+            public MI_POINT ptMaxPosition;
+            public MI_POINT ptMinTrackSize;
+            public MI_POINT ptMaxTrackSize;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO info);
+
+        [DllImport("user32.dll")]
+        private static extern int GetSystemMetrics(int index);
+
+        private const int SM_CXSIZEFRAME = 32;
+        private const int SM_CYSIZEFRAME = 33;
+        private const int SM_CXPADDEDBORDER = 92;
+
+        /// <summary>无边框窗口最大化时贴合工作区，避免盖住任务栏或超出屏幕。</summary>
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg != WM_GETMINMAXINFO)
+            {
+                return IntPtr.Zero;
+            }
+            var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+            var monitor = MonitorFromWindow(hwnd, 2);
+            var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+            if (monitor != IntPtr.Zero && GetMonitorInfo(monitor, ref info))
+            {
+                // 窗口自带一圈不可见缩放宽限框，最大化时按框厚外扩，客户区才能正好铺满工作区
+                var frame = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                mmi.ptMaxPosition.X = Math.Abs(info.rcWork.Left - info.rcMonitor.Left) - frame;
+                mmi.ptMaxPosition.Y = Math.Abs(info.rcWork.Top - info.rcMonitor.Top) - frame;
+                mmi.ptMaxSize.X = Math.Abs(info.rcWork.Right - info.rcWork.Left) + frame * 2;
+                mmi.ptMaxSize.Y = Math.Abs(info.rcWork.Bottom - info.rcWork.Top) + frame * 2;
+                mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
+                Marshal.StructureToPtr(mmi, lParam, true);
+                handled = true;
+            }
+            return IntPtr.Zero;
         }
 
         private void OnSystemThemeChanged()
@@ -1497,10 +1574,58 @@ namespace ClickShow
 
         private void OnStateChanged(object sender, EventArgs e)
         {
+            UpdateMaximizeIcon();
             if (WindowState == WindowState.Minimized)
             {
                 this.Hide();
             }
+        }
+
+        private void UpdateMaximizeIcon()
+        {
+            if (MaxIcon == null)
+            {
+                return;
+            }
+            var maximized = WindowState == WindowState.Maximized;
+            MaxIcon.Visibility = maximized ? Visibility.Collapsed : Visibility.Visible;
+            RestoreIcon.Visibility = maximized ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                ToggleMaximize();
+                return;
+            }
+            try
+            {
+                DragMove();
+            }
+            catch
+            {
+            }
+        }
+
+        private void TitleMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void TitleMaximize_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleMaximize();
+        }
+
+        private void TitleClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ToggleMaximize()
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
         public void MoveWindowWrapper(Window window, int X, int Y, int nWidth, int nHeight)

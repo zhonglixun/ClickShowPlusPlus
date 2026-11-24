@@ -46,15 +46,15 @@ Windows 10 1809+ o Windows 11 (x64). Tiempo de ejecución incluido — **no se n
 
 ## Instalación
 
-**Elige versión**: `ClickShow-Setup-2.1.5.exe` incluye el runtime de .NET (~63 MB) y funciona en cualquier Windows 10/11; `ClickShow-Setup-2.1.5-lite.exe` ocupa solo ~2 MB pero **requiere .NET 8 Desktop Runtime (x64)**; sin él la aplicación no arranca (el instalador lo detecta y ofrece la descarga). Si dudas, usa la completa.
+**Elige versión**: `ClickShow-Setup-2.1.6.exe` incluye el runtime de .NET (~63 MB) y funciona en cualquier Windows 10/11; `ClickShow-Setup-2.1.6-lite.exe` ocupa solo ~2 MB pero **requiere .NET 8 Desktop Runtime (x64)**; sin él la aplicación no arranca (el instalador lo detecta y ofrece la descarga). Si dudas, usa la completa.
 
-También hay dos portátiles: `ClickShowPlusPlus-Portable-2.1.5.zip` (completa, ~63 MB) y `ClickShowPlusPlus-Portable-2.1.5-lite.zip` (Lite, ~0,6 MB, mismo requisito).
+También hay dos portátiles: `ClickShowPlusPlus-Portable-2.1.6.zip` (completa, ~63 MB) y `ClickShowPlusPlus-Portable-2.1.6-lite.zip` (Lite, ~0,6 MB, mismo requisito).
 
-1. Descarga ClickShow-Setup-2.1.5.exe desde la página de Releases de este repositorio;
+1. Descarga ClickShow-Setup-2.1.6.exe desde la página de Releases de este repositorio;
 2. Ejecuta el asistente: ruta de instalación personalizada (si eliges la raíz de una unidad se añade una carpeta automáticamente); accesos directos opcionales;
 3. Si hay una versión anterior en ejecución, el instalador pedirá cerrarla.
 
-Versión portátil: descarga ClickShowPlusPlus-Portable-2.1.5.zip, descomprime y ejecuta — sin instalación; la configuración vive en %APPDATA%/ClickShow.
+Versión portátil: descarga ClickShowPlusPlus-Portable-2.1.6.zip, descomprime y ejecuta — sin instalación; la configuración vive en %APPDATA%/ClickShow.
 
 ## Actualizar desde 1.x
 
@@ -77,6 +77,12 @@ Instalador: compila `installer/ClickShow.iss` con [Inno Setup 6](https://jrsoftw
 - **¿Entrada de autoarranque rota tras desinstalar?** El desinstalador limpia la entrada del registro automáticamente.
 
 ## Historial
+
+### 2.1.6 (2026-11)
+- Barra de título dibujada por la app: los botones de ventana se integran arriba a la derecha y maximizar no deja bordes negros;
+- Los temas predefinidos pasan a tarjetas que muestran los cinco colores;
+- Iconos de ratón para izquierdo, central, derecho, X1, X2 y el punto;
+- Selector de color renovado: cuadrado SV, barra de tono, alfa, HEX/RGB y muestras.
 
 ### 2.1.5 (2026-11)
 - Restaurados los ocho temas predefinidos (Forest, Berry y Macaron se perdieron en el rediseño de la 2.1);

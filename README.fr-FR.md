@@ -46,15 +46,15 @@ Windows 10 1809+ ou Windows 11 (x64). Runtime inclus — **aucune installation d
 
 ## Installation
 
-**Choisir la version** : `ClickShow-Setup-2.1.5.exe` inclut le runtime .NET (~63 Mo) et fonctionne sur tout Windows 10/11 ; `ClickShow-Setup-2.1.5-lite.exe` ne fait que ~2 Mo mais **exige .NET 8 Desktop Runtime (x64)**, sinon l'application ne démarre pas (l'installateur le détecte et propose le téléchargement). En cas de doute, prenez la version complète.
+**Choisir la version** : `ClickShow-Setup-2.1.6.exe` inclut le runtime .NET (~63 Mo) et fonctionne sur tout Windows 10/11 ; `ClickShow-Setup-2.1.6-lite.exe` ne fait que ~2 Mo mais **exige .NET 8 Desktop Runtime (x64)**, sinon l'application ne démarre pas (l'installateur le détecte et propose le téléchargement). En cas de doute, prenez la version complète.
 
-Deux versions portables également : `ClickShowPlusPlus-Portable-2.1.5.zip` (complète, ~63 Mo) et `ClickShowPlusPlus-Portable-2.1.5-lite.zip` (Lite, ~0,6 Mo, même prérequis).
+Deux versions portables également : `ClickShowPlusPlus-Portable-2.1.6.zip` (complète, ~63 Mo) et `ClickShowPlusPlus-Portable-2.1.6-lite.zip` (Lite, ~0,6 Mo, même prérequis).
 
-1. Téléchargez ClickShow-Setup-2.1.5.exe depuis la page Releases de ce dépôt ;
+1. Téléchargez ClickShow-Setup-2.1.6.exe depuis la page Releases de ce dépôt ;
 2. Exécutez l'assistant : chemin d'installation personnalisé pris en charge (la racine d'un lecteur ajoute automatiquement un dossier) ; raccourcis bureau et menu Démarrer en option ;
 3. Si une ancienne version est en cours d'exécution, l'installateur demandera de la fermer.
 
-Version portable : téléchargez ClickShowPlusPlus-Portable-2.1.5.zip, décompressez et lancez — sans installation ; les paramètres vivent dans %APPDATA%/ClickShow.
+Version portable : téléchargez ClickShowPlusPlus-Portable-2.1.6.zip, décompressez et lancez — sans installation ; les paramètres vivent dans %APPDATA%/ClickShow.
 
 ## Mise à niveau depuis 1.x
 
@@ -77,6 +77,12 @@ Programme d'installation : compilez `installer/ClickShow.iss` avec [Inno Setup 6
 - **Entrée de démarrage cassée après désinstallation ?** Le désinstallateur nettoie automatiquement l'entrée du registre.
 
 ## Historique des versions
+
+### 2.1.6 (2026-11)
+- Barre de titre dessinée par l'application : les boutons de fenêtre sont intégrés en haut à droite, l'agrandissement ne laisse plus de bords noirs ;
+- Les thèmes prédéfinis deviennent des cartes montrant les cinq couleurs ;
+- Icônes de souris pour gauche, milieu, droite, X1, X2 et le point ;
+- Sélecteur de couleur refait : carré SV, teinte, alpha, HEX/RGB et nuances.
 
 ### 2.1.5 (2026-11)
 - Les huit thèmes prédéfinis sont de retour (Forêt, Baie et Macaron avaient disparu lors de la refonte 2.1) ;
